@@ -1,2 +1,2 @@
 // MIDDLEWARES
-const { isLoggedIn } = require("./middlewares/login");
+const { isLoggedIn } = require("../middlewares/login");

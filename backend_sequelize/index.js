@@ -5,8 +5,11 @@ const fileUpload = require("express-fileupload");
 const fs = require("fs");
 const path = require("path");
 
+const { Accounts } = require("./src/model_definitions/Accounts");
+const { Passwords } = require("./src/model_definitions/Passwords");
+
 const config = require("./src/config/config");
-const routes = require("./src/routes");
+const routes = require("./src/routes/main.routes");
 const db = require("./src/config/connection");
 
 const app = express();

@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 const db = require("../config/connection");
 
 // import models to define many-to-many relationship
-const { Employees } = require("./Employees");
 
 const Accounts = db.define(
     "Accounts",
