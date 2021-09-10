@@ -1,6 +1,7 @@
 const { Accounts } = require("../model_definitions/Accounts");
+const { Passwords } = require("../model_definitions/Passwords");
 
-module.exports.findUserByUsername = (username) => await Accounts.findOne({
+module.exports.findUserByUsername = async (username) => await Accounts.findOne({
     where: { username },
     include: [{
         model: Passwords,
@@ -10,6 +11,6 @@ module.exports.findUserByUsername = (username) => await Accounts.findOne({
     }]
 });
 
-module.exports.lockAccount = (account) => await account.update({
+module.exports.lockAccount = async (account) => await account.update({
     status: "locked"
 });

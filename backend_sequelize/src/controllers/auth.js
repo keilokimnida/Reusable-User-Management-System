@@ -7,6 +7,8 @@ const { updatePasswordAttempts } = require("../models/passwords");
 const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
 
+const { Passwords } = require("../model_definitions/Passwords");
+
 // PLATFORM CLIENT LOGIN
 module.exports.userLogin = async (req, res) => {
     try {

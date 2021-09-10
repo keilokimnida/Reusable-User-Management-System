@@ -38,6 +38,7 @@ module.exports.seeder = async () => {
                 include: ["passwords"]
             },
         );
+        console.log("SEEDING COMPLETE");
     }
     catch (error) {
         console.log("ERROR IN DATA SEEDING", error);
