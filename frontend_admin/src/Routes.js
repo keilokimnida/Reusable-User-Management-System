@@ -3,7 +3,7 @@ import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-d
 import Login from './pages/Login';
 import Home from './pages/Home';
 
-import { getToken } from './utils/token';
+import { getToken } from './utils/localStorage';
 
 const authGuard = (Component) => (props) => {
   let token = getToken();

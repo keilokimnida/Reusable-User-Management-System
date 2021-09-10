@@ -1,6 +1,9 @@
 import { Container, Button } from 'react-bootstrap';
 import { Formik, Form, Field } from 'formik';
 
+import axios from 'axios';
+import CONFIG from '../config/config';
+
 const Login = () => {
   const initialValues = {
     username: "",
@@ -9,6 +12,7 @@ const Login = () => {
 
   const handleSubmit = (values) => {
     console.log(values);
+    console.log(CONFIG.baseUrl);
   }
 
   return (
