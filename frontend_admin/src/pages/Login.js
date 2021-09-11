@@ -1,9 +1,14 @@
 import { useState } from 'react';
+
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+
 import { toast } from 'react-toastify';
+import TOAST_CONFIG from '../config/toast';
+
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+
 import { Link } from 'react-router-dom';
 
 import axios from 'axios';
@@ -35,7 +40,8 @@ const Login = () => {
           setLoading(false);
           login(res.data);
           return "Logged in successfully";
-        }
+        },
+        autoClose: TOAST_CONFIG.duration.quick
       },
       error: {
         render: ({ data: { response: res } }) => {

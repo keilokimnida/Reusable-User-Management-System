@@ -8,6 +8,7 @@ import Routes from './Routes';
 // toast notification container
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import TOAST_CONFIG from './config/toast';
 
 // styling
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,7 +21,7 @@ const App = () => {
       {/* The toast container is here so it is present through all interfaces */}
       <ToastContainer
         position="bottom-left"
-        autoClose={5000}
+        autoClose={TOAST_CONFIG.duration.normal}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}
