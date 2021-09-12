@@ -35,6 +35,16 @@ const Accounts = db.define(
             type: DataTypes.ENUM(["active", "locked", "deactivated"]),
             allowNull: false,
             defaultValue: "active"
+        },
+        admin_level: {
+            // the admin level the employee has
+            // 0 -> guest (No subscription)
+            // 1 -> normal (Paid for subscription)
+            // 2 -> client admin (Paid for subscription)
+            // 3 -> platform admin (People who manage the system i.e. us)
+            type: DataTypes.TINYINT.UNSIGNED,
+            allowNull: false,
+            defaultValue: 0
         }
     },
     {

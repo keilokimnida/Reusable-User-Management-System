@@ -1,155 +1,60 @@
-const jwt = require("jsonwebtoken");
-
-const { Accounts } = require("../model_definitions/Accounts");
-const { Invitations } = require("../model_definitions/Invitations");
-
-const { register } = require("../models/invitation");
-const { frontend, jwt: { secret: jwtSecret } } = require("../config/config");
-const { sendEmail, templates } = require("../utils/email");
+const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
 const { responses: r } = require("../utils/response");
 
-
-module.exports.createInvite = async (req, res,) => {
+module.exports.findAllAccounts = async (req, res, platformAdmin = false) => {
     try {
-        const { email } = req.body;
-        const json = { email };
+        const { auth: { decoded } } = res.locals;
 
-        const token = jwt.sign(json, jwtSecret, {
-            expiresIn: "7d"
-        });
-
-        await Invitations.create({
-            email, token,
-        });
-
-        const jumpContentTemplates = {
-            0: templates.inviteUser,
-            1: templates.invitePlatformAdmin,
-            2: templates.inviteSystemAdmin,
-        }
-
-        try {
-            await sendEmail(email, "You've been invited to join eISO", jumpContentTemplates[0](token))
-        }
-        catch (error) {
-            // here, the email failed to be sent
-            console.log(error);
-            return res.status(201).send(r.success201({
-                email: false,
-                token,
-                link: `${frontend.baseUrl}/create-account/${token}`
-            }));
-        }
-
-        return res.status(201).send(r.success201({
-            email: true,
-            token,
-            link: `${frontend.baseUrl}/create-account/${token}`
-        }));
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
-    }
-}
-
-// ============================================================
-
-module.exports.validateInvite = async (req, res) => {
-    try {
-        const {
-            token,
-            decoded: { admin_level, company_name, company_alias, title }
-        } = res.locals.invite;
-
-        const row = await User.Invitations.findOne({
-            where: { token }
-        });
-
-        if (!row) res.status(404).send(r.error404({
-            message: "Invitation does not exist"
+        // If account is a guest user
+        if (decoded.admin_level === 0) return res.status(401).send(r.error401({
+            message: "Unauthorised access!"
         }));
 
-        let json = {
-            email: row.email,
-            admin_level
-        };
-
-        if (row.fk_company_id !== null) {
-            json.company_id = row.fk_company_id;
-            json.company_name = company_name;
-            json.company_alias = company_alias;
-            json.title = title;
-        }
-
-        return res.status(200).send(r.success200(json));
-
-        // when undefined is parsed into json, the key is lost
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
-    }
-}
-
-// ============================================================
-
-module.exports.registerInvite = async (req, res) => {
-    try {
-        const {
-            firstname, lastname,
-            username, email, password,
-            address = null
-        } = req.body;
-
-        const jumpRegister = {
-            0: register.user,
-            1: register.platformAdmin,
-            2: register.systemAdmin,
-            3: register.secondaryAdmin
-        };
-
-        const { username } = await jumpRegister[0](res.locals.invite, {
-            firstname, lastname,
-            username, email, password,
-            address
-        }, req.files?.avatar);
-
-        res.status(201).send(r.success201({ username }));
-    }
-    catch (error) {
-        if (error.original.code === "ER_DUP_ENTRY") return res.status(400).send(r.error400({
-            message: "Username has been taken"
-        }));
-        console.log(error);
-        return res.status(500).send(r.error500(error));
-    }
-}
-
-// ============================================================
-
-module.exports.findUserById = async (req, res) => {
-    try {
         // if this controller is on the admin endpoint but for some reason
         // the token says the user is not a platform admin
-
-        const account_id = parseInt(req.params.account_id);
-        if (isNaN(account_id)) return res.status(400).send(r.error400({
-            message: "Invalid parameter \"account_id\""
+        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
+            message: "Client user on wrong endpoint"
         }));
 
-        let where = {
-            account_id: account_id,
-        };
+        const accounts = await findAllAccounts();
 
-        const account = await Accounts.findOne({ where });
-        if (!account) return res.status(404).send(r.error404({
-            message: `\"account_id\" ${account_id} not found`
+        if (accounts.length === 0) return res.status(204).send(r.success204);
+
+        return res.status(200).send(r.success200(accounts));
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(r.error500(error));
+    }
+}
+
+module.exports.findAccountByID = async (req, res, platformAdmin = false) => {
+    try {
+        const { auth: { decoded } } = res.locals;
+
+        // if this controller is on the admin endpoint but for some reason
+        // the token says the user is not a platform admin
+        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
+            message: "Client user on wrong endpoint"
         }));
+
+        // If account is a guest user
+        if (decoded.admin_level === 0) return res.status(401).send(r.error401({
+            message: "Unauthorised access!"
+        }));
+
+        const accountID = parseInt(req.params.employeeId)
+        if (isNaN(accountID)) return res.status(400).send(r.error400({
+            message: "Invalid parameter \"accountID\""
+        }));
+
+        const account = await findOneAccount({ accountID });
+
+        if (!account) return res.status(204).send(r.success204);
 
         return res.status(200).send(r.success200(account));
-    }
-    catch (error) {
+
+    } catch (error) {
         console.log(error);
         return res.status(500).send(r.error500(error));
     }
@@ -159,20 +64,20 @@ module.exports.findUserById = async (req, res) => {
 
 // UPDATE
 
-// updates only employee details and their address
+// updates only account details and their address
 // does not include updating account (username/password)
-module.exports.editEmployee = async (req, res, platformAdmin = false) => {
+module.exports.editAccount = async (req, res, platformAdmin = false) => {
     try {
         const { auth: { decoded }, companyId } = res.locals;
 
-        const employeeId = parseInt(req.params.employeeId);
-        if (isNaN(employeeId)) return res.status(400).send(r.error400({
-            message: "Invalid parameter \"employeeId\""
+        const accountID = parseInt(req.params.accountID);
+        if (isNaN(accountID)) return res.status(400).send(r.error400({
+            message: "Invalid parameter \"accountID\""
         }));
 
-        // if this controller is on the admin endpoint but for some reason
+        // if this controller is on the platform admin endpoint but for some reason
         // the token says the user is not a platform admin
-        if (platformAdmin && decoded.admin_level !== 1) return res.status(403).send(r.error403({
+        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
             message: "Client user on wrong endpoint"
         }));
 
@@ -186,30 +91,29 @@ module.exports.editEmployee = async (req, res, platformAdmin = false) => {
         if (status !== null) include.push("account");
 
         let where = {
-            employee_id: employeeId,
-            fk_company_id: companyId
+            account_id: accountID
         };
 
         if (platformAdmin) where = {
-            employee_id: employeeId,
-            fk_company_id: null,
+            account_id: accountID,
             admin_level: 1
         }
 
-        const employee = await Employees.findOne({ where, include });
-        if (!employee) return res.status(404).send(r.error404({
-            message: `\"employeeId\" ${employeeId} not found`
+        const account = await findOneAccount(where);
+
+        if (!account) return res.status(404).send(r.error404({
+            message: `\"accountID\" ${accountID} not found`
         }));
 
         let details = { firstname, lastname, email };
 
-        // as a system admin...
+        // as a platform admin...
         if (decoded.admin_level === 2) {
             details.title = title;
             details.status = status;
 
-            // dont allow the system admin to change their own admin_level
-            if (decoded.employee_id !== employeeId) {
+            // dont allow admin to change their own admin_level
+            if (decoded.account_id !== accountID) {
                 // just admin_level is from req.body
                 if (admin_level !== null) {
                     admin_level = parseInt(admin_level);
@@ -229,20 +133,20 @@ module.exports.editEmployee = async (req, res, platformAdmin = false) => {
             details.status = status;
         }
 
-        await employee.update(details);
+        await updateAccount(account, details);
 
         // update the address if necessary
-        if (address) await employee.address.update(address);
+        if (address) await account.address.update(address);
 
         // update the account status only when its necessary
         if (account_status !== null) {
-            // as a system admin...
+            // as an admin...
             // can only change the status when the account status is not locked
             // should only be either active or deactivated
             if (decoded.admin_level === 2 && employee.account.status !== "locked") {
-                // prevent the system admin from deactivating themself
-                if (decoded.employee_id !== employeeId)
-                    await employee.account.update({ status: account_status });
+                // prevent the admin from deactivating themself
+                if (decoded.account_id !== accountID)
+                    await account.account.update({ status: account_status });
                 else return res.status(400).send(r.error400({
                     message: "Cannot deactivate oneself"
                 }));

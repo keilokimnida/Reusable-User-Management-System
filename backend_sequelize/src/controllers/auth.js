@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const { findUserByUsername, lockAccount } = require("../models/accounts");
+const { findAccountByUsername, lockAccount } = require("../models/accounts");
 const { updatePasswordAttempts } = require("../models/passwords");
 
 const { jwt: { secret: jwtSecret } } = require("../config/config");
@@ -9,13 +9,13 @@ const { responses: r } = require("../utils/response");
 
 const { Passwords } = require("../model_definitions/Passwords");
 
-// PLATFORM CLIENT LOGIN
+// NORMAL USER LOGIN
 module.exports.userLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
 
         // Check if user exists
-        const account = await findUserByUsername(username);
+        const account = await findAccountByUsername(username);
 
         // no account matching username
         if (!account) return res.status(404).json({
@@ -86,6 +86,8 @@ module.exports.userLogin = async (req, res) => {
         const token = jwt.sign({
             account_id: account.account_id,
             username: account.username,
+            email: account.employee.email,
+            admin_level: account.employee.admin_level
         }, jwtSecret, { expiresIn: "12h" });
 
         return res.status(200).json({
@@ -95,6 +97,7 @@ module.exports.userLogin = async (req, res) => {
             token,
             data: {
                 username: account.username,
+                email: account.employee.email
             }
         });
     }
@@ -106,25 +109,13 @@ module.exports.userLogin = async (req, res) => {
 
 // ============================================================
 
-// PLATFORM ADMIN LOGIN
+// ADMIN LOGIN
 module.exports.adminLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const account = await Accounts.findOne({
-            where: { username },
-            include: [{
-                model: Employees,
-                as: "employee"
-                // platform admins are not tied to a company
-                // so does not include company
-            }, {
-                model: Passwords,
-                as: "passwords",
-                where: { active: true },
-                limit: 1
-            }]
-        });
+        // Check if user exists
+        const account = await findAccountByUsername(username);
 
         // no account matching username
         if (!account) return res.status(404).json({
@@ -159,17 +150,16 @@ module.exports.adminLogin = async (req, res) => {
 
         const valid = bcrypt.compareSync(password, hash);
 
+        // If password is not valid
         if (!valid) {
             const attempts = passwordAttempts + 1;
-            await Passwords.update({
-                attempts,
-            }, { where: { password_id } });
+
+            await updatePasswordAttempts(attempts, password_id);
 
             // lock the account
             if (attempts >= 5) {
-                await account.update({
-                    status: "locked"
-                });
+                await lockAccount(account);
+
                 return res.status(403).json({
                     message: "Account is now locked",
                     found: true,
@@ -179,7 +169,7 @@ module.exports.adminLogin = async (req, res) => {
                 });
             }
 
-            // incorrect password
+            // incorrect password but less than 5 password attempts
             return res.status(401).json({
                 message: "Invalid password",
                 found: true,
@@ -189,20 +179,17 @@ module.exports.adminLogin = async (req, res) => {
             });
         }
 
+
         // valid password below
 
         // reset password attempts
         // avoid unnecessary writing to database
-        if (passwordAttempts > 0) await Passwords.update({
-            attempts: 0
-        }, { where: { password_id } });
+        if (passwordAttempts > 0) await updatePasswordAttempts(0, password_id);
 
         // generate token
         const token = jwt.sign({
             account_id: account.account_id,
             username: account.username,
-            company_id: null,
-            employee_id: account.employee.employee_id,
             email: account.employee.email,
             admin_level: account.employee.admin_level
         }, jwtSecret, { expiresIn: "12h" });
@@ -213,10 +200,8 @@ module.exports.adminLogin = async (req, res) => {
             locked: false,
             token,
             data: {
-                display_name: `${account.employee.firstname} ${account.employee.lastname}`,
-                display_title: account.employee.title,
                 username: account.username,
-                email: account.employee.email,
+                email: account.employee.email
             }
         });
     }

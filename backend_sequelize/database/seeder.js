@@ -20,7 +20,8 @@ module.exports.seeder = async () => {
             email: `${username}@example.com`,
             passwords: [{
                 password: bcrypt.hashSync("12345678!", 10)
-            }]
+            }],
+            admin_level: 1
             // address: {
             //     address_line_one: faker.address.streetAddress(),
             //     address_line_two: `${state} ${postal_code}`,
