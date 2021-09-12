@@ -13,9 +13,11 @@ module.exports.seeder = async () => {
         // let state = faker.address.state();
         // let postal_code = faker.address.zipCode();
 
-
         await Accounts.create({
+            firstname,
+            lastname,
             username,
+            email: `${username}@example.com`,
             passwords: [{
                 password: bcrypt.hashSync("12345678!", 10)
             }]

@@ -36,21 +36,18 @@ module.exports.sendBulkEmail = (recipients, contents) => new Promise((resolve, r
 
 // EMAIL TEMPLATES
 
-const inviteUserHTML = (name, token) => `
-    <h4>Hi ${name}!</h4>
-    <p>You have been invited by a fellow colleague to join them in using eISO.</p>
+const inviteUserHTML = (token) => `
+    <p>You are invited to join our user management system!</p>
     <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Join Now</a></strong></p>
 `;
 
-const inviteFirstSysadminHTML = (name, token) => `
-    <h4>Hi ${name}!</h4>
+const inviteFirstSysadminHTML = (token) => `
     <p>Welcome to eISO!</p>
     <p>You are being invited to setup your organisation's eISO.</p>
     <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Setup Now</a></strong></p>
 `;
 
-const invitePlatformAdminHTML = (name, token) => `
-    <h4>Hi ${name}!</h4>
+const invitePlatformAdminHTML = (token) => `
     <p>You are being invited to administrate the eISO platform.</p>
     <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Begin Now</a></strong></p>
 `;

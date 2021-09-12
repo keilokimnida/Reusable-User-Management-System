@@ -11,6 +11,18 @@ const Accounts = db.define(
             primaryKey: true,
             autoIncrement: true
         },
+        firstname: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        lastname: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        email: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
         username: {
             type: DataTypes.STRING(255),
             allowNull: false,
