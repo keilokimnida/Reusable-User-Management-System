@@ -43,12 +43,24 @@ module.exports.findAccountByID = async (req, res, platformAdmin = false) => {
             message: "Unauthorised access!"
         }));
 
-        const accountID = parseInt(req.params.employeeId)
+        const accountID = parseInt(req.params.accountID)
         if (isNaN(accountID)) return res.status(400).send(r.error400({
             message: "Invalid parameter \"accountID\""
         }));
 
-        const account = await findOneAccount({ accountID });
+        let teamID = 1; // TBD
+        // Restrict users to obtain accounts from their team only
+        let where = {
+            account_id: accountID,
+            team_id: teamID
+        };
+
+        // If account is a platform admin
+        if (platformAdmin) where = {
+            account_id: accountID
+        };
+
+        const account = await findOneAccount(where);
 
         if (!account) return res.status(204).send(r.success204);
 

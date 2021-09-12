@@ -9,8 +9,8 @@ const { responses: r } = require("../utils/response");
 
 const { Passwords } = require("../model_definitions/Passwords");
 
-// NORMAL USER LOGIN
-module.exports.userLogin = async (req, res) => {
+// CLIENT LOGIN
+module.exports.clientLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -86,8 +86,8 @@ module.exports.userLogin = async (req, res) => {
         const token = jwt.sign({
             account_id: account.account_id,
             username: account.username,
-            email: account.employee.email,
-            admin_level: account.employee.admin_level
+            email: account.email,
+            admin_level: account.admin_level
         }, jwtSecret, { expiresIn: "12h" });
 
         return res.status(200).json({
@@ -97,7 +97,7 @@ module.exports.userLogin = async (req, res) => {
             token,
             data: {
                 username: account.username,
-                email: account.employee.email
+                email: account.email
             }
         });
     }
@@ -109,7 +109,7 @@ module.exports.userLogin = async (req, res) => {
 
 // ============================================================
 
-// ADMIN LOGIN
+// PLATFORM ADMIN LOGIN
 module.exports.adminLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -126,7 +126,7 @@ module.exports.adminLogin = async (req, res) => {
             data: null
         });
 
-        if (account.employee.admin_level !== 1) return res.status(403).json({
+        if (account.admin_level !== 3) return res.status(403).json({
             message: "Incorrect login endpoint"
         });
 
@@ -190,8 +190,8 @@ module.exports.adminLogin = async (req, res) => {
         const token = jwt.sign({
             account_id: account.account_id,
             username: account.username,
-            email: account.employee.email,
-            admin_level: account.employee.admin_level
+            email: account.email,
+            admin_level: account.admin_level
         }, jwtSecret, { expiresIn: "12h" });
 
         return res.status(200).json({
@@ -201,7 +201,7 @@ module.exports.adminLogin = async (req, res) => {
             token,
             data: {
                 username: account.username,
-                email: account.employee.email
+                email: account.email
             }
         });
     }
