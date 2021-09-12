@@ -31,17 +31,15 @@ const Accounts = db.define(
         status: {
             // active is the default state for the account
             // locked is when the password is invalidated
-            // deactivated is when the account is closed, but the associated employee is not deleted for record tracking purposes
+            // deactivated is when the account is closed, but the associated account is not deleted for record tracking purposes
             type: DataTypes.ENUM(["active", "locked", "deactivated"]),
             allowNull: false,
             defaultValue: "active"
         },
         admin_level: {
-            // the admin level the employee has
-            // 0 -> guest (No subscription)
-            // 1 -> normal (Paid for subscription)
-            // 2 -> client admin (Paid for subscription)
-            // 3 -> platform admin (People who manage the system i.e. us)
+            // the admin level the accounts has
+            // 1 -> normal (Cannot manage system)
+            // 2 -> admin (Manage system)
             type: DataTypes.TINYINT.UNSIGNED,
             allowNull: false,
             defaultValue: 0

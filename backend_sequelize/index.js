@@ -7,6 +7,7 @@ const path = require("path");
 
 const { Accounts } = require("./src/model_definitions/Accounts");
 const { Passwords } = require("./src/model_definitions/Passwords");
+const { CompanyParties, PartyItems } = require("./src/model_definitions/CompanyParties");
 
 const config = require("./src/config/config");
 const routes = require("./src/routes/main.routes");

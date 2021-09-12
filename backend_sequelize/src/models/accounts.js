@@ -11,14 +11,16 @@ module.exports.findAccountByUsername = async (username) => await Accounts.findOn
     }]
 });
 
-module.exports.findAllAccounts = async (where, include) => await Accounts.findAll({
+module.exports.findAllAccounts = async (where, include, attributes) => await Accounts.findAll({
     where,
-    include
+    include,
+    attributes
 })
 
-module.exports.findOneAccount = async (where, include) => await Accounts.findOne({
+module.exports.findOneAccount = async (where, include, attributes) => await Accounts.findOne({
     where,
-    include
+    include,
+    attributes
 });
 
 module.exports.lockAccount = async (account) => await account.update({

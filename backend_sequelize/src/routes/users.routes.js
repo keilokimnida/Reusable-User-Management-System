@@ -3,10 +3,11 @@ const accountsController = require("../controllers/accounts");
 
 // MIDDLEWARES
 const { isLoggedIn } = require("../middlewares/login");
+const { checkAccountStatus } = require("../middlewares/active");
 
 // NORMAL USER
-router.get("/accounts", isLoggedIn, (req, res) => accountsController.findAllAccounts(req, res, false));
-router.get("/account/:accountID", isLoggedIn, (req, res) => accountsController.findAccountByID(req, res, false));
-router.put("/account/:accountID", isLoggedIn, accountsController.editAccount);
+router.get("/accounts", isLoggedIn, checkAccountStatus, accountsController.findAllAccounts);
+router.get("/account/:accountID", isLoggedIn, checkAccountStatus, accountsController.findAccountByID);
+router.put("/account/:accountID", isLoggedIn, checkAccountStatus, accountsController.editAccount);
 
 module.exports = router;

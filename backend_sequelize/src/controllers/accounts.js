@@ -1,20 +1,8 @@
 const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
 const { responses: r } = require("../utils/response");
 
-module.exports.findAllAccounts = async (req, res, platformAdmin = false) => {
+module.exports.findAllAccounts = async (req, res) => {
     try {
-        const { auth: { decoded } } = res.locals;
-
-        // If account is a guest user
-        if (decoded.admin_level === 0) return res.status(401).send(r.error401({
-            message: "Unauthorised access!"
-        }));
-
-        // if this controller is on the admin endpoint but for some reason
-        // the token says the user is not a platform admin
-        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
-            message: "Client user on wrong endpoint"
-        }));
 
         const accounts = await findAllAccounts();
 
@@ -28,35 +16,28 @@ module.exports.findAllAccounts = async (req, res, platformAdmin = false) => {
     }
 }
 
-module.exports.findAccountByID = async (req, res, platformAdmin = false) => {
+module.exports.findAccountByID = async (req, res) => {
     try {
         const { auth: { decoded } } = res.locals;
-
-        // if this controller is on the admin endpoint but for some reason
-        // the token says the user is not a platform admin
-        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
-            message: "Client user on wrong endpoint"
-        }));
-
-        // If account is a guest user
-        if (decoded.admin_level === 0) return res.status(401).send(r.error401({
-            message: "Unauthorised access!"
-        }));
 
         const accountID = parseInt(req.params.accountID)
         if (isNaN(accountID)) return res.status(400).send(r.error400({
             message: "Invalid parameter \"accountID\""
         }));
 
-        let teamID = 1; // TBD
-        // Restrict users to obtain accounts from their team only
-        let where = {
-            account_id: accountID,
-            team_id: teamID
-        };
+        // If account is a guest user and is trying to view other accounts
+        if (decoded.admin_level === 0 && accountID !== decoded.account_id) return res.status(403).send(r.error403({
+            message: "Forbidden access!"
+        }));
 
-        // If account is a platform admin
-        if (platformAdmin) where = {
+        // let teamID = 1; // TBD
+        // Restrict users to obtain accounts from their team only
+        // let where = {
+        //     account_id: accountID,
+        //     team_id: teamID
+        // };
+
+        let where = {
             account_id: accountID
         };
 
@@ -78,7 +59,7 @@ module.exports.findAccountByID = async (req, res, platformAdmin = false) => {
 
 // updates only account details and their address
 // does not include updating account (username/password)
-module.exports.editAccount = async (req, res, platformAdmin = false) => {
+module.exports.editAccount = async (req, res) => {
     try {
         const { auth: { decoded }, companyId } = res.locals;
 
@@ -87,10 +68,9 @@ module.exports.editAccount = async (req, res, platformAdmin = false) => {
             message: "Invalid parameter \"accountID\""
         }));
 
-        // if this controller is on the platform admin endpoint but for some reason
-        // the token says the user is not a platform admin
-        if (platformAdmin && decoded.admin_level !== 3) return res.status(403).send(r.error403({
-            message: "Client user on wrong endpoint"
+        // If account is not admin and is trying to edit other accounts
+        if (decoded.admin_level !== 2 && accountID !== decoded.account_id) return res.status(403).send(r.error403({
+            message: "Forbidden access!"
         }));
 
         let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body;
@@ -106,11 +86,6 @@ module.exports.editAccount = async (req, res, platformAdmin = false) => {
             account_id: accountID
         };
 
-        if (platformAdmin) where = {
-            account_id: accountID,
-            admin_level: 1
-        }
-
         const account = await findOneAccount(where);
 
         if (!account) return res.status(404).send(r.error404({
@@ -119,7 +94,7 @@ module.exports.editAccount = async (req, res, platformAdmin = false) => {
 
         let details = { firstname, lastname, email };
 
-        // as a platform admin...
+        // as an admin...
         if (decoded.admin_level === 2) {
             details.title = title;
             details.status = status;
@@ -132,17 +107,12 @@ module.exports.editAccount = async (req, res, platformAdmin = false) => {
                     if (isNaN(admin_level)) return res.status(400).send(r.error400({
                         message: "\"admin_level\" is NaN"
                     }));
-                    if (admin_level === 1 || admin_level === 2) return res.status(400).send(r.error400({
-                        message: "\"admin_level\" invalid value"
-                    }));
+                    // if (admin_level === 1 || admin_level === 2) return res.status(400).send(r.error400({
+                    //     message: "\"admin_level\" invalid value"
+                    // }));
                     details.admin_level = admin_level;
                 }
             }
-        }
-
-        if (platformAdmin) {
-            details.title = title;
-            details.status = status;
         }
 
         await updateAccount(account, details);
@@ -158,7 +128,7 @@ module.exports.editAccount = async (req, res, platformAdmin = false) => {
             if (decoded.admin_level === 2 && employee.account.status !== "locked") {
                 // prevent the admin from deactivating themself
                 if (decoded.account_id !== accountID)
-                    await account.account.update({ status: account_status });
+                    await account.update({ status: account_status });
                 else return res.status(400).send(r.error400({
                     message: "Cannot deactivate oneself"
                 }));
