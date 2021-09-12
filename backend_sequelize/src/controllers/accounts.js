@@ -1,5 +1,132 @@
 const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
+const jwt = require("jsonwebtoken");
+
+const { Accounts } = require("../model_definitions/Accounts");
+const { Invitations } = require("../model_definitions/Invitations");
+const { findUserById } = require("../models/accounts");
+
+
+const { register } = require("../models/invitation");
+const { frontend, jwt: { secret: jwtSecret } } = require("../config/config");
+const { sendEmail, templates } = require("../utils/email");
 const { responses: r } = require("../utils/response");
+
+module.exports.createInvite = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const json = { email };
+
+        const token = jwt.sign(json, jwtSecret, {
+            expiresIn: "7d"
+        });
+
+        await Invitations.create({
+            email, token,
+        });
+
+        const jumpContentTemplates = {
+            0: templates.inviteUser,
+            1: templates.invitePlatformAdmin,
+            2: templates.inviteSystemAdmin,
+        }
+
+        try {
+            await sendEmail(email, "You've been invited to join eISO", jumpContentTemplates[0](token))
+        }
+        catch (error) {
+            // here, the email failed to be sent
+            console.log(error);
+            return res.status(201).send(r.success201({
+                email: false,
+                token,
+                link: `${frontend.baseUrl}/create-account/${token}`
+            }));
+        }
+
+        return res.status(201).send(r.success201({
+            email: true,
+            token,
+            link: `${frontend.baseUrl}/create-account/${token}`
+        }));
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send(r.error500(error));
+    }
+}
+
+// ============================================================
+
+module.exports.validateInvite = async (req, res) => {
+    try {
+        const {
+            token,
+            decoded: { admin_level, company_name, company_alias, title }
+        } = res.locals.invite;
+
+        const row = await User.Invitations.findOne({
+            where: { token }
+        });
+
+        if (!row) res.status(404).send(r.error404({
+            message: "Invitation does not exist"
+        }));
+
+        let json = {
+            email: row.email,
+            admin_level
+        };
+
+        if (row.fk_company_id !== null) {
+            json.company_id = row.fk_company_id;
+            json.company_name = company_name;
+            json.company_alias = company_alias;
+            json.title = title;
+        }
+
+        return res.status(200).send(r.success200(json));
+
+        // when undefined is parsed into json, the key is lost
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send(r.error500(error));
+    }
+}
+
+// ============================================================
+
+module.exports.registerInvite = async (req, res) => {
+    try {
+        const {
+            firstname, lastname,
+            username, email, password,
+            address = null
+        } = req.body;
+
+        const jumpRegister = {
+            0: register.user,
+            1: register.platformAdmin,
+            2: register.systemAdmin,
+            3: register.secondaryAdmin
+        };
+
+        const { username } = await jumpRegister[0](res.locals.invite, {
+            firstname, lastname,
+            username, email, password,
+            address
+        }, req.files?.avatar);
+
+        res.status(201).send(r.success201({ username }));
+    }
+    catch (error) {
+        if (error.original.code === "ER_DUP_ENTRY") return res.status(400).send(r.error400({
+            message: "Username has been taken"
+        }));
+        console.log(error);
+        return res.status(500).send(r.error500(error));
+    }
+}
 
 module.exports.findAllAccounts = async (req, res) => {
     try {
@@ -18,24 +145,10 @@ module.exports.findAllAccounts = async (req, res) => {
 
 module.exports.findAccountByID = async (req, res) => {
     try {
-        const { auth: { decoded } } = res.locals;
-
         const accountID = parseInt(req.params.accountID)
         if (isNaN(accountID)) return res.status(400).send(r.error400({
             message: "Invalid parameter \"accountID\""
         }));
-
-        // If account is a guest user and is trying to view other accounts
-        if (decoded.admin_level === 0 && accountID !== decoded.account_id) return res.status(403).send(r.error403({
-            message: "Forbidden access!"
-        }));
-
-        // let teamID = 1; // TBD
-        // Restrict users to obtain accounts from their team only
-        // let where = {
-        //     account_id: accountID,
-        //     team_id: teamID
-        // };
 
         let where = {
             account_id: accountID
@@ -43,7 +156,9 @@ module.exports.findAccountByID = async (req, res) => {
 
         const account = await findOneAccount(where);
 
-        if (!account) return res.status(204).send(r.success204);
+        if (!account) return res.status(404).send(r.error404({
+            message: `\"account_id\" ${accountID} not found`
+        }));
 
         return res.status(200).send(r.success200(account));
 
@@ -73,7 +188,7 @@ module.exports.editAccount = async (req, res) => {
             message: "Forbidden access!"
         }));
 
-        let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body;
+        let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body;like
         // nobody should be manually locking an account
         if (account_status === "locked") account_status = null;
 
