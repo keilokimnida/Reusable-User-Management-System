@@ -8,7 +8,7 @@ const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
 
 const { Passwords } = require("../model_definitions/Passwords");
-const { Invitations } = require("../model_definitions/AccountsVerifications");
+const { AccountsVerifications } = require("../model_definitions/AccountsVerifications");
 const { Accounts } = require("../model_definitions/Accounts");
 
 // CLIENT LOGIN
@@ -222,19 +222,20 @@ module.exports.verifyCreateAccount = async (req, res) => {
             message: "Invalid parameter \"token\""
         }));
 
-        // check if invitation exists
-        const invitation = await Invitations.findOne({
+        // check if Accounts Verifications exists
+        const verification = await AccountsVerifications.findOne({
             where: {
                 token
             }
         });
 
-        if (!invitation) return res.status(404).send(r.error404({
-            message: "Invitation not found!"
+        if (!verification) return res.status(404).send(r.error404({
+            message: "Account verification not found!"
         }));
 
-        // if invitation exist, create account
+        // if verification exist, create account
         Accounts.create({
+            verification.firstname,
             
         });
 

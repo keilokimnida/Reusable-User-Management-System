@@ -18,6 +18,23 @@ const AccountsVerifications = db.define(
                 isEmail: true
             }
         },
+        firstname: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        lastname: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        username: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            unique: true
+        },
+        password: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
         token: {
             type: DataTypes.STRING(512),
             allowNull: false

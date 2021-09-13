@@ -11,10 +11,19 @@ const { frontend, jwt: { secret: jwtSecret } } = require("../config/config");
 const { sendEmail, templates } = require("../utils/email");
 const { responses: r } = require("../utils/response");
 
-module.exports.createInvite = async (req, res) => {
+module.exports.sendVerificationLink = async (req, res) => {
     try {
-        const { email } = req.body;
-        const json = { email };
+        const {
+            firstname, lastname,
+            username, email, password,
+            address = null
+        } = req.body;
+
+        const json = {
+            firstname, lastname,
+            username, email, password,
+            address
+        };
 
         const token = jwt.sign(json, jwtSecret, {
             expiresIn: "7d"
@@ -23,7 +32,9 @@ module.exports.createInvite = async (req, res) => {
         // Check if email exists on Accounts and AccountsVerifications table
 
         await AccountsVerifications.create({
-            email, token,
+            firstname, lastname,
+            username, email, password,
+            address, token,
         });
 
         try {
@@ -32,6 +43,8 @@ module.exports.createInvite = async (req, res) => {
         catch (error) {
             // here, the email failed to be sent
             console.log(error);
+
+            // Why am i sending these back?
             return res.status(201).send(r.success201({
                 email: false,
                 token,
@@ -177,7 +190,7 @@ module.exports.editAccount = async (req, res) => {
             message: "Forbidden access!"
         }));
 
-        let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body;like
+        let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body; like
         // nobody should be manually locking an account
         if (account_status === "locked") account_status = null;
 
