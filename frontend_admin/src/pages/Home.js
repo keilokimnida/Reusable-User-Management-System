@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
+import PageLayout from '../layout/PageLayout';
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
 
 import { toast } from 'react-toastify';
 
@@ -14,10 +14,10 @@ const Home = () => {
   };
 
   return (
-    <Container className="my-4">
-      <h1>User Management System</h1>
+    <PageLayout>
+      <h1> User Management System</h1>
       <Button onClick={handleClick}>Summon Toast {count}</Button>
-    </Container>
+    </PageLayout>
   );
 }
 

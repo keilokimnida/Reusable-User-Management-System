@@ -9,7 +9,7 @@ import TOAST_CONFIG from '../config/toast';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import axios from 'axios';
 import CONFIG from '../config/config';
@@ -17,6 +17,7 @@ import { login } from '../utils/localStorage';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   const initialValues = {
     username: "",
@@ -30,7 +31,7 @@ const Login = () => {
 
   const handleSubmit = (values) => {
     setLoading(true);
-    const promise = axios.post(`${CONFIG.baseUrl}/admin/login`, values);
+    const promise = axios.post(`${CONFIG.baseUrl}/login`, values);
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."
@@ -39,6 +40,7 @@ const Login = () => {
         render: ({ data: res }) => {
           setLoading(false);
           login(res.data);
+          history.push("/");
           return "Logged in successfully";
         },
         autoClose: TOAST_CONFIG.duration.quick
@@ -63,12 +65,6 @@ const Login = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {/* 
-          I cannot use the React-Bootstrap components here
-          because I have to use Formik
-          I could have if I used the useFormik hook but that was not working
-          Thus, some ugly code below
-        */}
         {({ errors, touched }) => (
           <Form>
             <div className="mb-4">
