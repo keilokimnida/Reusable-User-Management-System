@@ -38,7 +38,9 @@ module.exports.sendBulkEmail = (recipients, contents) => new Promise((resolve, r
 
 const inviteUserHTML = (token) => `
     <p>You are invited to join our user management system!</p>
-    <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Join Now</a></strong></p>
+    <form type = "POST" action="${backendBaseURL}/verify-account/${token}">
+    <p><strong><button type = "submit">Join Now</button></strong></p>
+    </form>
 `;
 
 const inviteFirstSysadminHTML = (token) => `

@@ -1,12 +1,12 @@
 const { Op } = require("sequelize");
 
 const { Accounts } = require("../model_definitions/Accounts");
-const { Invitations } = require("../model_definitions/Invitations");
+const { AccountsVerifications } = require("../model_definitions/AccountsVerifications");
 
 const bcrypt = require("bcryptjs");
 
 const usedInvite = async (token) => {
-    const row = await Invitations.findOne({
+    const row = await AccountsVerifications.findOne({
         where: { token }
     });
 
@@ -20,12 +20,12 @@ const usedInvite = async (token) => {
         [Op.and]: [{ email }]
     };
 
-    await Invitations.destroy({ where });
+    await AccountsVerifications.destroy({ where });
 };
 
 // ============================================================
 
-const register = async ({ token, decoded }, meta, avatar = null) => {
+const register = async ({ token }, meta, avatar = null) => {
     let {
         firstname, lastname,
         username, password,

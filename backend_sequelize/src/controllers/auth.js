@@ -8,6 +8,8 @@ const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
 
 const { Passwords } = require("../model_definitions/Passwords");
+const { Invitations } = require("../model_definitions/AccountsVerifications");
+const { Accounts } = require("../model_definitions/Accounts");
 
 // CLIENT LOGIN
 module.exports.clientLogin = async (req, res) => {
@@ -206,6 +208,41 @@ module.exports.adminLogin = async (req, res) => {
         });
     }
     catch (error) {
+        console.log(error);
+        return res.status(500).send(r.error500(error));
+    }
+}
+
+module.exports.verifyCreateAccount = async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        // if no token
+        if (!token) return res.status(400).send(r.error400({
+            message: "Invalid parameter \"token\""
+        }));
+
+        // check if invitation exists
+        const invitation = await Invitations.findOne({
+            where: {
+                token
+            }
+        });
+
+        if (!invitation) return res.status(404).send(r.error404({
+            message: "Invitation not found!"
+        }));
+
+        // if invitation exist, create account
+        Accounts.create({
+            
+        });
+
+        // delete invitation
+        invitation.destroy({ force: true });
+
+
+    } catch (error) {
         console.log(error);
         return res.status(500).send(r.error500(error));
     }

@@ -2,11 +2,11 @@ const { findAllAccounts, findOneAccount, updateAccount } = require("../models/ac
 const jwt = require("jsonwebtoken");
 
 const { Accounts } = require("../model_definitions/Accounts");
-const { Invitations } = require("../model_definitions/Invitations");
+const { AccountsVerifications } = require("../model_definitions/AccountsVerifications");
 const { findUserById } = require("../models/accounts");
 
 
-const { register } = require("../models/invitation");
+const { register } = require("../models/AccountsVerifications");
 const { frontend, jwt: { secret: jwtSecret } } = require("../config/config");
 const { sendEmail, templates } = require("../utils/email");
 const { responses: r } = require("../utils/response");
@@ -20,18 +20,14 @@ module.exports.createInvite = async (req, res) => {
             expiresIn: "7d"
         });
 
-        await Invitations.create({
+        // Check if email exists on Accounts and AccountsVerifications table
+
+        await AccountsVerifications.create({
             email, token,
         });
 
-        const jumpContentTemplates = {
-            0: templates.inviteUser,
-            1: templates.invitePlatformAdmin,
-            2: templates.inviteSystemAdmin,
-        }
-
         try {
-            await sendEmail(email, "You've been invited to join eISO", jumpContentTemplates[0](token))
+            await sendEmail(email, "You've been invited to join User Management System!", templates.inviteUser(token))
         }
         catch (error) {
             // here, the email failed to be sent
@@ -64,7 +60,7 @@ module.exports.validateInvite = async (req, res) => {
             decoded: { admin_level, company_name, company_alias, title }
         } = res.locals.invite;
 
-        const row = await User.Invitations.findOne({
+        const row = await AccountsVerifications.findOne({
             where: { token }
         });
 
@@ -104,14 +100,7 @@ module.exports.registerInvite = async (req, res) => {
             address = null
         } = req.body;
 
-        const jumpRegister = {
-            0: register.user,
-            1: register.platformAdmin,
-            2: register.systemAdmin,
-            3: register.secondaryAdmin
-        };
-
-        const { username } = await jumpRegister[0](res.locals.invite, {
+        const { username } = await register.user(res.locals.invite, {
             firstname, lastname,
             username, email, password,
             address
