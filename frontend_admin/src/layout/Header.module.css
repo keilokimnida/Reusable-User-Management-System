@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 64px;
+}
+
+.title {
+    flex-shrink: 0;
+}
+
+.container h2 {
+    text-overflow: ellipsis;
+}

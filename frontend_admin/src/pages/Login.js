@@ -46,12 +46,16 @@ const Login = () => {
         autoClose: TOAST_CONFIG.duration.quick
       },
       error: {
-        render: ({ data: { response: res } }) => {
+        render: ({ data: error }) => {
           setLoading(false);
-          if (res.data.message) return res.data.message;
-          if (!res.data.found) return "Account was not found";
-          if (res.data.locked) return "Account has been locked";
-          return "Wrong password";
+          let { response: res } = error;
+          if (res) {
+            if (res.data.message) return res.data.message;
+            if (!res.data.found) return "Account was not found";
+            if (res.data.locked) return "Account has been locked";
+            return "Wrong password";
+          }
+          return error.message;
         }
       }
     });

@@ -1,0 +1,7 @@
+.windowContainer {
+    height: 100vh;
+}
+
+.viewContainer {
+    height: calc(100vh - 64px);
+}

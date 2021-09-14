@@ -1,0 +1,22 @@
+.navItems {
+    height: 50px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navItems:hover {
+    cursor: pointer;
+    color: white;
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.navItems svg {
+    width: 28px;
+    transform: translate(-6px, -2px);
+}
+
+.navSubIndent {
+    margin-left: 28px;
+}
