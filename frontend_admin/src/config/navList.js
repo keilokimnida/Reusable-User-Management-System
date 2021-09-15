@@ -12,7 +12,7 @@ const NAV_LIST = [
         sub: [
             {
                 name: "My Account",
-                route: ({ account_id }) => `/accounts/${account_id}`
+                route: "/me"
             },
             {
                 name: "Logout",

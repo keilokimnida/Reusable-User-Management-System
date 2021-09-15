@@ -18,8 +18,11 @@ const Header = ({ toggleNav }) => {
       >
         <List size={24} />
       </Button>
-      <div className={styles.title}>
+      <div className={`d-none d-md-block ${styles.titleContainer}`}>
         <h2 className="m-0">User Management System</h2>
+      </div>
+      <div className={styles.avatarContainer}>
+        <div className={styles.circle}></div>
       </div>
     </Container>
   );

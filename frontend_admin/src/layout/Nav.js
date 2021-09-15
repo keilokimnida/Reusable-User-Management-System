@@ -46,9 +46,7 @@ const NavList = ({ name, sub: items }) => {
         className={`px-3 py-0 ${styles.navItems}`}
         onClick={() => setCollapsed(!collapsed)}
       >
-        <div>
-          {collapsed ? <CaretRightFill /> : <CaretDownFill />}
-        </div>
+        {collapsed ? <CaretRightFill /> : <CaretDownFill />}
         {name}
       </div >
       {collapsed
@@ -68,6 +66,9 @@ const NavMap = ({ list }) => list.map((item, i) => {
 const Nav = () => {
   return (
     <nav className="w-100 h-100 bg-dark text-white py-3 d-flex flex-column">
+      <div className="d-md-none px-3">
+        <h2>User Management System</h2>
+        </div>
       <NavMap list={NAV_LIST} />
     </nav>
   );

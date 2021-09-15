@@ -10,7 +10,9 @@ const Home = () => {
 
   const handleClick = () => {
     setCount(count + 1);
-    toast.info("Privet!")
+    toast.info("Privet!", {
+      icon: "👋"
+    });
   };
 
   return (

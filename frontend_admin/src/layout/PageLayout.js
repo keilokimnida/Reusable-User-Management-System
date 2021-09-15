@@ -15,18 +15,16 @@ const PageLayout = ({ children }) => {
 
   const toggleNav = () => setNav(!nav);
 
-  const navContainer = { maxWidth: width < 992 ? undefined : 280 }
-
   return (
     <Container fluid className={styles.windowContainer}>
       <Row>
         <Header toggleNav={toggleNav} />
       </Row>
       <Row className={styles.viewContainer}>
-        <Col className={`p-0 ${nav ? "d-block" : "d-none"}`} style={navContainer}>
+        <Col className={`p-0 ${nav ? "d-block" : "d-none"} ${styles.navContainer}`}>
           <Nav />
         </Col>
-        <Col as="main" className={`p-3 ${!nav || "d-none"} d-lg-block`}>
+        <Col as="main" className={`p-3 ${!nav || "d-none"} d-lg-block ${styles.mainContainer}`}>
           {children}
         </Col>
       </Row>

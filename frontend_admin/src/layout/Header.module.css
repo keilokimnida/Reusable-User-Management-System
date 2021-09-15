@@ -3,12 +3,20 @@
     align-items: center;
     gap: 12px;
     height: 64px;
+    overflow: hidden hidden;
 }
 
-.title {
+.titleContainer {
     flex-shrink: 0;
 }
 
-.container h2 {
-    text-overflow: ellipsis;
+.avatarContainer {
+    margin-left: auto;
+}
+
+.circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background-color: gray;
 }

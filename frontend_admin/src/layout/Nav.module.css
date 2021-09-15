@@ -1,6 +1,7 @@
 .navItems {
     height: 50px;
     color: white;
+    user-select: none;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -14,7 +15,7 @@
 
 .navItems svg {
     width: 28px;
-    transform: translate(-6px, -2px);
+    transform: translate(-6px, -1px);
 }
 
 .navSubIndent {
