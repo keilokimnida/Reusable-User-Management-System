@@ -16,7 +16,7 @@ const Header = ({ toggleNav }) => {
         className="h-100"
         onClick={() => toggleNav()}
       >
-        <List size={24} />
+        <List size={28} />
       </Button>
       <div className={`d-none d-md-block ${styles.titleContainer}`}>
         <h2 className="m-0">User Management System</h2>

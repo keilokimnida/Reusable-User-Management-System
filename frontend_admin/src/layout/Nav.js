@@ -8,37 +8,43 @@ import { getAll } from '../utils/localStorage';
 import styles from './Nav.module.css';
 import NAV_LIST from '../config/navList';
 
-const NavItem = ({ name, route, handleClick }) => {
-  if (handleClick) return (
-    <div onClick={() => handleClick()} className={`px-3 py-0 ${styles.navItems}`}>
-      {name}
+const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
+  // this is to close the nav when it is on a smaller screen an occupies the entire viewport
+  const collapseNavIfSmall = () => window.innerWidth < 992 ? setNav(false) : null;
+
+  if (customClick) return (
+    <div
+      onClick={() => {
+        collapseNavIfSmall();
+        customClick();
+      }}
+      className={`px-3 py-0 ${styles.navItems}`}
+    >
+      {sub
+        ? <div className={styles.navSubIndent}>{name}</div>
+        : name
+      }
     </div>
   );
 
-  let to = typeof route === "function" ? route(getAll()) : route;
+  const to = typeof route === "function" ? route(getAll()) : route;
   return (
-    <Link to={to} className={`px-3 py-0 ${styles.navItems}`}>
-      {name}
+    <Link
+      to={to}
+      onClick={() => {
+        collapseNavIfSmall();
+      }}
+      className={`px-3 py-0 ${styles.navItems}`}
+    >
+      {sub
+        ? <div className={styles.navSubIndent}>{name}</div>
+        : name
+      }
     </Link>
   );
 }
 
-const NavSub = ({ name, route, handleClick }) => {
-  if (handleClick) return (
-    <div onClick={() => handleClick()} className={`px-3 py-0 ${styles.navItems}`}>
-      <div className={styles.navSubIndent}>{name}</div>
-    </div>
-  );
-
-  let to = typeof route === "function" ? route(getAll()) : route;
-  return (
-    <Link to={to} className={`px-3 py-0 ${styles.navItems}`}>
-      <div className={styles.navSubIndent}>{name}</div>
-    </Link>
-  );
-};
-
-const NavList = ({ name, sub: items }) => {
+const NavList = ({ name, sub: items, setNav }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <>
@@ -49,27 +55,26 @@ const NavList = ({ name, sub: items }) => {
         {collapsed ? <CaretRightFill /> : <CaretDownFill />}
         {name}
       </div >
+
       {collapsed
         ? null
-        : items.map((item, i) => <NavSub {...item} key={i} />)
+        : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} />)
       }
     </>
   );
 };
 
-const NavMap = ({ list }) => list.map((item, i) => {
-  if (item.route) return (<NavItem {...item} key={i} />);
-  if (item.sub) return (<NavList {...item} key={i} />);
-  return null;
-});
-
-const Nav = () => {
+const Nav = ({ setNav }) => {
   return (
     <nav className="w-100 h-100 bg-dark text-white py-3 d-flex flex-column">
       <div className="d-md-none px-3">
         <h2>User Management System</h2>
-        </div>
-      <NavMap list={NAV_LIST} />
+      </div>
+
+      {NAV_LIST.map((item, i) => item.sub
+        ? <NavList setNav={setNav} {...item} key={i} />
+        : <NavItem setNav={setNav} {...item} key={i} />
+      )}
     </nav>
   );
 }
