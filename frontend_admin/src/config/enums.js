@@ -1,4 +1,4 @@
-const ENUM = {
+const ENUMS = {
     account: {
         status: {
             active: "active",
@@ -8,4 +8,4 @@ const ENUM = {
     }
 }
 
-export default ENUM;
+export default ENUMS;

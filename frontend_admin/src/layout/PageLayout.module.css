@@ -3,7 +3,15 @@
 }
 
 .viewContainer {
-    height: calc(100vh - 64px);
+    height: 100vh;
+    padding-top: 64px;
+}
+
+.headerContainer {
+    width: 100%;
+    position: fixed;
+    scroll-padding-top: 64px;
+    z-index: 1;
 }
 
 .navContainer {
@@ -12,7 +20,7 @@
     overflow: hidden auto;
 }
 
-@media (min-width: 992px) {
+@media screen and (min-width: 992px) {
     .navContainer {
         max-width: 200px !important;
     }

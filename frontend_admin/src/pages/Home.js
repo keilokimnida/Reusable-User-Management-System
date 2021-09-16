@@ -15,12 +15,12 @@ const Home = () => {
     });
   };
 
-  throw new Error("Testing");
   return (
     <PageLayout>
       <h1> User Management System</h1>
       <Button onClick={handleClick}>Summon Toast {count}</Button>
-      <hr />
+
+      <hr/>
 
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sollicitudin quam mauris, in pharetra tortor egestas non. Cras pellentesque gravida tristique. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla vitae lorem sem. Suspendisse eu viverra quam. Nunc tincidunt eros nec eros scelerisque, et porta libero efficitur. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam quis ligula sed magna gravida tempus eget nec augue. Nam purus lorem, vehicula in lacinia sit amet, laoreet vitae enim. Curabitur ac rhoncus ipsum. Mauris nec finibus augue. Donec vestibulum lorem a erat accumsan viverra. Nunc ultricies erat leo, quis tempus augue egestas id. In tristique ultricies lacus a aliquet.</p>
 

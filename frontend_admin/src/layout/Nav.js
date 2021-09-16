@@ -6,11 +6,12 @@ import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
 import { getAll } from '../utils/localStorage';
 
 import styles from './Nav.module.css';
+import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
 
 const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
-  // this is to close the nav when it is on a smaller screen an occupies the entire viewport
-  const collapseNavIfSmall = () => window.innerWidth < 992 ? setNav(false) : null;
+  // this is to close the nav when it is on a smaller screen and occupies the entire viewport
+  const collapseNavIfSmall = () => window.innerWidth < BREAKPOINTS.lg ? setNav(false) : null;
 
   if (customClick) return (
     <div

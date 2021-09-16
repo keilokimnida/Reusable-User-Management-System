@@ -8,7 +8,7 @@ import Routes from './Routes';
 // toast notification container
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
-import TOAST_CONFIG from './config/toast';
+import TOAST_CONFIG from './config/toastConfig';
 
 // styling
 import 'bootstrap/dist/css/bootstrap.min.css';

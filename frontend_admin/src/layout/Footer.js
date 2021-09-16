@@ -1,5 +1,7 @@
 import Container from 'react-bootstrap/Container';
 
+import styles from './Footer.module.css';
+
 const Footer = () => {
   return (
     <Container fluid as="footer" className="p-3 bg-primary text-white">

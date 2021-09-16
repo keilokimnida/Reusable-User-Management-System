@@ -1,5 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import Avatar from './Avatar';
 import { List } from 'react-bootstrap-icons'
 
 import styles from './Header.module.css';
@@ -22,7 +23,7 @@ const Header = ({ toggleNav }) => {
         <h2 className="m-0">User Management System</h2>
       </div>
       <div className={styles.avatarContainer}>
-        <div className={styles.circle}></div>
+        <Avatar />
       </div>
     </Container>
   );

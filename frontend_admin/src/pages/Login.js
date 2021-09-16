@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
 import { toast } from 'react-toastify';
-import TOAST_CONFIG from '../config/toast';
+import TOAST_CONFIG from '../config/toastConfig';
 
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -12,7 +12,7 @@ import * as Yup from 'yup';
 import { Link, useHistory } from 'react-router-dom';
 
 import axios from 'axios';
-import CONFIG from '../config/config';
+import APP_CONFIG from '../config/appConfig';
 import { login } from '../utils/localStorage';
 
 const Login = () => {
@@ -31,7 +31,7 @@ const Login = () => {
 
   const handleSubmit = (values) => {
     setLoading(true);
-    const promise = axios.post(`${CONFIG.baseUrl}/login`, values);
+    const promise = axios.post(`${APP_CONFIG.baseUrl}/login`, values);
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."

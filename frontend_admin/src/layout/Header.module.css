@@ -3,7 +3,6 @@
     align-items: center;
     gap: 12px;
     height: 64px;
-    overflow: hidden hidden;
 }
 
 .titleContainer {
@@ -12,11 +11,4 @@
 
 .avatarContainer {
     margin-left: auto;
-}
-
-.circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 18px;
-    background-color: gray;
 }
