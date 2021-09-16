@@ -15,7 +15,7 @@ const useClickOutside = (ref, callback, exceptions = []) => {
         }
 
         window.addEventListener("mousedown", handleClick);
-        return window.addEventListener("mousedown", handleClick);
+        return window.removeEventListener("mousedown", handleClick);
     });
 }
 
