@@ -7,6 +7,7 @@ import Container from 'react-bootstrap/Container';
 // https://www.w3schools.com/tags/tag_pre.asp
 
 const Fallback = ({ error, resetErrorBoundary }) => {
+  console.log(error.stack);
   return (
     <Container className="my-4">
       <h2>Yikes!</h2>

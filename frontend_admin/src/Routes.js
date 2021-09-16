@@ -12,8 +12,8 @@ import { getAll, getToken } from './utils/localStorage';
 const dummy = (Component) => (props) => (<Component {...props} />);
 
 const authGuard = (Component) => (props) => {
-  let token = getToken();
-  if (!token) return (<Redirect to="/login" {...props} />);
+  // let token = getToken();
+  // if (!token) return (<Redirect to="/login" {...props} />);
   return (<Component {...props} />);
 }
 

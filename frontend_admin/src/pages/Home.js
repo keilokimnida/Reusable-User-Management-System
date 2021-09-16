@@ -15,6 +15,7 @@ const Home = () => {
     });
   };
 
+  throw new Error("Testing");
   return (
     <PageLayout>
       <h1> User Management System</h1>
