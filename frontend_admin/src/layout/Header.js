@@ -13,11 +13,10 @@ const Header = ({ toggleNav }) => {
       className={`px-3 py-2 shadow-sm ${styles.container}`}
     >
       <Button
-        size="lg"
         className="h-100"
         onClick={() => toggleNav()}
       >
-        <List size={28} />
+        <List size={32} />
       </Button>
       <div className={`d-none d-md-block ${styles.titleContainer}`}>
         <h2 className="m-0">User Management System</h2>
