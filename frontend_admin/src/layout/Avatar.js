@@ -13,9 +13,7 @@ const Avatar = () => {
   // it looks like the useEffect hook...
   // it checks if the user clicked outside of the reference component
   // the callback has a boolean parameter
-  useClickOutside(menuRef, (isOutside) => {
-    if (isOutside) setMenu(false);
-  }, [avatarRef]);
+  useClickOutside(menuRef, (isOutside) => !isOutside || setMenu(false), [avatarRef]);
 
   const toggleMenu = () => setMenu(!menu);
 
