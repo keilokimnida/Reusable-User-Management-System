@@ -14,8 +14,8 @@ const useClickOutside = (ref, callback, exceptions = []) => {
             clickedOutside(ref, event) ? callback(true) : callback(false);
         }
 
-        document.addEventListener("mousedown", handleClick);
-        return () => document.removeEventListener("mousedown", handleClick);
+        window.addEventListener("mousedown", handleClick);
+        return () => window.removeEventListener("mousedown", handleClick);
     });
 }
 
