@@ -4,8 +4,8 @@ const NAV_LIST = [
         route: "/"
     },
     {
-        name: "Accounts",
-        route: "/accounts"
+        name: "Users",
+        route: "/users"
     },
     {
         name: "Settings",

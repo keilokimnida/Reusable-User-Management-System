@@ -4,9 +4,9 @@ import styles from './Footer.module.css';
 
 const Footer = () => {
   return (
-    <Container fluid as="footer" className="p-3 bg-primary text-white">
+    <Container fluid as="footer" className={`p-3 bg-primary text-white ${styles.footer}`}>
       <h4>User Management System</h4>
-      <p className="mb-0">Reusable user management system</p>
+      <p>Reusable user management system</p>
     </Container>
   );
 }

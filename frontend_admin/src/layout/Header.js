@@ -10,7 +10,7 @@ const Header = ({ toggleNav }) => {
     <Container
       fluid
       as="header"
-      className={`px-3 py-2 shadow-sm ${styles.container}`}
+      className={`px-3 py-2 shadow-sm ${styles.header}`}
     >
       <Button
         className="h-100"

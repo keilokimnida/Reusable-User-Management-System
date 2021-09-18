@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react';
 import useClickOutside from '../hooks/useClickedOutside';
 
-import { getAll } from '../utils/localStorage';
-
 import styles from './Avatar.module.css';
 
 const Avatar = () => {
@@ -13,17 +11,17 @@ const Avatar = () => {
   // it looks like the useEffect hook...
   // it checks if the user clicked outside of the reference component
   // the callback has a boolean parameter
-  useClickOutside(menuRef, (isOutside) => !isOutside || setMenu(false), [avatarRef]);
+  useClickOutside(menuRef, (isOutside) => isOutside && setMenu(false), [avatarRef]);
 
   const toggleMenu = () => setMenu(!menu);
 
   const getInitials = () => {
-    const [first, last] = getAll().display_name.split(" ");
-    return `${first[0]}${last[0]}`.toUpperCase();
+    const [, last = "?"] = localStorage.getItem("display_name")?.split(" ");
+    return last[0].toUpperCase();
   }
 
   return (
-    <div className={styles.avatarContainer} onBlur={() => toggleMenu()}>
+    <div className={styles.avatarContainer}>
       <span
         ref={avatarRef}
         onClick={() => toggleMenu()}

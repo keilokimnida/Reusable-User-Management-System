@@ -1,9 +1,5 @@
 import { useState } from 'react';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
 import styles from './PageLayout.module.css';
 import BREAKPOINTS from '../config/breakpoints';
 
@@ -13,26 +9,28 @@ import Footer from './Footer';
 
 const PageLayout = ({ children }) => {
   const [nav, setNav] = useState(window.innerWidth < BREAKPOINTS.lg ? false : true);
-
   const toggleNav = () => setNav(!nav);
 
   return (
-    <Container fluid className={styles.windowContainer}>
-      <Row className={styles.headerContainer}>
-        <Header toggleNav={toggleNav} />
-      </Row>
+    <div className={styles.container}>
+      <Header toggleNav={toggleNav} />
 
-      <Row className={styles.viewContainer}>
-        <Col className={`p-0 ${nav ? "d-block" : "d-none"} ${styles.navContainer}`}>
+      <div className={styles.viewContainer}>
+        <div className={`${nav ? "d-block" : "d-none"} ${styles.navContainer}`}>
           <Nav setNav={setNav} />
-        </Col>
+        </div>
 
-        <Col as="main" className={`p-0 ${!nav || "d-none"} d-lg-block ${styles.mainContainer}`}>
-          <div className="p-3 w-100 d-block">{children}</div>
+        <div className={`${nav ? "d-none" : "d-flex"} d-lg-flex flex-column ${styles.mainContainer}`}>
+          <main className="p-3">
+            {typeof children === "function"
+              ? children({ nav, setNav, toggleNav })
+              : children
+            }
+          </main>
           <Footer />
-        </Col>
-      </Row>
-    </Container >
+        </div>
+      </div>
+    </div >
   );
 }
 

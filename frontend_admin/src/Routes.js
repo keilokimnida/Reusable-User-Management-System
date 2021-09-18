@@ -1,10 +1,13 @@
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 
+import { getToken } from './utils/localStorage';
+
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 
-import { getAll, getToken } from './utils/localStorage';
+import Users from './pages/Users/Index';
+import ManagerUser from './pages/Users/User';
 
 // this dummy is here so its more consistent
 // anecdote: i forgot to return JSX in render={} and only called the component 
@@ -12,8 +15,8 @@ import { getAll, getToken } from './utils/localStorage';
 const dummy = (Component) => (props) => (<Component {...props} />);
 
 const authGuard = (Component) => (props) => {
-  // let token = getToken();
-  // if (!token) return (<Redirect to="/login" {...props} />);
+  let [token] = getToken();
+  if (!token) return (<Redirect to="/login" {...props} />);
   return (<Component {...props} />);
 }
 
@@ -22,17 +25,21 @@ const Routes = () => {
     <Router>
       <Switch>
         {/* Login */}
-        <Route path="/login" render={(props) => dummy(Login)(props)} />
+        <Route exact path="/login" render={props => dummy(Login)(props)} />
 
-        {/* Forgot Password */}
-        <Route path="/forgot-password" render={(props) => dummy(ForgotPassword)(props)} />
+        {/* Forgot password */}
+        <Route exact path="/forgot-password" render={props => dummy(ForgotPassword)(props)} />
 
-        {/* Redirect to the user's own account */}
-        <Route path="/me">
-          <Redirect to={`/accounts/${getAll().account_id}`} />
+        {/* User account settings */}
+        <Route exact path="/me" />
+
+        <Route exact path="/home" render={props => authGuard(Home)(props)} />
+        <Route exact path="/" >
+          <Redirect to="/home" />
         </Route>
 
-        <Route path="/" render={(props) => authGuard(Home)(props)} />
+        <Route exact path="/users" render={props => authGuard(Users)(props)} />
+        <Route path="/users/:userId" render={props => authGuard(ManagerUser)(props)} />
       </Switch>
     </Router>
   );

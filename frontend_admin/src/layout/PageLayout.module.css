@@ -1,17 +1,21 @@
-.windowContainer {
-    height: 100vh;
-}
-
-.viewContainer {
-    height: 100vh;
-    padding-top: 64px;
-}
-
-.headerContainer {
+.container {
     width: 100%;
-    position: fixed;
-    scroll-padding-top: 64px;
-    z-index: 1;
+    height: 100vh;
+    display: grid;
+    /* define the number of rows and columns in the grid */
+    /* there are 2 rows, where the first is 64px tall and the second fills the rest */
+    /* there is 1 column where it fills the entire width */
+    grid-template: 64px auto / auto;
+    /* easier to work with than bootstrap's kind of weird containers/rows/cols */
+    /* like the containers have padding that the rows cancel but the cols add back */
+}
+
+/* this is the remaining area under the header */
+.viewContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
 }
 
 .navContainer {
@@ -22,12 +26,21 @@
 
 @media screen and (min-width: 992px) {
     .navContainer {
-        max-width: 200px !important;
+        max-width: 200px;
     }
 }
 
 .mainContainer {
     width: 100%;
     height: 100%;
+    display: flex;
     overflow: auto;
+}
+
+.mainContainer>* {
+    flex-shrink: 0;
+}
+
+.mainContainer>*:last-child{
+    margin-top: auto;
 }

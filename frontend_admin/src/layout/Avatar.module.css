@@ -14,6 +14,12 @@
     cursor: pointer;
 }
 
+.avatarContainer img {
+    max-width: 100%;
+    border-radius: calc(var(--diameter) / 2);
+    z-index: 0;
+}
+
 .placeholder {
     width: var(--diameter);
     height: var(--diameter);
@@ -26,14 +32,9 @@
     align-items: center;
     justify-content: center;
     z-index: -1;
+    font-size: 24px;
     font-weight: 500;
     user-select: none;
-}
-
-.avatarContainer img {
-    max-width: 100%;
-    border-radius: calc(var(--diameter) / 2);
-    z-index: 0;
 }
 
 .menuContainer {
@@ -44,7 +45,7 @@
     height: 300px;
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 767.98px) {
     .menuContainer {
         position: fixed;
         top: 0%;

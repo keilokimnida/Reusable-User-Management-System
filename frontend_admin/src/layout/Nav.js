@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
 
-import { getAll } from '../utils/localStorage';
-
 import styles from './Nav.module.css';
 import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
@@ -28,7 +26,7 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
     </div>
   );
 
-  const to = typeof route === "function" ? route(getAll()) : route;
+  const to = typeof route === "function" ? route() : route;
   return (
     <Link
       to={to}
