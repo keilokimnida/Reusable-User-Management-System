@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-const useClickOutside = (ref, callback, exceptions = []) => {
+const useClickedOutside = (ref, callback, exceptions = []) => {
     useEffect(() => {
         const clickedOutside = (r, e) => r.current && !r.current.contains(e.target);
 
@@ -19,4 +19,4 @@ const useClickOutside = (ref, callback, exceptions = []) => {
     });
 }
 
-export default useClickOutside;
+export default useClickedOutside;

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import useClickOutside from '../hooks/useClickedOutside';
+import useClickedOutside from '../hooks/useClickedOutside';
 
 import styles from './Avatar.module.css';
 
@@ -11,7 +11,7 @@ const Avatar = () => {
   // it looks like the useEffect hook...
   // it checks if the user clicked outside of the reference component
   // the callback has a boolean parameter
-  useClickOutside(menuRef, (isOutside) => isOutside && setMenu(false), [avatarRef]);
+  useClickedOutside(menuRef, (isOutside) => isOutside && setMenu(false), [avatarRef]);
 
   const toggleMenu = () => setMenu(!menu);
 

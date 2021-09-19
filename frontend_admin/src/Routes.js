@@ -4,8 +4,9 @@ import { getToken } from './utils/localStorage';
 
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
-import Home from './pages/Home';
 
+import Home from './pages/Home';
+import Account from './pages/Account';
 import Users from './pages/Users/Index';
 import ManagerUser from './pages/Users/User';
 
@@ -30,13 +31,14 @@ const Routes = () => {
         {/* Forgot password */}
         <Route exact path="/forgot-password" render={props => dummy(ForgotPassword)(props)} />
 
-        {/* User account settings */}
-        <Route exact path="/me" />
 
         <Route exact path="/home" render={props => authGuard(Home)(props)} />
         <Route exact path="/" >
           <Redirect to="/home" />
         </Route>
+
+        {/* User account settings */}
+        <Route exact path="/me" render={props => authGuard(Account)(props)} />
 
         <Route exact path="/users" render={props => authGuard(Users)(props)} />
         <Route path="/users/:userId" render={props => authGuard(ManagerUser)(props)} />

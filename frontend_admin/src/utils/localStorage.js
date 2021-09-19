@@ -18,7 +18,14 @@ export const login = (data) => {
     Object.keys(data.data).forEach(key => localStorage.setItem(key, data.data[key]));
 }
 
+export const logout = () => localStorage.clear();
+
 export const getAccountId = () => {
     const [, decoded] = getToken();
     return decoded.account_id;
 };
+
+export const getAll = () => {
+    const [, decoded] = getToken();
+    return { ...localStorage, decoded };
+}
