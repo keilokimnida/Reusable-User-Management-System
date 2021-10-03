@@ -50,8 +50,8 @@
         position: fixed;
         top: 0%;
         left: 50%;
-        transform: translate(-50%, 24%);
-        width: calc(100vw - 24px);
-        height: 300px;
+        transform: translate(-50%, 36%);
+        width: calc(100% - 32px);
+        height: 200px;
     }
 }

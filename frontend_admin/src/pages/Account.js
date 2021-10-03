@@ -50,6 +50,7 @@ const ManageUser = () => {
         return history.push("/login");
       }
       setError(error);
+      console.error("ERROR", { ...error });
     }).finally(() => {
       setLoading(false);
     });
@@ -103,7 +104,7 @@ const ManageUser = () => {
                 <Form>
                   <h5>General</h5>
                   <Row>
-                    <Col className="mb-3">
+                    <Col className="mb-3" xs={12} sm={6}>
                       <label htmlFor="firstname" className="form-label">Firstname</label>
                       <Field
                         id="firstname"
@@ -113,7 +114,7 @@ const ManageUser = () => {
                       />
                     </Col>
 
-                    <Col className="mb-3">
+                    <Col className="mb-3" xs={12} sm={6}>
                       <label htmlFor="lastname" className="form-label">Lastname</label>
                       <Field
                         id="lastname"
@@ -146,6 +147,7 @@ const ManageUser = () => {
                     </Col>
                   </Row>
 
+                  <hr />
                   <h5>Address</h5>
                   <div className="mb-3">
                     <label htmlFor="address_line_one" className="form-label">Line One</label>

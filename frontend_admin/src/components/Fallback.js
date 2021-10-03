@@ -21,7 +21,7 @@ const Fallback = ({ error, resetErrorBoundary }) => {
       </div>
 
       <div className="d-grid gap-2">
-        <Button variant="danger" onClick={resetErrorBoundary}>Reset</Button>
+        <Button variant="outline-danger" onClick={resetErrorBoundary}>Reset</Button>
       </div>
     </Container>
   );

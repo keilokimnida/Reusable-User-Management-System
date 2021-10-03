@@ -48,6 +48,7 @@ const Login = () => {
       error: {
         render: ({ data: error }) => {
           setLoading(false);
+          console.error("LOGIN FAIL", { ...error });
           let { response: res } = error;
           if (res) {
             if (res.data.message) return res.data.message;

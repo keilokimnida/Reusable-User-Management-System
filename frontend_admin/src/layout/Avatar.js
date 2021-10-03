@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
 import useClickedOutside from '../hooks/useClickedOutside';
 
+import { Link } from 'react-router-dom';
+
+import Button from 'react-bootstrap/Button';
 import styles from './Avatar.module.css';
 
 const Avatar = () => {
@@ -16,8 +19,11 @@ const Avatar = () => {
   const toggleMenu = () => setMenu(!menu);
 
   const getInitials = () => {
-    const [, last = "?"] = localStorage.getItem("display_name")?.split(" ");
-    return last[0].toUpperCase();
+    const name = (localStorage.getItem("display_name") ?? "?").split(" ");
+    let n;
+    if (name.length > 1) n = name[0][0].toUpperCase() + name[name.length - 1][0].toUpperCase();
+    else n = name[0].slice(0, 2);
+    return n;
   }
 
   return (
@@ -38,7 +44,15 @@ const Avatar = () => {
         ref={menuRef}
         className={`${menu ? "d-block" : "d-none"} ${styles.menuContainer} p-3 bg-white border rounded shadow-sm`}
       >
-        <h4>Hello</h4>
+        <div className="d-flex flex-column align-items-center justify-content-center w-100 h-100">
+          <h4>{localStorage.getItem("display_name")}</h4>
+          <Link
+            to="/me"
+            onClick={() => setMenu(false)}
+            className="btn btn-outline-primary">
+            Manage
+          </Link>
+        </div>
       </div>
     </div>
   );
