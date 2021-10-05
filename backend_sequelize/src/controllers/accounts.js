@@ -1,122 +1,21 @@
 const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
-const jwt = require("jsonwebtoken");
-
-const { Accounts } = require("../model_definitions/Accounts");
-const { AccountsVerifications } = require("../model_definitions/AccountsVerifications");
-const { findUserById } = require("../models/accounts");
-
-
-const { register } = require("../models/AccountsVerifications");
-const { frontend, jwt: { secret: jwtSecret } } = require("../config/config");
-const { sendEmail, templates } = require("../utils/email");
 const { responses: r } = require("../utils/response");
-
-module.exports.sendVerificationLink = async (req, res) => {
-    try {
-        const {
-            firstname, lastname,
-            username, email, password,
-            address = null
-        } = req.body;
-
-        const json = {
-            firstname, lastname,
-            username, email, password,
-            address
-        };
-
-        const token = jwt.sign(json, jwtSecret, {
-            expiresIn: "7d"
-        });
-
-        // Check if email exists on Accounts and AccountsVerifications table
-
-        await AccountsVerifications.create({
-            firstname, lastname,
-            username, email, password,
-            address, token,
-        });
-
-        try {
-            await sendEmail(email, "You've been invited to join User Management System!", templates.inviteUser(token))
-        }
-        catch (error) {
-            // here, the email failed to be sent
-            console.log(error);
-
-            // Why am i sending these back?
-            return res.status(201).send(r.success201({
-                email: false,
-                token,
-                link: `${frontend.baseUrl}/create-account/${token}`
-            }));
-        }
-
-        return res.status(201).send(r.success201({
-            email: true,
-            token,
-            link: `${frontend.baseUrl}/create-account/${token}`
-        }));
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
-    }
-}
+const { register } = require("../models/invitations");
 
 // ============================================================
 
-module.exports.validateInvite = async (req, res) => {
-    try {
-        const {
-            token,
-            decoded: { admin_level, company_name, company_alias, title }
-        } = res.locals.invite;
-
-        const row = await AccountsVerifications.findOne({
-            where: { token }
-        });
-
-        if (!row) res.status(404).send(r.error404({
-            message: "Invitation does not exist"
-        }));
-
-        let json = {
-            email: row.email,
-            admin_level
-        };
-
-        if (row.fk_company_id !== null) {
-            json.company_id = row.fk_company_id;
-            json.company_name = company_name;
-            json.company_alias = company_alias;
-            json.title = title;
-        }
-
-        return res.status(200).send(r.success200(json));
-
-        // when undefined is parsed into json, the key is lost
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
-    }
-}
-
-// ============================================================
-
-module.exports.registerInvite = async (req, res) => {
+module.exports.createAccount = async (req, res) => {
     try {
         const {
             firstname, lastname,
             username, email, password,
-            address = null
+            // address = null
         } = req.body;
 
-        const { username } = await register.user(res.locals.invite, {
+        await register.user(res.locals.invite, {
             firstname, lastname,
             username, email, password,
-            address
+            //address
         }, req.files?.avatar);
 
         res.status(201).send(r.success201({ username }));
@@ -129,6 +28,7 @@ module.exports.registerInvite = async (req, res) => {
         return res.status(500).send(r.error500(error));
     }
 }
+
 
 module.exports.findAllAccounts = async (req, res) => {
     try {

@@ -1,5 +1,52 @@
 const { Accounts } = require("../model_definitions/Accounts");
 const { Passwords } = require("../model_definitions/Passwords");
+const bcrypt = require("bcryptjs");
+
+// ============================================================
+
+const createAccount = async ({ token }, meta, avatar = null) => {
+    let {
+        firstname, lastname,
+        username, password,
+        // address = null
+    } = meta;
+
+    const hash = bcrypt.hashSync(password, 10);
+
+    let newAccount;
+    try {
+        newAccount = await Accounts.create({
+            firstname, lastname,
+            username,
+            status: "active",
+            passwords: [{ password: hash }]
+        }, { include: "passwords" });
+    }
+    catch (error) {
+        throw error;
+    }
+
+    await usedInvite(token);
+
+    if (avatar) {
+        // TODO avatar file upload
+    };
+
+    return newAccount;
+}
+
+// ============================================================
+
+const user = (token, meta, avatar = null) => createAccount(token, meta, 0, avatar);
+
+// ============================================================
+
+module.exports = {
+    createAccount: {
+        user
+    },
+}
+
 
 module.exports.findAccountByUsername = async (username) => await Accounts.findOne({
     where: { username },

@@ -3,8 +3,8 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/connection");
 
-const AccountsVerifications = db.define(
-    "AccountsVerifications",
+const Invitations = db.define(
+    "Invitations",
     {
         invitation_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -18,30 +18,13 @@ const AccountsVerifications = db.define(
                 isEmail: true
             }
         },
-        firstname: {
-            type: DataTypes.STRING(255),
-            allowNull: false
-        },
-        lastname: {
-            type: DataTypes.STRING(255),
-            allowNull: false
-        },
-        username: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
-        },
-        password: {
-            type: DataTypes.STRING(255),
-            allowNull: false
-        },
         token: {
             type: DataTypes.STRING(512),
             allowNull: false
         },
     },
     {
-        tableName: "accounts_verifications",
+        tableName: "invitations",
         timestamps: true,
         createdAt: "created_at",
         updatedAt: false
@@ -51,4 +34,4 @@ const AccountsVerifications = db.define(
 // TODO r/s on FKs
 // but i doubt there is a need since it is unlikely that a join query is necessary
 
-module.exports = { AccountsVerifications };
+module.exports = { Invitations };
