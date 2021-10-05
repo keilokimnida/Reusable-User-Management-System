@@ -1,6 +1,6 @@
 const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
 const { responses: r } = require("../utils/response");
-const { register } = require("../models/invitations");
+const { createAccount } = require("../models/accounts");
 
 // ============================================================
 
@@ -12,7 +12,7 @@ module.exports.createAccount = async (req, res) => {
             // address = null
         } = req.body;
 
-        await register.user(res.locals.invite, {
+        await createAccount(res.locals.invite, {
             firstname, lastname,
             username, email, password,
             //address

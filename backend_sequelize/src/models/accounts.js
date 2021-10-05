@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 // ============================================================
 
-const createAccount = async ({ token }, meta, avatar = null) => {
+module.exports.createAccount = async ({ token }, meta, avatar = null) => {
     let {
         firstname, lastname,
         username, password,
@@ -36,17 +36,6 @@ const createAccount = async ({ token }, meta, avatar = null) => {
 }
 
 // ============================================================
-
-const user = (token, meta, avatar = null) => createAccount(token, meta, 0, avatar);
-
-// ============================================================
-
-module.exports = {
-    createAccount: {
-        user
-    },
-}
-
 
 module.exports.findAccountByUsername = async (username) => await Accounts.findOne({
     where: { username },
