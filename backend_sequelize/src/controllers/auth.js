@@ -6,6 +6,7 @@ const { updatePasswordAttempts } = require("../models/passwords");
 
 const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
+const E = require("../errors/Errors");
 
 const { Passwords } = require("../model_definitions/Passwords");
 const { Invitations } = require("../model_definitions/Invitations");
@@ -104,8 +105,15 @@ module.exports.clientLogin = async (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        // custom errors
+        if (error instanceof E.BaseError) res
+            .status(error.code)
+            .send(error.toJSON());
+        // other errors
+        else {
+            console.log(error);
+            res.status(500).send(r.error500(error));
+        }
     }
 }
 
@@ -208,7 +216,14 @@ module.exports.adminLogin = async (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        // custom errors
+        if (error instanceof E.BaseError) res
+            .status(error.code)
+            .send(error.toJSON());
+        // other errors
+        else {
+            console.log(error);
+            res.status(500).send(r.error500(error));
+        }
     }
 }

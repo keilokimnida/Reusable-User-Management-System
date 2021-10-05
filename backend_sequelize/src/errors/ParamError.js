@@ -10,7 +10,7 @@ class ParamError extends BaseError {
 class ParamTypeError extends ParamError {
     constructor(paramName, paramValue, paramType) {
         super(`Parameter "${paramName}" expected a ${paramType} but got a ${Object.prototype.toString.call(paramValue)}`);
-        this.name = "ParamError";
+        this.name = "ParamTypeError";
         this.code = 400;
     }
 }

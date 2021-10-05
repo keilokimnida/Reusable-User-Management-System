@@ -40,17 +40,24 @@ module.exports.findAllAccounts = async (req, res) => {
         return res.status(200).send(r.success200(accounts));
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        // custom errors
+        if (error instanceof E.BaseError) res
+            .status(error.code)
+            .send(error.toJSON());
+        // other errors
+        else {
+            console.log(error);
+            res.status(500).send(r.error500(error));
+        }
     }
 }
 
 module.exports.findAccountByID = async (req, res) => {
     try {
         const accountID = parseInt(req.params.accountID)
-        if (isNaN(accountID)) return res.status(400).send(r.error400({
-            message: "Invalid parameter \"accountID\""
-        }));
+        if (isNaN(accountID)) throw new E.ParamTypeError(
+            "accountID", req.params.accountID, 1
+        );
 
         let where = {
             account_id: accountID
@@ -58,15 +65,20 @@ module.exports.findAccountByID = async (req, res) => {
 
         const account = await findOneAccount(where);
 
-        if (!account) return res.status(404).send(r.error404({
-            message: `\"account_id\" ${accountID} not found`
-        }));
+        if (!account) throw new E.AccountNotFound();
 
         return res.status(200).send(r.success200(account));
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        // custom errors
+        if (error instanceof E.BaseError) res
+            .status(error.code)
+            .send(error.toJSON());
+        // other errors
+        else {
+            console.log(error);
+            res.status(500).send(r.error500(error));
+        }
     }
 }
 
@@ -81,14 +93,12 @@ module.exports.editAccount = async (req, res) => {
         const { auth: { decoded }, companyId } = res.locals;
 
         const accountID = parseInt(req.params.accountID);
-        if (isNaN(accountID)) return res.status(400).send(r.error400({
-            message: "Invalid parameter \"accountID\""
-        }));
+        if (isNaN(accountID)) throw new E.ParamTypeError(
+            "accountID", req.params.accountID, 1
+        );
 
         // If account is not admin and is trying to edit other accounts
-        if (decoded.admin_level !== 2 && accountID !== decoded.account_id) return res.status(403).send(r.error403({
-            message: "Forbidden access!"
-        }));
+        if (decoded.admin_level !== 2 && accountID !== decoded.account_id) throw new E.PermissionError();
 
         let { firstname, lastname, title, email, status, admin_level = null, account_status = null, address = null } = req.body; like
         // nobody should be manually locking an account
@@ -105,9 +115,7 @@ module.exports.editAccount = async (req, res) => {
 
         const account = await findOneAccount(where);
 
-        if (!account) return res.status(404).send(r.error404({
-            message: `\"accountID\" ${accountID} not found`
-        }));
+        if (!account) throw new E.AccountNotFound();
 
         let details = { firstname, lastname, email };
 
@@ -121,9 +129,9 @@ module.exports.editAccount = async (req, res) => {
                 // just admin_level is from req.body
                 if (admin_level !== null) {
                     admin_level = parseInt(admin_level);
-                    if (isNaN(admin_level)) return res.status(400).send(r.error400({
-                        message: "\"admin_level\" is NaN"
-                    }));
+                    if (isNaN(admin_level)) throw new E.ParamTypeError(
+                        "admin_level", admin_level, 1
+                    );
                     // if (admin_level === 1 || admin_level === 2) return res.status(400).send(r.error400({
                     //     message: "\"admin_level\" invalid value"
                     // }));
@@ -155,8 +163,15 @@ module.exports.editAccount = async (req, res) => {
         return res.status(204).send(r.success204());
     }
     catch (error) {
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        // custom errors
+        if (error instanceof E.BaseError) res
+            .status(error.code)
+            .send(error.toJSON());
+        // other errors
+        else {
+            console.log(error);
+            res.status(500).send(r.error500(error));
+        }
     }
 }
 
