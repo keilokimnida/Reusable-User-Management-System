@@ -1,10 +1,7 @@
 import { useState, useRef } from 'react';
 import useClickedOutside from '../hooks/useClickedOutside';
 
-import { Link } from 'react-router-dom';
-
-import Button from 'react-bootstrap/Button';
-import styles from './Avatar.module.css';
+import { Link } from 'react-router-dom'
 
 const Avatar = () => {
   const [menu, setMenu] = useState(false);
@@ -30,7 +27,7 @@ const Avatar = () => {
   }
 
   return (
-    <div className={styles.avatarContainer}>
+    <div className="c-Avatar">
       <span
         ref={avatarRef}
         onClick={() => toggleMenu()}
@@ -40,20 +37,20 @@ const Avatar = () => {
           src="https://res.cloudinary.com/cmpkiwidit/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1613547690/samples/people/smiling-man.jpg"
         />
 
-        <div className={styles.placeholder}>{getInitials()}</div>
+        <div className="c-Avatar__Placeholder">{getInitials()}</div>
       </span>
 
       {/* the menu when the avatar is clicked on */}
       <div
         ref={menuRef}
-        className={`${menu ? "d-block" : "d-none"} ${styles.menuContainer} p-3 bg-white border rounded shadow-sm`}
+        className={`c-Avatar__Pop-up--${menu ? "display" : "hide"} c-Avatar__Pop-up`}
       >
-        <div className="d-flex flex-column align-items-center justify-content-center w-100 h-100">
+        <div className="c-Pop-up__Inner">
           <h4>{localStorage.getItem("username")}</h4>
           <Link
             to="/me"
             onClick={() => setMenu(false)}
-            className="btn btn-outline-primary">
+            className="c-Btn c-Btn--primary">
             Manage
           </Link>
         </div>

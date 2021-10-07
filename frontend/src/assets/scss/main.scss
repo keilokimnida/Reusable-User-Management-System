@@ -12,6 +12,7 @@
 @import "utilities/mixins";
 
 // Components styles
+@import "components/avatar";
 @import "components/breadcrumb";
 @import "components/buttons";
 @import "components/dashboard-bento-box";
@@ -21,9 +22,9 @@
 @import "components/settings-bento-box";
 
 // Layout styles
-// @import "layout/header";
+@import "layout/header";
 @import "layout/page-layout";
-// @import "layout/footer";
+@import "layout/footer";
 @import "layout/nav";
 // @import "layout/table";
 
