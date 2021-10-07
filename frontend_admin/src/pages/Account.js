@@ -19,6 +19,8 @@ import Col from 'react-bootstrap/Col';
 import { ArrowClockwise } from 'react-bootstrap-icons';
 import styles from './Account.module.css';
 
+import jwtDecode from 'jwt-decode';
+
 const ManageUser = () => {
   // states used for fetching user details
   const [account, setAccount] = useState(null);
@@ -29,35 +31,32 @@ const ManageUser = () => {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
-  // set loading is an arguement because this fn can be used for when the page first loads or after
-  const getAccount = (setLoading) => {
-    setLoading(true);
-    const {
-      token,
-      decoded: { company_id, employee_id }
-    } = getAll();
+  const getAccount = async () => {
+    const { token } = getAll();
+    const { account_id } = jwtDecode(token);
 
-    axios.get(`${APP_CONFIG.baseUrl}/company/${company_id}/employees/${employee_id}`, {
-      params: { "address": "true" },
-      headers: { "Authorization": `Bearer ${token}` }
-    }).then((res) => {
+    try {
+      const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${account_id}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       setAccount(res.data.results);
-    }).catch((error) => {
+    }
+    catch (error) {
       const reauth = error.response?.status === 401;
       if (reauth) {
         logout();
         alert("Reauthentication is required");
         return history.push("/login");
       }
+
       setError(error);
       console.error("ERROR", { ...error });
-    }).finally(() => {
-      setLoading(false);
-    });
+    }
   }
 
   useEffect(() => {
-    getAccount(setFirstLoading);
+    setFirstLoading(true);
+    getAccount().then(() => setFirstLoading(false));
     // eslint-disable-next-line
   }, []);
 
@@ -90,13 +89,13 @@ const ManageUser = () => {
                 firstname: account?.firstname,
                 lastname: account?.lastname,
                 email: account?.email,
-                title: account?.title,
-                address_line_one: account?.address?.address_line_one,
-                address_line_two: account?.address?.address_line_two,
-                city: account?.address?.city,
-                state: account?.address?.state,
-                postal_code: account?.address?.postal_code,
-                country: account?.address?.country
+                // title: account?.title,
+                // address_line_one: account?.address?.address_line_one,
+                // address_line_two: account?.address?.address_line_two,
+                // city: account?.address?.city,
+                // state: account?.address?.state,
+                // postal_code: account?.address?.postal_code,
+                // country: account?.address?.country
               }}
               onSubmit={handleSubmit}
             >
@@ -126,7 +125,7 @@ const ManageUser = () => {
                   </Row>
 
                   <Row>
-                    <Col className="mb-3" xs={12} md={6}>
+                    <Col className="mb-3">
                       <label htmlFor="email" className="form-label">Email</label>
                       <Field
                         id="email"
@@ -136,7 +135,7 @@ const ManageUser = () => {
                       />
                     </Col>
 
-                    <Col className="mb-3" xs={12} md={6}>
+                    {/* <Col className="mb-3" xs={12} md={6}>
                       <label htmlFor="title" className="form-label">Job Title</label>
                       <Field
                         id="title"
@@ -144,10 +143,10 @@ const ManageUser = () => {
                         className="form-control"
                         type="text"
                       />
-                    </Col>
+                    </Col> */}
                   </Row>
 
-                  <hr />
+                  {/* <hr />
                   <h5>Address</h5>
                   <div className="mb-3">
                     <label htmlFor="address_line_one" className="form-label">Line One</label>
@@ -209,7 +208,7 @@ const ManageUser = () => {
                         type="text"
                       />
                     </Col>
-                  </Row>
+                  </Row> */}
 
                   <div className="d-grid gap-2">
                     <Button type="submit" disabled={loading}>Save</Button>

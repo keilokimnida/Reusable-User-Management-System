@@ -1,6 +1,7 @@
 const { findAllAccounts, findOneAccount, updateAccount } = require("../models/accounts");
 const { responses: r } = require("../utils/response");
 const { createAccount } = require("../models/accounts");
+const E = require("../errors/Errors");
 
 // ============================================================
 

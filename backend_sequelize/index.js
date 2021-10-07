@@ -73,11 +73,6 @@ const reset = false;
 process.on("uncaughtException", (error, origin) => {
     console.log(`AN UNCAUGHT ERROR OCCURED AT ${origin}`);
     console.log("ERROR", error);
-
-    // cleanup temp files
-    const dirPath = path.resolve(process.cwd(), "tmp");
-    fs.readdirSync(dirPath).forEach(file => fs.unlinkSync(path.resolve(dirPath, file)));
-
     process.exit(1);
 });
 

@@ -31,7 +31,7 @@ const Login = () => {
 
   const handleSubmit = (values) => {
     setLoading(true);
-    const promise = axios.post(`${APP_CONFIG.baseUrl}/login`, values);
+    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/admin/login`, values);
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."

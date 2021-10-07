@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { findAccountByUsername, lockAccount } = require("../models/accounts");
 const { updatePasswordAttempts } = require("../models/passwords");
 
+const { ADMIN_LEVELS } = require("../config/enums");
 const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
 const E = require("../errors/Errors");
@@ -132,7 +133,7 @@ module.exports.adminLogin = async (req, res) => {
             data: null
         });
 
-        if (account.admin_level !== 3) return res.status(403).json({
+        if (account.admin_level !== ADMIN_LEVELS.ADMIN) return res.status(403).json({
             message: "Incorrect login endpoint"
         });
 

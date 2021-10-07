@@ -9,7 +9,7 @@ class AccountError extends BaseError {
     }
 }
 
-class AdminError extends EmployeeError {
+class AdminError extends AccountError {
     /**
      * User cannot [administrate this action]
      */

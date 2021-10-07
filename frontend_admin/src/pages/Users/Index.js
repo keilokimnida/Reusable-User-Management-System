@@ -19,35 +19,30 @@ const Users = () => {
   const [firstLoading, setFirstLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const {
-      token,
-      decoded: { company_id }
-    } = getAll();
+  const { token } = getAll();
 
-    axios.get(`${APP_CONFIG.baseUrl}/company/${company_id}/employees`, {
-      params: {
-        "roles": "true",
-        "address": "true"
-      },
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-      .then((res) => {
-        setUsers(res.data.results);
-      })
-      .catch((err) => {
-        const reauth = err.response?.status === 401;
-        if (reauth) {
-          logout();
-          alert("Reauthentication is required");
-          return history.push("/login");
-        }
-        setError(err);
-        console.error("ERROR", { ...err });
-      })
-      .finally(() => {
-        setFirstLoading(false);
+  const getUsers = async () => {
+    try {
+      const res = await axios.get(`${APP_CONFIG.baseUrl}/admin/accounts`, {
+        headers: { "Authorization": `Bearer ${token}` }
       });
+      setUsers(res.data.results);
+    }
+    catch (err) {
+      const reauth = err.response?.status === 401;
+      if (reauth) {
+        logout();
+        alert("Reauthentication is required");
+        return history.push("/login");
+      }
+      setError(err);
+      console.error("ERROR", { ...err });
+    }
+  }
+
+  useEffect(() => {
+    setFirstLoading(true);
+    getUsers().then(() => setFirstLoading(false));
     // eslint-disable-next-line
   }, []);
 
@@ -61,29 +56,9 @@ const Users = () => {
     dataField: "email",
     text: "Email"
   }, {
-    dataField: "account.status",
+    dataField: "status",
     text: "Status"
   }];
-
-  const expandRow = {
-    renderer: (row) => (
-      <div className={styles.expandContainer}>
-        <div>
-          <h6>Job Title</h6>
-          {row.title}
-        </div>
-        <div>
-          <h6>Username</h6>
-          {row.account.username}
-        </div>
-        <div>
-          <h6>Created</h6>
-          {/* not proper implementation with time zoning */}
-          {new Date(row.created_at).toDateString()}
-        </div>
-      </div>
-    )
-  }
 
   return (
     <PageLayout>
@@ -99,7 +74,6 @@ const Users = () => {
               keyField="employee_id"
               columns={columns}
               data={users}
-              expandRow={expandRow}
             />
           </>
       }
