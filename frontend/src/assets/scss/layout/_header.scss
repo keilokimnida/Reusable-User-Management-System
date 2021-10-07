@@ -1,16 +1,18 @@
 .c-Header {
-  padding: 16px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  background-color: rgb(247, 247, 247);
+  height: 100%;
 
   &__Left {
     display: flex;
     flex-direction: row;
     button {
       background-color: black;
-      height: 100%;
       display: flex;
+      height: fit-content;
       justify-content: center;
       align-items: center;
 
@@ -22,6 +24,11 @@
 
     .c-Header__Title {
       padding-left: 20px;
+      display: flex;
+      align-items: center;
+      h2 {
+        margin-bottom: 0;
+      }
     }
 
     @media screen and (max-width: 768px) {
@@ -30,5 +37,11 @@
       }
     }
 
+  }
+
+  &__Avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
