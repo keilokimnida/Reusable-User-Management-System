@@ -19,20 +19,6 @@ class AdminError extends AccountError {
         this.generic = "Forbidden action";
         this.code = 403;
     }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                otp_found: false
-            }
-        };
-        return json;
-    }
 }
 
 class OtpExpiredError extends AccountError {
@@ -124,7 +110,7 @@ class AccountNotFound extends AccountError {
             error: {
                 name: this.name,
                 message: this.message,
-                invite_found: false
+                account_found: false
             }
         };
         return json;
@@ -158,7 +144,7 @@ class PermissionError extends AccountError {
     /**
      * Account does not have permission to [...]
      */
-     constructor(action = "perform this action") {
+    constructor(action = "perform this action") {
         super(`Employee does not have permission to ${action}`);
         this.name = "PermissionError";
         this.code = 403
