@@ -1,6 +1,7 @@
 module.exports = {
     ADMIN_LEVELS: {
         USER: 0,
-        ADMIN: 1
+        SUPER_ADMIN: 1,
+        ADMIN: 2
     }
 }

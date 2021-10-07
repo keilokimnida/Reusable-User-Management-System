@@ -4,12 +4,12 @@
 const E = require("../errors/Errors");
 const { responses: r } = require("../utils/response");
 
-// only admin can access
-module.exports.onlyAdminAccess = (req, res, next) => {
+// only super admin can access
+module.exports.onlySuperAdminAccess = (req, res, next) => {
     try {
         const { decoded } = res.locals.auth;
 
-        // admin level 1 is admin
+        // admin level 1 is super admin
         if (decoded.admin_level !== 1) E.AdminError("access this feature");
 
         return next();

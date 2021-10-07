@@ -4,8 +4,8 @@ const accountsController = require('../controllers/accounts');
 // MIDDLEWARES
 const { isLoggedIn } = require("../middlewares/login");
 const { checkAccountStatus } = require("../middlewares/active");
-const { onlyAdminAccess } = require('../middlewares/access');
+const { onlySuperAdminAccess } = require('../middlewares/access');
 
-router.get("/accounts", isLoggedIn, checkAccountStatus, onlyAdminAccess, accountsController.findAllAccounts);
+router.get("/accounts", isLoggedIn, checkAccountStatus, onlySuperAdminAccess, accountsController.findAllAccounts);
 
 module.exports = router;

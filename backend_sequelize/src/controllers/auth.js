@@ -116,7 +116,7 @@ module.exports.clientLogin = async (req, res) => {
 
 // ============================================================
 
-// PLATFORM ADMIN LOGIN
+// SUPER ADMIN LOGIN
 module.exports.adminLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -133,7 +133,7 @@ module.exports.adminLogin = async (req, res) => {
             data: null
         });
 
-        if (account.admin_level !== ADMIN_LEVELS.ADMIN) return res.status(403).json({
+        if (account.admin_level !== ADMIN_LEVELS.SUPER_ADMIN) return res.status(403).json({
             message: "Incorrect login endpoint"
         });
 
