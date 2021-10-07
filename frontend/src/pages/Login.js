@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Title from '../layout/Title';
 
 import { toast } from 'react-toastify';
 import TOAST_CONFIG from '../config/toastConfig';
@@ -63,7 +64,8 @@ const Login = () => {
   }
 
   return (
-    <Container className="my-4" style={{ maxWidth: 480 }}>
+    <div className="c-Login">
+      <Title title="Login" />
       <h2 className="text-center">Login</h2>
       <Formik
         initialValues={initialValues}
@@ -72,8 +74,8 @@ const Login = () => {
       >
         {({ errors, touched }) => (
           <Form>
-            <div className="mb-4">
-              <label htmlFor="username" className="form-label">Username</label>
+            <div className="c-Card__Username">
+              <label htmlFor="username">Username</label>
               <Field
                 id="username"
                 name="username"
@@ -86,8 +88,8 @@ const Login = () => {
               }
             </div>
 
-            <div className="mb-4">
-              <label htmlFor="password" className="form-label">Password</label>
+            <div className="c-Card__Password">
+              <label htmlFor="password">Password</label>
               <Field
                 id="password"
                 name="password"
@@ -101,13 +103,15 @@ const Login = () => {
               <Link to="/forgot-password" className="form-text">Forgot your password?</Link>
             </div>
 
-            <div className="d-grid gap-2">
-              <Button type="submit" disabled={loading}>Login</Button>
+            <Button className="c-Btn c-Btn--login" type="submit" disabled={loading}>{loading ? "Loading..." : "Login"}</Button>
+
+            <div className="c-Card__Create-account">
+              Need an account?<Link to="/create-account"> Sign Up</Link>
             </div>
           </Form>
         )}
       </Formik>
-    </Container>
+    </div>
   );
 }
 

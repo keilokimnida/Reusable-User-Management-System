@@ -42,7 +42,7 @@ app.listen(PORT, (error) => {
 });
 
 // setting this to true will drop all tables and seed new data
-const reset = false;
+const reset = true;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code

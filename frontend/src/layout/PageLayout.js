@@ -6,14 +6,16 @@ import BREAKPOINTS from '../config/breakpoints';
 import Header from './Header';
 import Nav from './Nav';
 import Footer from './Footer';
+import Title from './Title';
 
-const PageLayout = ({ children }) => {
+const PageLayout = ({ children, title }) => {
   const [nav, setNav] = useState(window.innerWidth < BREAKPOINTS.lg ? false : true);
   const toggleNav = () => setNav(!nav);
 
   return (
     <div className={styles.container}>
       <Header toggleNav={toggleNav} />
+      <Title title={title} />
 
       <div className={styles.viewContainer}>
         <div className={`${nav ? "d-block" : "d-none"} ${styles.navContainer}`}>

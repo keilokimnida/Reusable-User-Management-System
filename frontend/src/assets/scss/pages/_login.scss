@@ -1,0 +1,31 @@
+.c-Login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 480px;
+  margin: auto;
+  form {
+    width: 100%;
+    .c-Card__Create-account {
+      text-align: center;
+      padding-top: 10px;
+    }
+    input {
+      width: 100%;
+      border: thin solid black;
+      outline: none;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+    }
+    .c-Card__Username,
+    .c-Card__Password {
+      margin-top: 10px;
+    }
+  }
+}
