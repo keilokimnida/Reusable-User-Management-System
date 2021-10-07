@@ -1,0 +1,26 @@
+.c-Account {
+    &__Heading {
+        font-size: $font-large;
+    }
+
+    &__Description {
+        font-size: $font-small;
+    }
+
+    &__Form {
+        .c-Form {
+
+            &__Heading {
+                font-size: $font-medium;
+                font-weight: 100px;
+            }
+            &__Col {
+                margin-bottom: 10px;
+            }
+        }
+    }
+
+    &__Btn {
+        margin: 10px 0;
+    }
+}

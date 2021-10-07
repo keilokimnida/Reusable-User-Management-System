@@ -9,8 +9,15 @@ export const getToken = () => {
     return [token, token ? jwtDecode(token) : null];
 }
 
+/**
+ * Sets token
+ * @param {string} token 
+ */
 export const setToken = (token) => localStorage.setItem("token", token);
 
+/**
+ * Clear token
+ */
 export const clearToken = () => localStorage.removeItem("token");
 
 export const login = (data) => {

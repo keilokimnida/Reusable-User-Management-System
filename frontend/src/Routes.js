@@ -7,8 +7,8 @@ import ForgotPassword from './pages/ForgotPassword';
 
 import Home from './pages/Home';
 import Account from './pages/Account';
-import Users from './pages/Users/Index';
-import ManagerUser from './pages/Users/User';
+import ManageUsers from './pages/Users/ManageUsers';
+import ManagerUser from './pages/Users/ManageUser';
 
 // this dummy is here so its more consistent
 // anecdote: i forgot to return JSX in render={} and only called the component 
@@ -40,7 +40,7 @@ const Routes = () => {
         {/* User account settings */}
         <Route exact path="/me" render={props => authGuard(Account)(props)} />
 
-        <Route exact path="/users" render={props => authGuard(Users)(props)} />
+        <Route exact path="/users" render={props => authGuard(ManageUsers)(props)} />
         <Route path="/users/:userId" render={props => authGuard(ManagerUser)(props)} />
       </Switch>
     </Router>

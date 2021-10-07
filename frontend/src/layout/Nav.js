@@ -17,7 +17,7 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
         collapseNavIfSmall();
         customClick();
       }}
-      className={`px-3 py-0 ${styles.navItems}`}
+      className={`c-List-item`}
     >
       {sub
         ? <div className={styles.navSubIndent}>{name}</div>
@@ -33,7 +33,7 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
       onClick={() => {
         collapseNavIfSmall();
       }}
-      className={`px-3 py-0 ${styles.navItems}`}
+      className={`c-List-item`}
     >
       {sub
         ? <div className={styles.navSubIndent}>{name}</div>
@@ -46,9 +46,9 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
 const NavList = ({ name, sub: items, setNav }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
-    <>
+    <div className = "c-Nav__List c-List">
       <div
-        className={`px-3 py-0 ${styles.navItems}`}
+        className={`c-List__Display`}
         onClick={() => setCollapsed(!collapsed)}
       >
         {collapsed ? <CaretRightFill /> : <CaretDownFill />}
@@ -59,17 +59,13 @@ const NavList = ({ name, sub: items, setNav }) => {
         ? null
         : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} />)
       }
-    </>
+    </div>
   );
 };
 
 const Nav = ({ setNav }) => {
   return (
-    <nav className="w-100 h-100 bg-dark text-white py-3 d-flex flex-column">
-      <div className="d-md-none px-3">
-        <h2>User Management System</h2>
-      </div>
-
+    <nav className="c-Nav">
       {NAV_LIST.map((item, i) => item.sub
         ? <NavList setNav={setNav} {...item} key={i} />
         : <NavItem setNav={setNav} {...item} key={i} />

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import styles from './PageLayout.module.css';
 import BREAKPOINTS from '../config/breakpoints';
 
 import Header from './Header';
@@ -13,17 +12,17 @@ const PageLayout = ({ children, title }) => {
   const toggleNav = () => setNav(!nav);
 
   return (
-    <div className={styles.container}>
+    <div className="l-Main">
       <Header toggleNav={toggleNav} />
       <Title title={title} />
 
-      <div className={styles.viewContainer}>
-        <div className={`${nav ? "d-block" : "d-none"} ${styles.navContainer}`}>
+      <div className="l-Main__View l-View">
+        <div className={`l-View__Nav--${nav ? "display" : "hide"} l-View__Nav`}>
           <Nav setNav={setNav} />
         </div>
 
-        <div className={`${nav ? "d-none" : "d-flex"} d-lg-flex flex-column ${styles.mainContainer}`}>
-          <main className="p-3">
+        <div className={`l-View__Content--${nav ? "hide" : "display"} l-View__Content`}>
+          <main>
             {typeof children === "function"
               ? children({ nav, setNav, toggleNav })
               : children

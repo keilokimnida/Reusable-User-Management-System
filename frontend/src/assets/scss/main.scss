@@ -22,10 +22,12 @@
 
 // Layout styles
 // @import "layout/header";
-// @import "layout/body";
+@import "layout/page-layout";
 // @import "layout/footer";
-// @import "layout/sidenav";
+@import "layout/nav";
 // @import "layout/table";
 
 // Pages styles
 @import "pages/login";
+@import "pages/account";
+@import "pages/home";

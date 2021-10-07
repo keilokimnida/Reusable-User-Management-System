@@ -6,14 +6,13 @@ import Loading from '../../components/Loading';
 import Error from '../../components/Error';
 import Button from 'react-bootstrap/Button';
 import BootstrapTable from 'react-bootstrap-table-next';
-import styles from './Index.module.css';
 
 import { getAll, logout } from '../../utils/localStorage';
 import axios from 'axios';
 import APP_CONFIG from '../../config/appConfig';
 import { toast } from 'react-toastify';
 
-const Users = () => {
+const ManageUsers = () => {
   const history = useHistory();
   const [users, setUsers] = useState([]);
   const [firstLoading, setFirstLoading] = useState(true);
@@ -81,4 +80,4 @@ const Users = () => {
   );
 }
 
-export default Users;
+export default ManageUsers;

@@ -17,7 +17,6 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { ArrowClockwise } from 'react-bootstrap-icons';
-import styles from './Account.module.css';
 
 import jwtDecode from 'jwt-decode';
 
@@ -73,11 +72,11 @@ const ManageUser = () => {
         ? <Loading />
         : error
           ? <Error error={error} />
-          : <>
+          : <div className = "c-Account">
             {/* <div className={styles.header}>
               <div> */}
-            <h1>Hey, {account?.lastname}</h1>
-            <p>Your account settings</p>
+            <h1 className = "c-Account__Heading">Hey, {account?.lastname}</h1>
+            <p className = "c-Account__Description">Your account settings</p>
             {/* </div>
               <Button variant="outline-success">
                 <ArrowClockwise size="2rem" />
@@ -100,10 +99,10 @@ const ManageUser = () => {
               onSubmit={handleSubmit}
             >
               {(errors, touched) => (
-                <Form>
-                  <h5>General</h5>
+                <Form className = "c-Account__Form c-Form">
+                  <h2 className = "c-Form__Heading">General</h2>
                   <Row>
-                    <Col className="mb-3" xs={12} sm={6}>
+                    <Col className="c-Form__Col" xs={12} sm={6}>
                       <label htmlFor="firstname" className="form-label">Firstname</label>
                       <Field
                         id="firstname"
@@ -113,7 +112,7 @@ const ManageUser = () => {
                       />
                     </Col>
 
-                    <Col className="mb-3" xs={12} sm={6}>
+                    <Col className="c-Form__Col" xs={12} sm={6}>
                       <label htmlFor="lastname" className="form-label">Lastname</label>
                       <Field
                         id="lastname"
@@ -125,7 +124,7 @@ const ManageUser = () => {
                   </Row>
 
                   <Row>
-                    <Col className="mb-3">
+                    <Col className="c-Form__Col">
                       <label htmlFor="email" className="form-label">Email</label>
                       <Field
                         id="email"
@@ -210,13 +209,13 @@ const ManageUser = () => {
                     </Col>
                   </Row> */}
 
-                  <div className="d-grid gap-2">
-                    <Button type="submit" disabled={loading}>Save</Button>
+                  <div className="c-Account__Btn">
+                    <Button className = "c-Btn c-Btn--submit" type="submit" disabled={loading}>Save</Button>
                   </div>
                 </Form>
               )}
             </Formik>
-          </>
+          </div>
       }
     </PageLayout >
   );

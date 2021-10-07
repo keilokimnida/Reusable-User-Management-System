@@ -5,8 +5,6 @@ import Button from 'react-bootstrap/Button';
 
 import { toast } from 'react-toastify';
 
-import styles from './Home.module.css';
-
 const Home = () => {
   const [count, setCount] = useState(0);
 
@@ -22,14 +20,15 @@ const Home = () => {
   return (
     <PageLayout>
       {({ nav, setNav, toggleNav }) => (
-        <>
+        <div className = "c-Home">
           <h1>User Management System</h1>
           <Button onClick={handleClick}>Summon Toast {count}</Button>
           <hr />
 
-          <div className={styles.dashboardContainer}>
+          <div className="c-Home__Dashboard">
+            {/* Render dashboard items */}
             {dashboardItems.map(item => (
-              <div className={styles.dashboardItem} key={item}>
+              <div className="c-Home__Dashboard-item c-Dashboard-item" key={item}>
                 Dashboard item {item}
               </div>
             ))}
@@ -40,7 +39,8 @@ const Home = () => {
           <Button onClick={() => toggleNav()}>I can also now toggle the nav from inside PageLayout</Button>
           <Button variant="success" onClick={() => setNav(true)}>Force the nav to open</Button>
           <Button variant="danger" onClick={() => setNav(false)}>Force the nav to close</Button>
-        </>
+          
+        </div>
       )}
     </PageLayout>
   );
