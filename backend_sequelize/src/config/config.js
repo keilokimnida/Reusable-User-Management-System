@@ -27,5 +27,9 @@ module.exports = {
     },
     jwt: {
         secret: process.env.JWT_SECRET
+    },
+    cors: {
+        origin: "*",
+        optionsSuccessStatus: 200,
     }
 }

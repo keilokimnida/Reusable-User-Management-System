@@ -1,7 +1,4 @@
-const { Passwords } = require("../model_definitions/Passwords");
+const { Passwords } = require('../schemas/Passwords');
 
-module.exports.updatePasswordAttempts = async (attempts, password_id) => await Passwords.update({
-    attempts,
-}, {
-    where: { password_id }
-});
+module.exports.updatePasswordAttempts = (attempts, password_id) =>
+    Passwords.update({ attempts }, { where: { password_id } });
