@@ -9,6 +9,32 @@ class AccountError extends BaseError {
     }
 }
 
+class AdminError extends EmployeeError {
+    /**
+     * User cannot [administrate this action]
+     */
+    constructor(action = "administrate this action") {
+        super(`Employee user cannot ${action}`);
+        this.name = "AdminError";
+        this.generic = "Forbidden action";
+        this.code = 403;
+    }
+
+    toJSON() {
+        let json = {
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message,
+                otp_found: false
+            }
+        };
+        return json;
+    }
+}
+
 class OtpExpiredError extends AccountError {
     constructor() {
         super("OTP has expired");
@@ -152,4 +178,4 @@ class PermissionError extends AccountError {
     }
 }
 
-module.exports = { AccountError, OtpExpiredError, OtpNotFoundError, AccountStatusError, AccountNotFound, InviteNotFoundError, PermissionError };
+module.exports = { AccountError, AdminError, OtpExpiredError, OtpNotFoundError, AccountStatusError, AccountNotFound, InviteNotFoundError, PermissionError };

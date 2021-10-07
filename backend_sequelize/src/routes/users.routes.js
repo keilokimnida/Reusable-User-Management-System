@@ -8,8 +8,6 @@ const { checkAccountStatus } = require("../middlewares/active");
 // CREATE ACCOUNT
 router.post("/account", accountsController.createAccount);
 
-// 
-router.get("/accounts", isLoggedIn, checkAccountStatus, accountsController.findAllAccounts);
 router.get("/account/:accountID", isLoggedIn, checkAccountStatus, accountsController.findAccountByID);
 router.put("/account/:accountID", isLoggedIn, checkAccountStatus, accountsController.editAccount);
 
