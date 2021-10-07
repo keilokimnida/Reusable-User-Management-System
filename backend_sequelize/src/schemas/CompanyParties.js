@@ -1,12 +1,10 @@
-// CLAUSE 4.2
+const { DataTypes } = require('sequelize');
+const db = require('../config/connection');
 
-const { DataTypes } = require("sequelize");
-const db = require("../config/connection");
-
-const { Accounts } = require("./Accounts");
+const Accounts = db.model('Accounts');
 
 const CompanyParties = db.define(
-    "CompanyParties",
+    'CompanyParties',
     {
         party_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -22,7 +20,7 @@ const CompanyParties = db.define(
             allowNull: false,
             references: {
                 model: Accounts,
-                key: "account_id"
+                key: 'account_id'
             }
         },
         remarks: {
@@ -34,37 +32,37 @@ const CompanyParties = db.define(
             allowNull: false,
             references: {
                 model: Accounts,
-                key: "account_id"
+                key: 'account_id'
             }
         },
         status: {
             // ENUM data type maps each valid string value to an index starting at 1
             // 1 = active, 2 = pending, ...
             // Only the specified values below are valid in string
-            type: DataTypes.ENUM(["active", "pending", "rejected", "archived"]),
+            type: DataTypes.ENUM(['active', 'pending', 'rejected', 'archived']),
             allowNull: false
         },
         approved_on: {
-            type: "TIMESTAMP",
+            type: 'TIMESTAMP',
             allowNull: true
         },
         expired_on: {
-            type: "TIMESTAMP",
+            type: 'TIMESTAMP',
             allowNull: true
         }
     },
     {
-        tableName: "company_parties",
+        tableName: 'company_parties',
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
         paranoid: true,
-        deletedAt: "deleted_at"
+        deletedAt: 'deleted_at'
     }
 );
 
 const PartyItems = db.define(
-    "PartyItems",
+    'PartyItems',
     {
         party_item_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -76,7 +74,7 @@ const PartyItems = db.define(
             allowNull: false,
             references: {
                 model: CompanyParties,
-                key: "party_id"
+                key: 'party_id'
             }
         },
         interested_party: {
@@ -97,62 +95,60 @@ const PartyItems = db.define(
             defaultValue: null,
             references: {
                 model: this,
-                key: "party_item_id"
+                key: 'party_item_id'
             }
         }
     },
     {
-        tableName: "company_party_items",
+        tableName: 'company_party_items',
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
         paranoid: true,
-        deletedAt: "deleted_at"
+        deletedAt: 'deleted_at'
     }
 );
 
-
 CompanyParties.hasMany(PartyItems, {
-    foreignKey: "fk_party_id",
-    as: "items"
+    foreignKey: 'fk_party_id',
+    as: 'items'
 });
 
 PartyItems.belongsTo(CompanyParties, {
-    foreignKey: "fk_party_id",
-    as: "party"
+    foreignKey: 'fk_party_id',
+    as: 'party'
 });
 
 Accounts.hasMany(CompanyParties, {
-    foreignKey: "created_by",
-    as: "submitted_parties"
+    foreignKey: 'created_by',
+    as: 'submitted_parties'
 });
 
 CompanyParties.belongsTo(Accounts, {
-    foreignKey: "created_by",
-    as: "author"
+    foreignKey: 'created_by',
+    as: 'author'
 });
 
 Accounts.hasMany(CompanyParties, {
-    foreignKey: "approved_by",
-    as: "approved_parties"
+    foreignKey: 'approved_by',
+    as: 'approved_parties'
 });
 
 CompanyParties.belongsTo(Accounts, {
-    foreignKey: "approved_by",
-    as: "approver"
+    foreignKey: 'approved_by',
+    as: 'approver'
 });
-
 
 // optional self-reference r/s
 // for swot items that have a parent
 PartyItems.hasOne(PartyItems, {
-    foreignKey: "parent_item_id",
-    as: "child"
+    foreignKey: 'parent_item_id',
+    as: 'child'
 });
 
 PartyItems.belongsTo(PartyItems, {
-    foreignKey: "parent_item_id",
-    as: "parent"
+    foreignKey: 'parent_item_id',
+    as: 'parent'
 });
 
 module.exports = { CompanyParties, PartyItems };

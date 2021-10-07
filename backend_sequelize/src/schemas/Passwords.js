@@ -1,10 +1,10 @@
-const { DataTypes } = require("sequelize");
-const db = require("../config/connection");
+const { DataTypes } = require('sequelize');
+const db = require('../config/connection');
 
-const { Accounts } = require("./Accounts");
+const Accounts = db.model('Accounts');
 
 const Passwords = db.define(
-    "Passwords",
+    'Passwords',
     {
         password_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -16,7 +16,7 @@ const Passwords = db.define(
             allowNull: false,
             references: {
                 model: Accounts,
-                key: "account_id"
+                key: 'account_id'
             }
         },
         password: {
@@ -35,21 +35,21 @@ const Passwords = db.define(
         }
     },
     {
-        tableName: "passwords",
+        tableName: 'passwords',
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at"
+        createdAt: 'created_at',
+        updatedAt: 'updated_at'
     }
 );
 
 Accounts.hasMany(Passwords, {
-    foreignKey: "fk_account_id",
-    as: "passwords"
+    foreignKey: 'fk_account_id',
+    as: 'passwords'
 });
 
 Passwords.belongsTo(Accounts, {
-    foreignKey: "fk_account_id",
-    as: "account"
+    foreignKey: 'fk_account_id',
+    as: 'account'
 });
 
 module.exports = { Passwords };

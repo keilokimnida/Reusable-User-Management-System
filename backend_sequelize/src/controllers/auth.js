@@ -1,13 +1,15 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const { findAccountByUsername, lockAccount } = require("../models/accounts");
-const { updatePasswordAttempts } = require("../models/passwords");
+const { findAccountByUsername, lockAccount } = require('../models/accounts');
+const { updatePasswordAttempts } = require('../models/passwords');
 
-const { ADMIN_LEVELS } = require("../config/enums");
-const { jwt: { secret: jwtSecret } } = require("../config/config");
-const { responses: r } = require("../utils/response");
-const E = require("../errors/Errors");
+const { ADMIN_LEVELS } = require('../config/enums');
+const {
+    jwt: { secret: jwtSecret }
+} = require('../config/config');
+const { responses: r } = require('../utils/response');
+const E = require('../errors/Errors');
 
 // CLIENT LOGIN
 module.exports.clientLogin = async (req, res) => {
@@ -18,13 +20,14 @@ module.exports.clientLogin = async (req, res) => {
         const account = await findAccountByUsername(username);
 
         // no account matching username
-        if (!account) return res.status(404).json({
-            message: "Account not found",
-            found: false,
-            locked: null,
-            token: null,
-            data: null
-        });
+        if (!account)
+            return res.status(404).json({
+                message: 'Account not found',
+                found: false,
+                locked: null,
+                token: null,
+                data: null
+            });
 
         // because of the one-to-many r/s btw account and passwords,
         // passwords is an array even though theres only one active password
@@ -32,17 +35,19 @@ module.exports.clientLogin = async (req, res) => {
 
         // if the account is locked or
         // the password has been attempted for more than 5 times
-        if (account.status === "locked" || passwordAttempts > 5) return res.status(403).json({
-            message: "Account is locked",
-            found: true,
-            locked: true,
-            token: null,
-            data: null
-        });
+        if (account.status === 'locked' || passwordAttempts > 5)
+            return res.status(403).json({
+                message: 'Account is locked',
+                found: true,
+                locked: true,
+                token: null,
+                data: null
+            });
 
-        if (account.status === "deactivated") return res.status(403).json({
-            message: "Account is deactivated"
-        });
+        if (account.status === 'deactivated')
+            return res.status(403).json({
+                message: 'Account is deactivated'
+            });
 
         // Check if password is correct
         const valid = bcrypt.compareSync(password, hash);
@@ -58,7 +63,7 @@ module.exports.clientLogin = async (req, res) => {
                 await lockAccount(account);
 
                 return res.status(403).json({
-                    message: "Account is now locked",
+                    message: 'Account is now locked',
                     found: true,
                     locked: true,
                     token: null,
@@ -68,7 +73,7 @@ module.exports.clientLogin = async (req, res) => {
 
             // incorrect password but less than 5 password attempts
             return res.status(401).json({
-                message: "Invalid password",
+                message: 'Invalid password',
                 found: true,
                 locked: false,
                 token: null,
@@ -83,15 +88,19 @@ module.exports.clientLogin = async (req, res) => {
         if (passwordAttempts > 0) await updatePasswordAttempts(0, password_id);
 
         // generate token
-        const token = jwt.sign({
-            account_id: account.account_id,
-            username: account.username,
-            email: account.email,
-            admin_level: account.admin_level
-        }, jwtSecret, { expiresIn: "12h" });
+        const token = jwt.sign(
+            {
+                account_id: account.account_id,
+                username: account.username,
+                email: account.email,
+                admin_level: account.admin_level
+            },
+            jwtSecret,
+            { expiresIn: '12h' }
+        );
 
         return res.status(200).json({
-            message: "Success",
+            message: 'Success',
             found: true,
             locked: false,
             token,
@@ -100,19 +109,16 @@ module.exports.clientLogin = async (req, res) => {
                 email: account.email
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         // custom errors
-        if (error instanceof E.BaseError) res
-            .status(error.code)
-            .send(error.toJSON());
+        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors
         else {
             console.log(error);
             res.status(500).send(r.error500(error));
         }
     }
-}
+};
 
 // ============================================================
 
@@ -125,17 +131,19 @@ module.exports.adminLogin = async (req, res) => {
         const account = await findAccountByUsername(username);
 
         // no account matching username
-        if (!account) return res.status(404).json({
-            message: "Account not found",
-            found: false,
-            locked: null,
-            token: null,
-            data: null
-        });
+        if (!account)
+            return res.status(404).json({
+                message: 'Account not found',
+                found: false,
+                locked: null,
+                token: null,
+                data: null
+            });
 
-        if (account.admin_level !== ADMIN_LEVELS.SUPER_ADMIN) return res.status(403).json({
-            message: "Incorrect login endpoint"
-        });
+        if (account.admin_level !== ADMIN_LEVELS.SUPER_ADMIN)
+            return res.status(403).json({
+                message: 'Incorrect login endpoint'
+            });
 
         // because of the one-to-many r/s btw account and passwords,
         // passwords is an array even though theres only one active password
@@ -143,17 +151,19 @@ module.exports.adminLogin = async (req, res) => {
 
         // if the account is locked or
         // the password has been attempted for more than 5 times
-        if (account.status === "locked" || passwordAttempts > 5) return res.status(403).json({
-            message: "Account is locked",
-            found: true,
-            locked: true,
-            token: null,
-            data: null
-        });
+        if (account.status === 'locked' || passwordAttempts > 5)
+            return res.status(403).json({
+                message: 'Account is locked',
+                found: true,
+                locked: true,
+                token: null,
+                data: null
+            });
 
-        if (account.status === "deactivated") return res.status(403).json({
-            message: "Account is deactivated"
-        });
+        if (account.status === 'deactivated')
+            return res.status(403).json({
+                message: 'Account is deactivated'
+            });
 
         const valid = bcrypt.compareSync(password, hash);
 
@@ -168,7 +178,7 @@ module.exports.adminLogin = async (req, res) => {
                 await lockAccount(account);
 
                 return res.status(403).json({
-                    message: "Account is now locked",
+                    message: 'Account is now locked',
                     found: true,
                     locked: true,
                     token: null,
@@ -178,14 +188,13 @@ module.exports.adminLogin = async (req, res) => {
 
             // incorrect password but less than 5 password attempts
             return res.status(401).json({
-                message: "Invalid password",
+                message: 'Invalid password',
                 found: true,
                 locked: false,
                 token: null,
                 data: null
             });
         }
-
 
         // valid password below
 
@@ -194,15 +203,19 @@ module.exports.adminLogin = async (req, res) => {
         if (passwordAttempts > 0) await updatePasswordAttempts(0, password_id);
 
         // generate token
-        const token = jwt.sign({
-            account_id: account.account_id,
-            username: account.username,
-            email: account.email,
-            admin_level: account.admin_level
-        }, jwtSecret, { expiresIn: "12h" });
+        const token = jwt.sign(
+            {
+                account_id: account.account_id,
+                username: account.username,
+                email: account.email,
+                admin_level: account.admin_level
+            },
+            jwtSecret,
+            { expiresIn: '12h' }
+        );
 
         return res.status(200).json({
-            message: "Success",
+            message: 'Success',
             found: true,
             locked: false,
             token,
@@ -211,16 +224,13 @@ module.exports.adminLogin = async (req, res) => {
                 email: account.email
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         // custom errors
-        if (error instanceof E.BaseError) res
-            .status(error.code)
-            .send(error.toJSON());
+        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors
         else {
             console.log(error);
             res.status(500).send(r.error500(error));
         }
     }
-}
+};

@@ -1,10 +1,8 @@
-const { DataTypes } = require("sequelize");
-const db = require("../config/connection");
-
-// import models to define many-to-many relationship
+const { DataTypes } = require('sequelize');
+const db = require('../config/connection');
 
 const Accounts = db.define(
-    "Accounts",
+    'Accounts',
     {
         account_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -32,9 +30,9 @@ const Accounts = db.define(
             // active is the default state for the account
             // locked is when the password is invalidated
             // deactivated is when the account is closed, but the associated account is not deleted for record tracking purposes
-            type: DataTypes.ENUM(["active", "locked", "deactivated"]),
+            type: DataTypes.ENUM(['active', 'locked', 'deactivated']),
             allowNull: false,
-            defaultValue: "active"
+            defaultValue: 'active'
         },
         admin_level: {
             // the admin level the accounts has
@@ -47,12 +45,12 @@ const Accounts = db.define(
         }
     },
     {
-        tableName: "accounts",
+        tableName: 'accounts',
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
         paranoid: true,
-        deletedAt: "deleted_at"
+        deletedAt: 'deleted_at'
     }
 );
 

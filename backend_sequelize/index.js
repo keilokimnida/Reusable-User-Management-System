@@ -1,45 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-const fileUpload = require("express-fileupload");
-
-const fs = require("fs");
-const path = require("path");
-
-const { Accounts } = require("./src/model_definitions/Accounts");
-const { Passwords } = require("./src/model_definitions/Passwords");
-const { CompanyParties, PartyItems } = require("./src/model_definitions/CompanyParties");
 
 const config = require("./src/config/config");
-const routes = require("./src/routes/main.routes");
 const db = require("./src/config/connection");
+const mainRouter = require("./src/routes/main.routes");
 
 const app = express();
 const PORT = config.port ?? 5000;
 
-const corsOptions = {
-    origin: "*",
-    optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
-
-// for file uploads
-app.use(
-    fileUpload({
-        useTempFiles: true,
-    })
-);
-
+app.use(cors(config.cors));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const router = express.Router();
-app.use(router);
-
-app.listen(PORT, (error) => {
-    if (error) console.log(`FAIL TO LISTEN ON PORT ${PORT}`);
-    else console.log(`LISTENING TO PORT ${PORT}`);
-});
+app.use(mainRouter);
 
 // setting this to true will drop all tables and seed new data
 const reset = false;
@@ -76,4 +48,7 @@ process.on("uncaughtException", (error, origin) => {
     process.exit(1);
 });
 
-routes(router);
+app.listen(PORT, (error) => {
+    if (error) console.log(`FAIL TO LISTEN ON PORT ${PORT}`);
+    else console.log(`LISTENING TO PORT ${PORT}`);
+});
