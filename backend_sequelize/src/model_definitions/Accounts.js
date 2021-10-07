@@ -39,7 +39,8 @@ const Accounts = db.define(
         admin_level: {
             // the admin level the accounts has
             // 0 -> normal (Cannot manage system)
-            // 1 -> admin (Manage system)
+            // 1 -> super admin (Manage system, admin users, and normal users)
+            // 2 -> admin (manage normal users)
             type: DataTypes.TINYINT.UNSIGNED,
             allowNull: false,
             defaultValue: 0

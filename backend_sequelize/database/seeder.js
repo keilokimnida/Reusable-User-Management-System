@@ -14,6 +14,7 @@ module.exports.seeder = async () => {
         // let state = faker.address.state();
         // let postal_code = faker.address.zipCode();
 
+        // create super admin user
         const account = await Accounts.create({
             firstname,
             lastname,
@@ -22,7 +23,7 @@ module.exports.seeder = async () => {
             passwords: [{
                 password: bcrypt.hashSync("12345678!", 10)
             }],
-            admin_level: 2
+            admin_level: 1
             // address: {
             //     address_line_one: faker.address.streetAddress(),
             //     address_line_two: `${state} ${postal_code}`,
@@ -57,7 +58,7 @@ module.exports.seeder = async () => {
                 passwords: [{
                     password: bcrypt.hashSync("12345678!", 10)
                 }],
-                admin_level: 1
+                admin_level: 0
                 // address: {
                 //     address_line_one: faker.address.streetAddress(),
                 //     address_line_two: `${state} ${postal_code}`,
