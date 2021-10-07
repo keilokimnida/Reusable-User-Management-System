@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
 
-import styles from './Nav.module.css';
 import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
 
@@ -20,7 +19,7 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
       className={`c-List-item`}
     >
       {sub
-        ? <div className={styles.navSubIndent}>{name}</div>
+        ? <div className="c-List-item__Indent">{name}</div>
         : name
       }
     </div>
@@ -36,7 +35,7 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
       className={`c-List-item`}
     >
       {sub
-        ? <div className={styles.navSubIndent}>{name}</div>
+        ? <div className="c-List-item__Indent">{name}</div>
         : name
       }
     </Link>
