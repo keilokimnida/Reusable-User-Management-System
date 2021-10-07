@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 // ============================================================
 
-module.exports.createAccount = async ({ token }, meta, avatar = null) => {
+module.exports.createAccount = async (meta, avatar = null) => {
     let {
         firstname, lastname,
         username, password,
@@ -25,8 +25,6 @@ module.exports.createAccount = async ({ token }, meta, avatar = null) => {
     catch (error) {
         throw error;
     }
-
-    await usedInvite(token);
 
     if (avatar) {
         // TODO avatar file upload

@@ -12,7 +12,7 @@ module.exports.createAccount = async (req, res) => {
             // address = null
         } = req.body;
 
-        await createAccount(res.locals.invite, {
+        await createAccount({
             firstname, lastname,
             username, email, password,
             //address
