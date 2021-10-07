@@ -8,10 +8,6 @@ const { jwt: { secret: jwtSecret } } = require("../config/config");
 const { responses: r } = require("../utils/response");
 const E = require("../errors/Errors");
 
-const { Passwords } = require("../model_definitions/Passwords");
-const { Invitations } = require("../model_definitions/Invitations");
-const { Accounts } = require("../model_definitions/Accounts");
-
 // CLIENT LOGIN
 module.exports.clientLogin = async (req, res) => {
     try {
