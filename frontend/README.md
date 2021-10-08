@@ -6,5 +6,5 @@ The 2nd variable may vary, especially the port number
 
 ```
 PORT=4001
-REACT_APP_BACKEND_URL=http://localhost:8000/api/v1
+REACT_APP_BACKEND_URL=http://localhost:5000/api/v1
 ```
