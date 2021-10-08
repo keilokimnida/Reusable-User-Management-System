@@ -1,6 +1,6 @@
-const { Accounts } = require("../src/model_definitions/Accounts");
-const { Passwords } = require("../src/model_definitions/Passwords");
-const { CompanyParties, PartyItems } = require("../src/model_definitions/CompanyParties");
+const { Accounts } = require("../src/schemas/Accounts");
+const { Passwords } = require("../src/schemas/Passwords");
+const { CompanyParties, PartyItems } = require("../src/schemas/CompanyParties");
 
 const c = require("../src/utils/cloudinary");
 const faker = require("faker");
