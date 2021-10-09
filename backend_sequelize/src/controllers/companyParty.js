@@ -22,7 +22,8 @@ module.exports.findActiveInterestedParties = async (req, res) => {
         if (!active) return res.status(204).send();
 
         return res.status(200).send(active);
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors

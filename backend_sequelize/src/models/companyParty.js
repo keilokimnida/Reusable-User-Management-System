@@ -1,4 +1,4 @@
-const { Accounts, Passwords, InterestedParties } = require('../schemas/Schemas');
+const { Accounts, InterestedParties } = require('../schemas/Schemas');
 
 module.exports.findActivePartyDoc = () =>
     InterestedParties.Forms.findOne({

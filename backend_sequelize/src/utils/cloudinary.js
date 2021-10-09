@@ -1,12 +1,12 @@
-const cloudinary = require("cloudinary").v2;
-const fetch = require("node-fetch");
+const cloudinary = require('cloudinary').v2;
+const fetch = require('node-fetch');
 
 // path lib to form file paths
 // using the linux version of this lib for the forward slash
 // https://blog.logrocket.com/mastering-node-js-path-module/
-const path = require("path").posix;
+const path = require('path').posix;
 
-const { cloudinary: c } = require("../config/config");
+const c = require('../config/config').cloudinary;
 
 cloudinary.config({
     cloud_name: c.cloudName,
@@ -32,7 +32,7 @@ cloudinary.config({
  * @param {string} uploadPreset Cloudinary upload preset
  */
 module.exports.uploadFileWithPreset = (pathToFile, uploadPreset) => cloudinary.uploader.upload(pathToFile, {
-    resource_type: "raw",
+    resource_type: 'raw',
     upload_preset: uploadPreset
 });
 
@@ -51,7 +51,7 @@ module.exports.uploadFileWithPreset = (pathToFile, uploadPreset) => cloudinary.u
  * @param {string} folderPath 
  */
 module.exports.uploadFile = (pathToFile, folderPath) => cloudinary.uploader.upload(pathToFile, {
-    resource_type: "raw",
+    resource_type: 'raw',
     folder: folderPath
 });
 
@@ -71,7 +71,7 @@ module.exports.uploadFile = (pathToFile, folderPath) => cloudinary.uploader.uplo
  * @param {boolean} [inline] Whether the file is downloaded and saved to disk (default) or an inline element (such as profile pictures)
  * @returns {Promise} Promise (of error if applicable)
  */
-module.exports.downloadFile = (uri, originalFileName, res, inline = false) => fetch(uri).then(fRes => new Promise((resolve, reject) => {
+module.exports.downloadFile = (uri, originalFileName, res, inline = false) => fetch(uri).then((fRes) => new Promise((resolve, reject) => {
     // the body is a readable stream that is being piped into the endpoint respond
     // the endpoint respond is a writable stream
     fRes.body.pipe(res);
@@ -79,15 +79,15 @@ module.exports.downloadFile = (uri, originalFileName, res, inline = false) => fe
     // http header content-disposition
     // this line sets a http header such that i can rename the download file name
     // and also say that this file is a download to be saved
-    res.set("Content-Disposition", `${inline ? "inline" : "attachment"}; filename="${originalFileName}"`);
+    res.set('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${originalFileName}"`);
     // http header content-type
     // express will automatically determine the mime type as best as it can
     res.type(originalFileName);
     // response status
     res.status(200);
 
-    res.on("close", () => resolve("OK"));
-    res.on("error", e => reject(e));
+    res.on('close', () => resolve('OK'));
+    res.on('error', (e) => reject(e));
 }));
 
 // ============================================================
@@ -117,7 +117,7 @@ module.exports.createUploadPreset = (fullFolderPath, presetName) => cloudinary.a
 // DELETE
 
 module.exports.deleteFile = (publicFileId) => cloudinary.uploader.destroy(publicFileId, {
-    resource_type: "raw"
+    resource_type: 'raw'
 });
 
 // ============================================================
@@ -137,18 +137,9 @@ module.exports.createFolder = (fullFolderPath) => cloudinary.api.create_folder(f
 // ============================================================
 
 module.exports.formDocumentsFolderPath = (companyId, moduleCode, file = null) => {
-    if (!/^m[0-9]{2}_[0-9]{2}$/.test(moduleCode)) throw new Error("Invalid format for module codes");
+    if (!/^m[0-9]{2}_[0-9]{2}$/.test(moduleCode)) throw new Error('Invalid format for module codes');
     let result;
-    if (file !== null) result = path.join(c.baseFolderPath, `org_${companyId}`, "documents", moduleCode, file);
-    else result = path.join(c.baseFolderPath, `org_${companyId}`, "documents", moduleCode);
+    if (file !== null) result = path.join(c.baseFolderPath, `org_${companyId}`, 'documents', moduleCode, file);
+    else result = path.join(c.baseFolderPath, `org_${companyId}`, 'documents', moduleCode);
     return result;
-}
-
-// ============================================================
-
-module.exports.formAvatarsFolderPath = (file = null) => {
-    let result;
-    if (file !== null) result = path.join(c.baseFolderPath, "avatars", file);
-    else result = path.join(c.baseFolderPath, `org_${companyId}`, "avatars");
-    return result;
-}
+};

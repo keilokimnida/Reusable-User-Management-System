@@ -1,9 +1,10 @@
 // this middleware is for validating a login token
 
 const jwt = require('jsonwebtoken');
-const {
-    jwt: { secret: jwtSecret }
-} = require('../config/config');
+const { secret: jwtSecret } = require('../config/config').jwt;
+
+const r = require('../utils/response').responses;
+const E = require('../errors/Errors');
 
 module.exports.isLoggedIn = (req, res, next) => {
     try {
@@ -12,7 +13,8 @@ module.exports.isLoggedIn = (req, res, next) => {
 
         try {
             var decode = jwt.verify(token, jwtSecret);
-        } catch (error) {
+        }
+        catch (error) {
             if (error instanceof jwt.TokenExpiredError)
                 return res.status(401).json({ message: 'Token has expired', broken: false, expired: true });
 
@@ -27,7 +29,8 @@ module.exports.isLoggedIn = (req, res, next) => {
         res.locals.auth = { token, decoded: decode };
 
         return next();
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) return res.status(error.code).send(error.toJSON());
         // other errors

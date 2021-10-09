@@ -7,7 +7,8 @@ module.exports.createAccount = async (req, res) => {
     try {
         const { username } = await createAccount(req.body);
         res.status(201).send(r.success201({ username }));
-    } catch (error) {
+    }
+    catch (error) {
         if (error.original.code === 'ER_DUP_ENTRY')
             return res.status(400).send(
                 r.error400({
@@ -28,7 +29,8 @@ module.exports.findAllAccounts = async (req, res) => {
         if (accounts.length === 0) return res.status(204).send(r.success204);
 
         return res.status(200).send(r.success200(accounts));
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors
@@ -55,7 +57,8 @@ module.exports.findAccountByID = async (req, res) => {
         if (!account) throw new E.AccountNotFound();
 
         return res.status(200).send(r.success200(account));
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors
@@ -145,7 +148,7 @@ module.exports.editAccount = async (req, res) => {
             // as an admin...
             // can only change the status when the account status is not locked
             // should only be either active or deactivated
-            if (decoded.admin_level === 2 && employee.account.status !== 'locked') {
+            if (decoded.admin_level === 2 && account.status !== 'locked') {
                 // prevent the admin from deactivating themself
                 if (decoded.account_id !== accountID)
                     await account.update({ status: account_status });
@@ -159,7 +162,8 @@ module.exports.editAccount = async (req, res) => {
         }
 
         return res.status(204).send(r.success204());
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
         // other errors

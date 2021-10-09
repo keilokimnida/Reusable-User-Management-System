@@ -21,7 +21,8 @@ module.exports.checkAccountStatus = async (req, res, next) => {
         if (account.status !== ACCOUNT_STATUSES.ACTIVE) throw E.AccountStatusError(account.status);
 
         return next();
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
         if (error instanceof E.BaseError) return res.status(error.code).send(error.toJSON());
         // other errors

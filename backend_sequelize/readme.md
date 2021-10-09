@@ -1,7 +1,7 @@
 ## Project Setup
 
 - Run the SQL init file
-- Create a new ``.env`` file and paste this inside: 
+- Create a new ``.env`` file and paste this inside and **make any necessary changes**: 
 
     ```
     PORT=5000
@@ -15,11 +15,11 @@
     CLOUDINARY_CLOUD_NAME=
     CLOUDINARY_API_KEY=
     CLOUDINARY_API_SECRET=
-    CLOUDINARY_BASE_FOLDER_PATH=eISO
+    CLOUDINARY_BASE_FOLDER_PATH=User Management System
 
     NODEMAILER_HOSTNAME=
     NODEMAILER_PORT=
-    NODEMAILER_DOMAIN=eISO.com
+    NODEMAILER_DOMAIN=ums.com
     NODEMAILER_USERNAME=
     NODEMIALER_PASSWORD=
 
