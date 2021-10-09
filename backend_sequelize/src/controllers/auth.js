@@ -5,10 +5,8 @@ const { findAccountByUsername, lockAccount } = require('../models/accounts');
 const { updatePasswordAttempts } = require('../models/passwords');
 
 const { ADMIN_LEVELS } = require('../config/enums');
-const {
-    jwt: { secret: jwtSecret }
-} = require('../config/config');
-const { responses: r } = require('../utils/response');
+const { secret: jwtSecret } = require('../config/config').jwt;
+const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 
 // CLIENT LOGIN
@@ -109,14 +107,14 @@ module.exports.clientLogin = async (req, res) => {
                 email: account.email
             }
         });
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
-        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
+        if (error instanceof E.BaseError)
+            return res.status(error.code).send(error.toJSON());
         // other errors
-        else {
-            console.log(error);
-            res.status(500).send(r.error500(error));
-        }
+        console.log(error);
+        return res.status(500).send(r.error500(error));
     }
 };
 
@@ -224,13 +222,13 @@ module.exports.adminLogin = async (req, res) => {
                 email: account.email
             }
         });
-    } catch (error) {
+    }
+    catch (error) {
         // custom errors
-        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
+        if (error instanceof E.BaseError)
+            return res.status(error.code).send(error.toJSON());
         // other errors
-        else {
-            console.log(error);
-            res.status(500).send(r.error500(error));
-        }
+        console.log(error);
+        return res.status(500).send(r.error500(error));
     }
 };

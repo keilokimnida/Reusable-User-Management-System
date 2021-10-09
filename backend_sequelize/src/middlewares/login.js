@@ -27,14 +27,11 @@ module.exports.isLoggedIn = (req, res, next) => {
         res.locals.auth = { token, decoded: decode };
 
         return next();
-
-        // i read/heard somewhere that if after calling next and the chain of callback functions are finished,
-        // and the middleware does not return
-        // you can run code under next(), for example setting a last known logon date/time for a user
-        // next() is synchronous and blocking
-        // i think the order is also backwards in the chain of callback functions
     } catch (error) {
+        // custom errors
+        if (error instanceof E.BaseError) return res.status(error.code).send(error.toJSON());
+        // other errors
         console.log(error);
-        return res.status(500).send();
+        return res.status(500).send(r.error500(error));
     }
 };

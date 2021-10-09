@@ -23,7 +23,7 @@ module.exports = {
         baseFolderPath: process.env.CLOUDINARY_BASE_FOLDER_PATH ?? "eISO"
     },
     frontend: {
-        baseUrl: "http://localhost:3000"
+        baseUrl: "http://localhost:4001"
     },
     jwt: {
         secret: process.env.JWT_SECRET

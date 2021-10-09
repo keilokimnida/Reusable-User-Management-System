@@ -1,6 +1,6 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
-const { nodemailer: nm, frontend } = require("../config/config");
+const { nodemailer: nm, frontend } = require('../config/config');
 
 const transporter = nodemailer.createTransport({
     host: nm.hostname,
@@ -11,72 +11,38 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-module.exports.sendEmail = (recipient, subject, content) => new Promise((resolve, reject) => {
-    transporter.sendMail({
-        from: {
-            name: "eISO",
-            address: `system@${nm.domain}`
-        },
-        to: recipient,
-        subject,
-        html: content
-    }, (error, info) => {
-        if (error) reject(error);
-        else resolve(info);
+module.exports.sendEmail = (recipient, subject, htmlContent) =>
+    new Promise((resolve, reject) => {
+        transporter.sendMail(
+            {
+                from: {
+                    name: 'eISO',
+                    address: `system@${nm.domain}`
+                },
+                to: recipient,
+                subject,
+                html: htmlContent
+            },
+            (error, info) => {
+                if (error) reject(error);
+                else resolve(info);
+            }
+        );
     });
-});
-
-// ============================================================
-
-module.exports.sendBulkEmail = (recipients, contents) => new Promise((resolve, reject) => {
-
-});
 
 // ============================================================
 
 // EMAIL TEMPLATES
 
-const inviteUserHTML = (token) => `
-    <p>You are invited to join our user management system!</p>
-    <form type="POST" action="${backendBaseURL}/verify-create-account/${token}">
-        <p><strong><button type="submit">Join Now</button></strong></p>
-    </form>
-`;
-
-const inviteFirstSysadminHTML = (token) => `
-    <p>Welcome to eISO!</p>
-    <p>You are being invited to setup your organisation's eISO.</p>
-    <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Setup Now</a></strong></p>
-`;
-
-const invitePlatformAdminHTML = (token) => `
-    <p>You are being invited to administrate the eISO platform.</p>
-    <p><strong><a href="${frontend.baseUrl}/create-account/${token}">Begin Now</a></strong></p>
-`;
-
-const requestOtpHTML = (name, otp) => `
-    <h4>Hi ${name},</h4>
-    <p>You have recently requested for an OTP. Your OTP is <strong>${otp}</strong>.</p>
-    <p>The OTP will expire in 5 minutes.</p>
-`;
-
-const passwordChangedHTML = (name) => `
-    <h4>Hi ${name},</h4>
-    <p>You have recently changed your password for your eISO account.</p>
-`;
-
-const documentApprovalHTML = (name, document, author) => `
-    <h4>Hi ${name},</h4>
-    <p>The document <strong>${document}</strong> by ${author} requires your approval.</p>
-`;
-
-// ============================================================
-
 module.exports.templates = {
-    inviteUser: inviteUserHTML,
-    inviteSystemAdmin: inviteFirstSysadminHTML,
-    invitePlatformAdmin: invitePlatformAdminHTML,
-    requestOtp: requestOtpHTML,
-    passwordChanged: passwordChangedHTML,
-    documentApproval: documentApprovalHTML
-}
+    forgotPassword: (name, token) => `
+        <h4>Hello ${name},</h4>
+        <p>You have recently clicked on "forgot password".</p>
+        <p><a href="${frontend}/${token}">Click here to change your password.</a></p>
+        <p>This attempt will expire in 5 minutes.</p>
+    `,
+    passwordChanged: (name) => `
+        <h4>Hello ${name},</h4>
+        <p>You have recently changed your password.</p>
+    `
+};

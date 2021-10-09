@@ -6,16 +6,22 @@
 // https://stackoverflow.com/a/32750746
 
 class BaseError extends Error {
-    constructor(message = "No message") {
+    constructor(message = 'No message') {
         super(message);
-        this.name = "BaseError"
+        this.name = 'BaseError';
+        this.generic = 'Error';
         this.code = 400;
     }
 
     toJSON() {
         let json = {
-            name: this.name,
-            message: this.message
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message
+            }
         };
         return json;
     }

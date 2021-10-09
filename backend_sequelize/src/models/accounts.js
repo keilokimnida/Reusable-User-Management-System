@@ -1,35 +1,21 @@
-const { Accounts } = require('../schemas/Accounts');
-const { Passwords } = require('../schemas/Passwords');
+const { Op } = require('sequelize/types');
 const bcrypt = require('bcryptjs');
+const { Accounts, Passwords } = require('../schemas/Schemas');
 
 // ============================================================
 
-module.exports.createAccount = async (meta, avatar = null) => {
-    let {
-        firstname,
-        lastname,
-        username,
-        password
-        // address = null
-    } = meta;
+module.exports.createAccount = async (meta, avatar) => {
+    let { firstname, lastname, username, password } = meta;
 
     const hash = bcrypt.hashSync(password, 10);
 
-    let newAccount;
-    try {
-        newAccount = await Accounts.create(
-            {
-                firstname,
-                lastname,
-                username,
-                status: 'active',
-                passwords: [{ password: hash }]
-            },
-            { include: 'passwords' }
-        );
-    } catch (error) {
-        throw error;
-    }
+    let newAccount = await Accounts.create({
+        firstname,
+        lastname,
+        username,
+        status: 'active',
+        passwords: [{ password: hash }]
+    }, { include: 'passwords' });
 
     if (avatar) {
         // TODO avatar file upload
@@ -40,18 +26,21 @@ module.exports.createAccount = async (meta, avatar = null) => {
 
 // ============================================================
 
-module.exports.findAccountByUsername = (username) =>
-    Accounts.findOne({
-        where: { username },
-        include: [
-            {
-                model: Passwords,
-                as: 'passwords',
-                where: { active: true },
-                limit: 1
-            }
-        ]
-    });
+module.exports.findAccountByUsername = (username) => Accounts.findOne({
+    where: { username },
+    include: [{
+        model: Passwords,
+        as: 'passwords',
+        where: { active: true },
+        limit: 1
+    }]
+});
+
+module.exports.findAccountByUsernameOrEmail = (unique) => Accounts.findOne({
+    where: {
+        [Op.or]: [{ username: unique }, { email: unique }]
+    }
+});
 
 module.exports.findAllAccounts = (where, include, attributes) =>
     Accounts.findAll({

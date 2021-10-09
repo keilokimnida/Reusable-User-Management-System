@@ -2,16 +2,14 @@
 // only admins can access all data
 
 const E = require('../errors/Errors');
+const { ADMIN_LEVELS } = require('../config/enums');
 const { responses: r } = require('../utils/response');
 
 // only super admin can access
 module.exports.onlySuperAdminAccess = (req, res, next) => {
     try {
         const { decoded } = res.locals.auth;
-
-        // admin level 1 is super admin
-        if (decoded.admin_level !== 1) E.AdminError('access this feature');
-
+        if (decoded.admin_level !== ADMIN_LEVELS.SUPER_ADMIN) throw E.AdminError('access this feature');
         return next();
     } catch (error) {
         // custom errors

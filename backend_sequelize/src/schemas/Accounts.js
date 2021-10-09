@@ -19,7 +19,8 @@ const Accounts = db.define(
         },
         email: {
             type: DataTypes.STRING(255),
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         username: {
             type: DataTypes.STRING(255),

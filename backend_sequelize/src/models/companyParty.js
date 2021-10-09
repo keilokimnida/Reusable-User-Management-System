@@ -1,8 +1,7 @@
-const { CompanyParties, PartyItems } = require('../schemas/CompanyParties');
-const { Accounts } = require('../schemas/Accounts');
+const { Accounts, Passwords, InterestedParties } = require('../schemas/Schemas');
 
 module.exports.findActivePartyDoc = () =>
-    CompanyParties.findOne({
+    InterestedParties.Forms.findOne({
         where: {
             status: 'active'
         },
@@ -19,5 +18,5 @@ module.exports.findActivePartyDoc = () =>
             },
             'items'
         ],
-        order: [[CompanyParties.associations.items, 'display_order', 'ASC']]
+        order: [[InterestedParties.Forms.associations.items, 'display_order', 'ASC']]
     });

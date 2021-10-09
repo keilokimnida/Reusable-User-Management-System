@@ -1,26 +1,39 @@
-const { BaseError } = require("./BaseError");
+const { BaseError } = require('./BaseError');
 
 class TokenError extends BaseError {
     constructor(message) {
         super(message);
-        this.name = "TokenError";
+        this.name = 'TokenError';
+        this.generic = 'Token error';
+        this.code = 401;
     }
 }
 
 class TokenExpiredError extends TokenError {
     constructor() {
-        super("The token has expired");
-        this.name = "TokenExpiredError";
-        this.code = 401;
+        super('The token has expired');
+        this.name = 'TokenExpiredError';
     }
 }
 
 class TokenBrokenError extends TokenError {
     constructor() {
-        super("The token is broken");
-        this.name = "TokenBrokenError";
-        this.code = 401;
+        super('The token is broken');
+        this.name = 'TokenBrokenError';
     }
 }
 
-module.exports = { TokenError, TokenExpiredError, TokenBrokenError };
+class TokenNotFound extends TokenError {
+    constructor() {
+        super('The token is missing');
+        this.name = 'TokenNotFound';
+        this.code = 400;
+    }
+}
+
+module.exports = {
+    TokenError,
+    TokenExpiredError,
+    TokenBrokenError,
+    TokenNotFound
+};

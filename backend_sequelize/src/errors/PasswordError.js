@@ -1,26 +1,26 @@
-const { BaseError } = require("./BaseError");
+const { BaseError } = require('./BaseError');
 
 class PasswordError extends BaseError {
     constructor(message) {
         super(message);
-        this.name = "PasswordError";
+        this.name = 'PasswordError';
+        this.generic = 'Provided password is invalid';
+        this.code = 400;
     }
 }
 
-class OtpExpiredError extends PasswordError {
+class RepeatPasswordError extends PasswordError {
     constructor() {
-        super("OTP has expired");
-        this.name = "OtpExpiredError";
-        this.code = 401;
+        super('The password has been used before previously');
+        this.name = 'RepeatPasswordError';
     }
 }
 
-class OtpNotFoundError extends PasswordError {
+class PasswordStrengthError extends PasswordError {
     constructor() {
-        super("OTP not found");
-        this.name = "OtpNotFoundError";
-        this.code = 401;
+        super('The password is not strong enough');
+        this.name = 'PasswordStrengthError';
     }
 }
 
-module.exports = { PasswordError, OtpExpiredError, OtpNotFoundError };
+module.exports = { PasswordError, RepeatPasswordError, PasswordStrengthError };
