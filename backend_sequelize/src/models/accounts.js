@@ -1,4 +1,4 @@
-const { Op } = require('sequelize/types');
+const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { Accounts, Passwords } = require('../schemas/Schemas');
 
