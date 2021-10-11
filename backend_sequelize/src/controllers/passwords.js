@@ -10,7 +10,7 @@ const { sendEmail, templates } = require('../utils/email');
 
 module.exports.forgotPassword = async (req, res) => {
     try {
-        const { username: unique } = req.body;
+        const { usernameOrEmail: unique } = req.body;
         const account = await findAccountByUsernameOrEmail(unique);
 
         const token = createResetToken(account.account_id);

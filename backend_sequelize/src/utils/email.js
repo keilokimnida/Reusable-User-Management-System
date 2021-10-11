@@ -38,8 +38,8 @@ module.exports.templates = {
     forgotPassword: (name, token) => `
         <h4>Hello ${name},</h4>
         <p>You have recently clicked on "forgot password".</p>
-        <p><a href="${frontend}/${token}">Click here to change your password.</a></p>
-        <p>This attempt will expire in 5 minutes.</p>
+        <p><a href="${frontend.baseUrl}/change-password/${token}">Click here to change your password.</a></p>
+        <p>This link will expire in 5 minutes.</p>
     `,
     passwordChanged: (name) => `
         <h4>Hello ${name},</h4>

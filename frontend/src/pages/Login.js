@@ -2,15 +2,11 @@ import { useState, useEffect } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Title from '../layout/Title';
-
 import { toast } from 'react-toastify';
 import TOAST_CONFIG from '../config/toastConfig';
-
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-
 import { Link, useHistory } from 'react-router-dom';
-
 import axios from 'axios';
 import APP_CONFIG from '../config/appConfig';
 import { login } from '../utils/localStorage';
@@ -22,6 +18,7 @@ const Login = () => {
 
   const [isRecaptchaValidated, setIsRecaptchaValidated] = useState(false);
   const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
+
   const initialValues = {
     username: "",
     password: "12345678!",
@@ -36,6 +33,7 @@ const Login = () => {
     setUserTriedToSubmit(true);
     // If captcha is not validated, don't allow 
     if (isRecaptchaValidated === false) return;
+    
     setLoading(true);
     const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/admin/login`, values);
     toast.promise(promise, {
@@ -68,10 +66,10 @@ const Login = () => {
     });
   }
 
+  // Handler for Recaptcha
   const recaptchaOnChange = (value) => {
     console.log("Captcha value:", value);
     setIsRecaptchaValidated(() => true);
-    console.log(isRecaptchaValidated);
   }
 
   return (

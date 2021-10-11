@@ -1,60 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import Title from '../../layout/Title';
 import { toast, ToastContainer } from 'react-toastify';
-import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
 import { Container, Row, Col } from 'react-bootstrap';
 import { IconContext } from 'react-icons';
 import toastConfig from '../../config/toastConfig';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+import ReCAPTCHA from "react-google-recaptcha";
+import Button from 'react-bootstrap/Button';
+import APP_CONFIG from '../../config/appConfig';
 
 const ForgotPassword = () => {
     const history = useHistory();
-    const [formFilled, setFormFilled] = useState(false);
-    const [otpFormFilled, setOtpFormFilled] = useState(false);
-    const [sentEmail, setSentEmail] = useState(false);
-    const [otp, setOtp] = useState(null);
-    const [inputValues, setInputValues] = useState({
-        username: '',
-        password: ''
-    });
     const [loading, setLoading] = useState(false);
     const toastTiming = toastConfig.duration.quick;
-
-    useEffect(() => {
-        // Check if user touched send otp form
-        if (inputValues.username !== '') {
-            setFormFilled(() => (true));
-        } else {
-            setFormFilled(() => (false));
-        }
-        // Check if user touched submit otp form
-        if (otp !== '') {
-            setOtpFormFilled(() => (true));
-        } else {
-            setOtpFormFilled(() => (false));
-        }
-    }, [inputValues, otp]);
+    const [isRecaptchaValidated, setIsRecaptchaValidated] = useState(false);
+    const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 
     // Handler for form submission
     // Need change endpoint
-    const handleFormSubmit = (event) => {
-        let username = event.target.username.value;
-        console.log(username);
-        event.preventDefault();
-        setLoading(() => (true));
+    const handleFormSubmit = (values) => {
+        setUserTriedToSubmit(true);
+        // If captcha is not validated, don't allow 
+        if (isRecaptchaValidated === false) return;
 
-        axios.post(`${process.env.REACT_APP_BASEURL}/forget-password/otp/new`, {
-            username,
-        }, {})
+        setLoading(() => (true));
+        axios.post(`${APP_CONFIG.baseUrl}/auth/forgot-password/request`, values, {})
             .then((res) => {
-                console.log("Sent OTP successfully!");
+                console.log("Sent Verification Email successfully!");
                 const data = res.data;
                 console.log(data);
                 setLoading(() => (false));
-                setSentEmail(true);
-                toast.success(<>Success!<br />Message: <b>OTP has been sent!</b></>);
+                toast.success(<>Success!<br />Message: <b>Verification Email has been sent!</b></>);
             })
             .catch((err) => {
                 console.log(err.response);
@@ -69,52 +49,19 @@ const ForgotPassword = () => {
             })
     }
 
-    // Handler for OTP submission
-    const handleOtpSubmit = (event) => {
-        console.log(otp);
-        console.log(inputValues.username);
-
-        event.preventDefault();
-        setLoading(() => (true));
-
-        // If success redirect to change password form with username & otp as params
-        axios.post(`${process.env.REACT_APP_BASEURL}/forget-password/otp/check`, {
-            username: inputValues.username,
-            otp
-        }, {})
-            .then((res) => {
-                console.log("Checked OTP successfully!");
-                const data = res.data;
-                console.log(data);
-                setLoading(() => (false));
-                history.push(`/change-password/${inputValues.username}/${otp}`);
-            })
-            .catch((err) => {
-                console.log(err.response);
-                let errCode = "Error!";
-                let errMsg = "Error!"
-                if (err.response !== undefined) {
-                    errCode = err.response.status;
-                    errMsg = err.response.data.message;
-                }
-                toast.error(<>Error Code: <b>{errCode}</b><br />Message: <b>{errMsg}</b></>);
-                setLoading(() => (false));
-            })
+    // Handler for Recaptcha
+    const recaptchaOnChange = (value) => {
+        console.log("Captcha value:", value);
+        setIsRecaptchaValidated(() => true);
     }
 
-    // Handler for input change
-    const handleInputChange = (event) => {
-        setInputValues((prevValues) => ({
-            ...prevValues,
-            [event.target.name]: event.target.value
-        }))
-    }
+    const initialValues = {
+        usernameOrEmail: "",
+    };
 
-    // Handler for otp input change
-    const handleOtpChange = (otp) => {
-        setOtp(() => (otp));
-    }
-
+    const validationSchema = Yup.object().shape({
+        usernameOrEmail: Yup.string().required(),
+    });
 
     return (
         <>
@@ -129,59 +76,63 @@ const ForgotPassword = () => {
                 draggable
                 pauseOnHover
             />
-            <Title title="Login" />
-            <div className="c-Login">
-                <div className="l-Login__Card">
-                    <div className="c-Login__Card">
-                        <form onSubmit={handleFormSubmit}>
-                            {/* Title */}
-                            <Container>
-                                <Row>
-                                    <Col className="c-Card__Back-btn" xs={1}>
-                                        <IconContext.Provider value={{ size: "21px" }}>
-                                            <BiArrowBack onClick={() => history.goBack()}></BiArrowBack>
-                                        </IconContext.Provider>
-                                    </Col>
-                                    <Col xs={11}><h4>Forgot Password</h4></Col>
-                                </Row>
-                            </Container>
-                            {/* Username */}
-                            <div className="c-Card__Username">
-                                <label htmlFor="username">Username</label>
-                                <input type="text" name="username" value={inputValues.username || ''} onChange={handleInputChange} placeholder="username" />
-                                <p className="c-Username__Information-message text-muted">We will send a one time password for verification to your email address</p>
-                            </div>
-                            {
-                                // Check if user has touched username input
-                                formFilled ?
-                                    <button className="c-Btn c-Btn--login" type="submit" value="submit">{loading ? "Loading..." : "Send OTP"}</button> :
-                                    <button className="c-Btn c-Btn--disabled" type="button" disabled={true}>Send OTP</button>
-                            }
-                        </form>
+            <Title title="Forgot Password" />
+            <div className="c-Forgot-password">
+                <div className="l-Forgot-password__Card">
+                    <div className="c-Forgot-password__Card">
+                        {/* Title */}
+                        <Container>
+                            <Row>
+                                <Col className="c-Card__Back-btn" xs={1}>
+                                    <IconContext.Provider value={{ size: "21px" }}>
+                                        <BiArrowBack onClick={() => history.goBack()}></BiArrowBack>
+                                    </IconContext.Provider>
+                                </Col>
+                                <Col xs={11}><h4>Forgot Password</h4></Col>
+                            </Row>
+                            <Row>
+                                <p className="c-Card__Instructions">Please enter your Username or E-mail and follow the instructions sent to your email in order to set a new password.</p>
+                            </Row>
+                        </Container>
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={validationSchema}
+                            onSubmit={handleFormSubmit}
+                        >
+                            {({ errors, touched }) => (
+                                <Form>
+                                    <div className="c-Email">
+                                        <label htmlFor="usernameOrEmail">Username / E-mail</label>
+                                        <Field
+                                            id="usernameOrEmail"
+                                            name="usernameOrEmail"
+                                            className="form-control"
+                                            type="text"
+                                        />
+                                        {errors.usernameOrEmail && touched.usernameOrEmail
+                                            ? <div className="form-text">Please provide a valid e-mail</div>
+                                            : null
+                                        }
+                                    </div>
 
-                        {/* Form for OTP submission */}
-                        {sentEmail ?
-                            <form onSubmit={handleOtpSubmit}>
-                                {/* Email */}
-                                <div className="c-Card__Username">
-                                    <label htmlFor="otp">Key in OTP</label>
-                                </div>
-                                <OtpInput
-                                    value={otp}
-                                    onChange={handleOtpChange}
-                                    numInputs={6}
-                                    inputStyle={""}
-                                    className="otpInput"
-                                    name="otp"
-                                />
-                                {
-                                    // Check if user has touched both inputs
-                                    otpFormFilled ?
-                                        <button className="c-Btn c-Btn--login" type="submit" value="submit">{loading ? "Loading..." : "Submit"}</button> :
-                                        <button className="c-Btn c-Btn--disabled" type="button" disabled={true}>Submit</button>
-                                }
-                            </form> : ""
-                        }
+                                    <div className="c-Card__Recaptcha">
+                                        <ReCAPTCHA
+                                            // Using Test key for localhost for now
+                                            sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                                            // Real key below for when website is hosted online but will need to add website domain to recaptcha on google settings
+                                            // sitekey="6LfUgcEcAAAAAFTCie0MuC_Lg7GtKpYDEbA3FIge"    
+                                            onChange={recaptchaOnChange}
+                                        />
+                                        {
+                                            !isRecaptchaValidated && userTriedToSubmit ? <div className="form-text">Invalid captcha</div>
+                                                : null
+                                        }
+                                    </div>
+
+                                    <Button className="c-Btn c-Btn--login" type="submit" disabled={loading}>{loading ? "Loading..." : "Get Verification Email"}</Button>
+                                </Form>
+                            )}
+                        </Formik>
                     </div>
                 </div>
             </div>

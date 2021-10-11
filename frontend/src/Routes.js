@@ -32,7 +32,7 @@ const Routes = () => {
 
         {/* Forgot password */}
         <Route exact path="/forgot-password" render={props => dummy(ForgotPassword)(props)} />
-        <Route path="/change-password/:username/:otp" render={(props) => dummy(ChangePassword)(props)} />
+        <Route path="/change-password/:token" render={(props) => dummy(ChangePassword)(props)} />
         <Route path="/create-account" render={(props) => dummy(CreateAccount)(props)} />
 
         {/* <Route path="/change-password/:username/:otp" render={(props) => <ChangePassword {...props} />} />
