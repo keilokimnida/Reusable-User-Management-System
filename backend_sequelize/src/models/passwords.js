@@ -20,8 +20,8 @@ module.exports.changePassword = async (accountId, newPassword) => {
 
     // "ORDER BY updated_at ASC" orders the oldest password first
 
-    const comparisons = await Promise.all(account.passwords.map(row => bcrypt.compare(newPassword, row.password)));
-    const usedBefore = comparisons.some(compare => !!compare);
+    const comparisons = await Promise.all(account.passwords.map((row) => bcrypt.compare(newPassword, row.password)));
+    const usedBefore = comparisons.some((compare) => !!compare);
     if (usedBefore) throw new E.RepeatPasswordError();
 
     // find the current active p/w and set to not active

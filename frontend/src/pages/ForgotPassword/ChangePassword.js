@@ -8,12 +8,10 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { IconContext } from 'react-icons';
 import PasswordCriteria from '../../components/PasswordCriteria';
 import toastConfig from '../../config/toastConfig';
-import jwtDecode from 'jwt-decode';
 import APP_CONFIG from '../../config/appConfig';
 
 const ChangePassword = ({ match }) => {
     const token = match.params.token;
-    const { account_id } = jwtDecode(token);
     const isNumberRegx = /\d/;
     const specialCharacterRegx = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
     const toastTiming = toastConfig.duration.quick;
@@ -55,9 +53,8 @@ const ChangePassword = ({ match }) => {
         setLoading(() => (true));
 
         // Endpoint for changing password
-        axios.post(`${APP_CONFIG.baseUrl}/forgot-password/change`, {
-            password,
-            account_id
+        axios.post(`${APP_CONFIG.baseUrl}/auth/forgot-password/change`, {
+            password
         }, {
             headers: { "Authorization": `Bearer ${token}` }
         })
