@@ -3,9 +3,10 @@ const jwt = require('jsonwebtoken');
 const { findAccountByUsernameOrEmail } = require('../models/accounts');
 const { createResetToken, changePassword } = require('../models/passwords');
 
-const { secret: jwtSecret } = require('../config/config').jwt;
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
+
+const { secret: jwtSecret } = require('../config/config').jwt;
 const { sendEmail, templates } = require('../utils/email');
 
 module.exports.forgotPassword = async (req, res) => {

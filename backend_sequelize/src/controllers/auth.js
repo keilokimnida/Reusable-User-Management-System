@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 const { findAccountByUsername, lockAccount } = require('../models/accounts');
 const { updatePasswordAttempts } = require('../models/passwords');
 
-const { ADMIN_LEVELS } = require('../config/enums');
-const { secret: jwtSecret } = require('../config/config').jwt;
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
+
+const { ADMIN_LEVELS } = require('../config/enums');
+const { secret: jwtSecret } = require('../config/config').jwt;
 
 // CLIENT LOGIN
 module.exports.clientLogin = async (req, res) => {

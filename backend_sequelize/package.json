@@ -6,6 +6,7 @@
   "scripts": {
     "start": "cls && echo Cleared Console... && node index",
     "unix": "clear && echo Cleared Console... && node index",
+    "lint": "npx eslint --fix index.js ./src ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

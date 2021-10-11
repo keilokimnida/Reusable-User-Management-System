@@ -1,7 +1,7 @@
 const { CompanyParties, PartyItems } = require('../schemas/CompanyParties');
 const { findActivePartyDoc } = require('../models/CompanyParty');
 
-const { responses: r } = require('../utils/response');
+const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 
 // ============================================================

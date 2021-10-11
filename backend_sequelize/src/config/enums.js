@@ -5,8 +5,8 @@ module.exports = {
         ADMIN: 2
     },
     ACCOUNT_STATUSES: {
-        ACTIVE: "active",
-        LOCKED: "locked",
-        DEACTIVATED: "deactivated"
+        ACTIVE: 'active',
+        LOCKED: 'locked',
+        DEACTIVATED: 'deactivated'
     }
-}
+};
