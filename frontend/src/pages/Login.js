@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
 import Title from '../layout/Title';
 
 import { toast } from 'react-toastify';
@@ -15,22 +14,28 @@ import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import APP_CONFIG from '../config/appConfig';
 import { login } from '../utils/localStorage';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
+  const [isRecaptchaValidated, setIsRecaptchaValidated] = useState(false);
+  const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
   const initialValues = {
     username: "",
-    password: "12345678!"
+    password: "12345678!",
   };
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().required(),
-    password: Yup.string().required()
+    password: Yup.string().required(),
   });
 
   const handleSubmit = (values) => {
+    setUserTriedToSubmit(true);
+    // If captcha is not validated, don't allow 
+    if (isRecaptchaValidated === false) return;
     setLoading(true);
     const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/admin/login`, values);
     toast.promise(promise, {
@@ -61,6 +66,12 @@ const Login = () => {
         }
       }
     });
+  }
+
+  const recaptchaOnChange = (value) => {
+    console.log("Captcha value:", value);
+    setIsRecaptchaValidated(() => true);
+    console.log(isRecaptchaValidated);
   }
 
   return (
@@ -101,6 +112,20 @@ const Login = () => {
                 : null
               }
               <Link to="/forgot-password" className="form-text">Forgot your password?</Link>
+            </div>
+
+            <div className="c-Card__Recaptcha">
+              <ReCAPTCHA
+                // Using Test key for localhost for now
+                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                // Real key below for when website is hosted online but will need to add website domain to recaptcha on google settings
+                // sitekey="6LfUgcEcAAAAAFTCie0MuC_Lg7GtKpYDEbA3FIge"    
+                onChange={recaptchaOnChange}
+              />
+              {
+                !isRecaptchaValidated && userTriedToSubmit ? <div className="form-text">Invalid captcha</div>
+                  : null
+              }
             </div>
 
             <Button className="c-Btn c-Btn--login" type="submit" disabled={loading}>{loading ? "Loading..." : "Login"}</Button>

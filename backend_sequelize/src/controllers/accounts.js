@@ -2,6 +2,7 @@ const { findAllAccounts, findOneAccount, updateAccount } = require('../models/ac
 const { responses: r } = require('../utils/response');
 const { createAccount } = require('../models/accounts');
 const E = require('../errors/Errors');
+const validator = require('validator');
 
 module.exports.createAccount = async (req, res) => {
     try {

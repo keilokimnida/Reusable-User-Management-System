@@ -36,7 +36,8 @@ const reset = false;
             const { seeder } = require('./database/seeder');
             await seeder();
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.log(error);
     }
 })();
