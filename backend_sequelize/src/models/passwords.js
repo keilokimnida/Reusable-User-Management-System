@@ -4,23 +4,56 @@ const bcrypt = require('bcryptjs');
 const E = require('../errors/Errors');
 const { secret: jwtSecret } = require('../config/config').jwt;
 
-const { Accounts, Passwords } = require('../schemas/Schemas');
+const { Accounts, Passwords, Otps } = require('../schemas/Schemas').User;
 
-module.exports.createResetToken = (account_id) =>
-    jwt.sign({ account_id }, jwtSecret, { expiresIn: '5m' });
+module.exports.createResetToken = async (account_id) => {
+    const token = jwt.sign({ account_id }, jwtSecret, { expiresIn: '5m' });
+    const row = await Otps.create({ fk_account_id: account_id, token });
+    return { token, row };
+};
+
+module.exports.validateResetToken = async (token) => {
+    try {
+        const decoded = jwt.verify(token, jwtSecret);
+
+        const row = await Otps.findOne({
+            where: { fk_account_id: decoded.account_id, token }
+        });
+
+        if (!row) throw new E.TokenNotFound();
+    }
+    catch (error) {
+        // expired tokens should be removed from db
+        if (error instanceof jwt.TokenExpiredError) {
+            await Otps.destroy({ where: { token } });
+            throw new E.TokenExpiredError();
+        }
+
+        if (error instanceof jwt.JsonWebTokenError)
+            throw new E.TokenBrokenError();
+
+        // other errors
+        throw error;
+    }
+};
+
+module.exports.useResetTokens = (fk_account_id) =>
+    Otps.destroy({
+        where: { fk_account_id }
+    });
 
 module.exports.updatePasswordAttempts = (attempts, password_id) =>
     Passwords.update({ attempts }, { where: { password_id } });
 
 module.exports.changePassword = async (accountId, newPassword) => {
-    const account = await Accounts.findByPk(accountId, {
+    const { passwords, ...account } = await Accounts.findByPk(accountId, {
         include: 'passwords',
         order: [[Accounts.associations.passwords, 'updated_at', 'ASC']]
     });
 
     // "ORDER BY updated_at ASC" orders the oldest password first
 
-    const comparisons = await Promise.all(account.passwords.map((row) => bcrypt.compare(newPassword, row.password)));
+    const comparisons = await Promise.all(passwords.map((row) => bcrypt.compare(newPassword, row.password)));
     const usedBefore = comparisons.some((compare) => !!compare);
     if (usedBefore) throw new E.RepeatPasswordError();
 
@@ -30,13 +63,13 @@ module.exports.changePassword = async (accountId, newPassword) => {
     const hash = bcrypt.hashSync(newPassword, 10);
 
     // add in the new password  
-    if (account.passwords.length < 5) await Passwords.create({
+    if (passwords.length < 5) await Passwords.create({
         fk_account_id: accountId,
         password: hash,
         active: true
     });
     // take the oldest password and update it
-    else await account.passwords[0].update({
+    else await passwords[0].update({
         password: hash,
         active: true,
         attempts: 0

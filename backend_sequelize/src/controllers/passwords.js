@@ -1,12 +1,15 @@
-const jwt = require('jsonwebtoken');
-
 const { findAccountByUsernameOrEmail } = require('../models/accounts');
-const { createResetToken, changePassword } = require('../models/passwords');
+
+const {
+    createResetToken,
+    validateResetToken,
+    useResetTokens,
+    changePassword
+} = require('../models/passwords');
 
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 
-const { secret: jwtSecret } = require('../config/config').jwt;
 const { sendEmail, templates } = require('../utils/email');
 
 module.exports.forgotPassword = async (req, res) => {
@@ -14,10 +17,14 @@ module.exports.forgotPassword = async (req, res) => {
         const { usernameOrEmail: unique } = req.body;
         const account = await findAccountByUsernameOrEmail(unique);
 
-        const token = createResetToken(account.account_id);
+        const { token } = await createResetToken(account.account_id);
 
         const name = account.firstname.concat(' ', account.lastname);
-        await sendEmail(account.email, 'Forgot Password', templates.forgotPassword(name, token));
+        await sendEmail(
+            account.email,
+            'Forgot Password',
+            templates.forgotPassword(name, token)
+        );
 
         res.status(200).send(r.success200());
     }
@@ -37,17 +44,12 @@ module.exports.changeForgottenPassword = async (req, res) => {
         if (!token) throw new E.TokenNotFound();
 
         const { password: newPassword } = req.body;
-
-        try {
-            var { account_id } = jwt.verify(token, jwtSecret);
-        }
-        catch (error) {
-            if (error instanceof jwt.TokenExpiredError) throw new E.TokenExpiredError();
-            if (error instanceof jwt.JsonWebTokenError) throw new E.TokenBrokenError();
-            throw error;
-        }
+        const { account_id } = validateResetToken(token);
 
         const account = await changePassword(account_id, newPassword);
+
+        // remove all reset tokens for this account
+        await useResetTokens(account_id);
 
         const name = account.firstname.concat(' ', account.lastname);
         sendEmail(account.email, 'Forgot Password', templates.passwordChanged(name))
