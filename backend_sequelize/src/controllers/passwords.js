@@ -12,7 +12,7 @@ const E = require('../errors/Errors');
 
 const { sendEmail, templates } = require('../utils/email');
 
-module.exports.forgotPassword = async (req, res) => {
+module.exports.forgotPassword = async (req, res, next) => {
     try {
         const { usernameOrEmail: unique } = req.body;
         const account = await findAccountByUsernameOrEmail(unique);
@@ -27,18 +27,14 @@ module.exports.forgotPassword = async (req, res) => {
         );
 
         res.status(200).send(r.success200());
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError)
-            return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };
 
-module.exports.changeForgottenPassword = async (req, res) => {
+module.exports.changeForgottenPassword = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) throw new E.TokenNotFound();
@@ -56,18 +52,14 @@ module.exports.changeForgottenPassword = async (req, res) => {
             .catch((error) => console.log('Email failed to sent', error));
 
         res.status(200).send(r.success200());
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError)
-            return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };
 
-module.exports.changeLoggedInPassword = async (req, res) => {
+module.exports.changeLoggedInPassword = async (req, res, next) => {
     try {
         const { account_id } = res.locals.auth.decoded;
         const { password: newPassword } = req.body;
@@ -79,13 +71,9 @@ module.exports.changeLoggedInPassword = async (req, res) => {
             .catch((error) => console.log('Email failed to sent', error));
 
         res.status(200).send(r.success200());
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError)
-            return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };

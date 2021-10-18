@@ -17,16 +17,14 @@ module.exports.checkAccountStatus = async (req, res, next) => {
         let attributes = ['status', 'admin_level'];
 
         const account = await findOneAccount(where, null, attributes);
+        
         // check if account is active
-        if (account.status !== ACCOUNT_STATUSES.ACTIVE) throw E.AccountStatusError(account.status);
+        if (account.status !== ACCOUNT_STATUSES.ACTIVE)
+            throw E.AccountStatusError(account.status);
 
         return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError) return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };

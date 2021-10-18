@@ -17,4 +17,15 @@ class NotFoundError extends QueryError {
     }
 }
 
-module.exports = { QueryError, NotFoundError };
+class DuplicateError extends QueryError {
+    constructor(column) {
+        super(`Duplicate value on ${column}`);
+        this.name = 'DuplicateError';
+    }
+}
+
+module.exports = {
+    QueryError,
+    NotFoundError,
+    DuplicateError
+};

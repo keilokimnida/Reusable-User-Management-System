@@ -1,11 +1,35 @@
 const { BaseError } = require('./BaseError');
 
 class AccountError extends BaseError {
-    constructor(message) {
+    constructor(message, found, status) {
         super(message);
         this.name = 'PasswordError';
         this.generic = 'Account error';
         this.code = 400;
+        this.found = found;
+        this.status = status;
+    }
+
+    toJSON() {
+        return {
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message,
+                account_found: this.found,
+                account_status: this.status
+            }
+        };
+    }
+}
+
+class AccountNotFound extends AccountError {
+    constructor() {
+        super('Account not found', false);
+        this.name = 'AccountNotFound';
+        this.code = 404;
     }
 }
 
@@ -13,50 +37,10 @@ class AccountStatusError extends AccountError {
     /**
      * The account is currently [not active]
      */
-    constructor(status = 'not active') {
-        super(`The account is currently ${status}`);
+    constructor(status) {
+        super('The account is currently not active', true, status);
         this.name = 'AccountStatusError';
-        this.generic = 'Account is not active';
         this.code = 403;
-        this.status = status;
-    }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                account_found: true,
-                account_status: this.status
-            }
-        };
-        return json;
-    }
-}
-
-class AccountNotFound extends AccountError {
-    constructor() {
-        super('Account not found');
-        this.name = 'AccountNotFound';
-        this.generic = 'Account not found';
-        this.code = 404;
-    }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                account_found: false
-            }
-        };
-        return json;
     }
 }
 

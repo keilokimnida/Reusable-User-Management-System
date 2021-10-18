@@ -13,21 +13,18 @@ const transporter = nodemailer.createTransport({
 
 module.exports.sendEmail = (recipient, subject, htmlContent) =>
     new Promise((resolve, reject) => {
-        transporter.sendMail(
-            {
-                from: {
-                    name: 'eISO',
-                    address: `system@${nm.domain}`
-                },
-                to: recipient,
-                subject,
-                html: htmlContent
+        transporter.sendMail({
+            from: {
+                name: 'eISO',
+                address: `system@${nm.domain}`
             },
-            (error, info) => {
-                if (error) reject(error);
-                else resolve(info);
-            }
-        );
+            to: recipient,
+            subject,
+            html: htmlContent
+        }, (error, info) => {
+            if (error) reject(error);
+            else resolve(info);
+        });
     });
 
 // ============================================================
@@ -35,14 +32,14 @@ module.exports.sendEmail = (recipient, subject, htmlContent) =>
 // EMAIL TEMPLATES
 
 module.exports.templates = {
-    forgotPassword: (name, token) => `
+    forgotPassword: (name, token) => (`
         <h4>Hello ${name},</h4>
         <p>You have recently clicked on "forgot password".</p>
         <p><a href="${frontend.baseUrl}/change-password/${token}">Click here to change your password.</a></p>
         <p>This link will expire in 5 minutes.</p>
-    `,
-    passwordChanged: (name) => `
+    `),
+    passwordChanged: (name) => (`
         <h4>Hello ${name},</h4>
         <p>You have recently changed your password.</p>
-    `
+    `)
 };

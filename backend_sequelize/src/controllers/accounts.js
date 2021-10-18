@@ -5,69 +5,51 @@ const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 const validator = require('validator');
 
-module.exports.createAccount = async (req, res) => {
+module.exports.createAccount = async (req, res, next) => {
     try {
         const { username } = await createAccount(req.body);
         res.status(201).send(r.success201({ username }));
+        return next();
     }
     catch (error) {
         if (error.original.code === 'ER_DUP_ENTRY')
-            return res.status(400).send(
-                r.error400({
-                    message: 'Username has been taken'
-                })
-            );
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+            return next(new E.DuplicateError('username'));
+        return next(error);
     }
 };
 
 // ============================================================
 
-module.exports.findAllAccounts = async (req, res) => {
+module.exports.findAllAccounts = async (req, res, next) => {
     try {
         const accounts = await findAllAccounts();
-
-        if (accounts.length === 0) return res.status(204).send(r.success204);
-
-        return res.status(200).send(r.success200(accounts));
+        const results = accounts.length === 0 ? undefined : accounts;
+        res.status(200).send(r.success200(results));
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
-        // other errors
-        else {
-            console.log(error);
-            res.status(500).send(r.error500(error));
-        }
+        return next(error);
     }
 };
 
 // ============================================================
 
-module.exports.findAccountByID = async (req, res) => {
+module.exports.findAccountByID = async (req, res, next) => {
     try {
         const accountID = parseInt(req.params.accountID);
-        if (isNaN(accountID)) throw new E.ParamTypeError('accountID', req.params.accountID, 1);
+        if (isNaN(accountID))
+            throw new E.ParamTypeError('accountID', req.params.accountID, 1);
 
-        let where = {
-            account_id: accountID
-        };
+        const where = { account_id: accountID };
 
         const account = await findOneAccount(where);
-
         if (!account) throw new E.AccountNotFound();
 
-        return res.status(200).send(r.success200(account));
+        res.status(200).send(r.success200(account));
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
-        // other errors
-        else {
-            console.log(error);
-            res.status(500).send(r.error500(error));
-        }
+        return next(error);
     }
 };
 
@@ -77,15 +59,13 @@ module.exports.findAccountByID = async (req, res) => {
 
 // updates only account details and their address
 // does not include updating account (username/password)
-module.exports.editAccount = async (req, res) => {
+module.exports.editAccount = async (req, res, next) => {
     try {
-        const {
-            auth: { decoded },
-            companyId
-        } = res.locals;
+        const { decoded } = res.locals.auth;
 
         const accountID = parseInt(req.params.accountID);
-        if (isNaN(accountID)) throw new E.ParamTypeError('accountID', req.params.accountID, 1);
+        if (isNaN(accountID))
+            throw new E.ParamTypeError('accountID', req.params.accountID, 1);
 
         // If account is not admin and is trying to edit other accounts
         if (decoded.admin_level !== 2 && accountID !== decoded.account_id)
@@ -115,7 +95,6 @@ module.exports.editAccount = async (req, res) => {
         };
 
         const account = await findOneAccount(where);
-
         if (!account) throw new E.AccountNotFound();
 
         let details = { firstname, lastname, email };
@@ -152,26 +131,17 @@ module.exports.editAccount = async (req, res) => {
             // should only be either active or deactivated
             if (decoded.admin_level === 2 && account.status !== 'locked') {
                 // prevent the admin from deactivating themself
-                if (decoded.account_id !== accountID)
-                    await account.update({ status: account_status });
-                else
-                    return res.status(400).send(
-                        r.error400({
-                            message: 'Cannot deactivate oneself'
-                        })
-                    );
+                if (decoded.account_id === accountID)
+                    throw new E.ParamError('Cannot deactivate yourself');
+
+                await account.update({ status: account_status });
             }
         }
 
-        return res.status(204).send(r.success204());
+        res.status(200).send(r.success200());
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError) res.status(error.code).send(error.toJSON());
-        // other errors
-        else {
-            console.log(error);
-            res.status(500).send(r.error500(error));
-        }
+        return next(error);
     }
 };

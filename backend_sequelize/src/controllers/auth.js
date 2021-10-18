@@ -11,7 +11,7 @@ const { ADMIN_LEVELS } = require('../config/enums');
 const { secret: jwtSecret } = require('../config/config').jwt;
 
 // CLIENT LOGIN
-module.exports.clientLogin = async (req, res) => {
+module.exports.clientLogin = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
@@ -30,7 +30,11 @@ module.exports.clientLogin = async (req, res) => {
 
         // because of the one-to-many r/s btw account and passwords,
         // passwords is an array even though theres only one active password
-        const { password_id, password: hash, attempts: passwordAttempts } = account.passwords[0];
+        const {
+            password_id,
+            password: hash,
+            attempts: passwordAttempts
+        } = account.passwords[0];
 
         // if the account is locked or
         // the password has been attempted for more than 5 times
@@ -98,7 +102,7 @@ module.exports.clientLogin = async (req, res) => {
             { expiresIn: '12h' }
         );
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'Success',
             found: true,
             locked: false,
@@ -108,21 +112,18 @@ module.exports.clientLogin = async (req, res) => {
                 email: account.email
             }
         });
+
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError)
-            return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };
 
 // ============================================================
 
 // SUPER ADMIN LOGIN
-module.exports.adminLogin = async (req, res) => {
+module.exports.adminLogin = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
@@ -146,7 +147,11 @@ module.exports.adminLogin = async (req, res) => {
 
         // because of the one-to-many r/s btw account and passwords,
         // passwords is an array even though theres only one active password
-        const { password_id, password: hash, attempts: passwordAttempts } = account.passwords[0];
+        const {
+            password_id,
+            password: hash,
+            attempts: passwordAttempts
+        } = account.passwords[0];
 
         // if the account is locked or
         // the password has been attempted for more than 5 times
@@ -213,7 +218,7 @@ module.exports.adminLogin = async (req, res) => {
             { expiresIn: '12h' }
         );
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'Success',
             found: true,
             locked: false,
@@ -223,13 +228,10 @@ module.exports.adminLogin = async (req, res) => {
                 email: account.email
             }
         });
+
+        return next();
     }
     catch (error) {
-        // custom errors
-        if (error instanceof E.BaseError)
-            return res.status(error.code).send(error.toJSON());
-        // other errors
-        console.log(error);
-        return res.status(500).send(r.error500(error));
+        return next(error);
     }
 };

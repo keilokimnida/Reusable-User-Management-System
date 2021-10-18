@@ -1,11 +1,27 @@
 const { BaseError } = require('./BaseError');
 
 class OtpError extends BaseError {
-    constructor(message) {
+    constructor(message, found, expired) {
         super(message);
         this.name = 'OtpError';
         this.generic = 'OTP error';
-        this.code = 401;
+        this.code = found ? 401 : 400;
+        this.found = found;
+        this.expired = expired;
+    }
+
+    toJSON() {
+        return {
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message,
+                otp_found: this.found,
+                otp_expired: this.expired
+            }
+        };
     }
 }
 
@@ -13,23 +29,6 @@ class OtpExpiredError extends OtpError {
     constructor() {
         super('OTP has expired');
         this.name = 'OtpExpiredError';
-        this.generic = 'Expired OTP';
-        this.code = 401;
-    }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                otp_found: true,
-                otp_expired: true
-            }
-        };
-        return json;
     }
 }
 
@@ -37,22 +36,6 @@ class OtpNotFoundError extends OtpError {
     constructor() {
         super('OTP not found');
         this.name = 'OtpNotFoundError';
-        this.generic = 'Not found';
-        this.code = 404;
-    }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                otp_found: false
-            }
-        };
-        return json;
     }
 }
 

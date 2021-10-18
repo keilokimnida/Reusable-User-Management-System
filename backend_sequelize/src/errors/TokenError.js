@@ -1,39 +1,56 @@
 const { BaseError } = require('./BaseError');
 
 class TokenError extends BaseError {
-    constructor(message) {
+    constructor(message, found, broken, expired) {
         super(message);
         this.name = 'TokenError';
-        this.generic = 'Token error';
+        this.generic = 'Invalid JWT';
         this.code = 401;
+        this.found = found;
+        this.broken = broken;
+        this.expired = expired;
     }
-}
 
-class TokenExpiredError extends TokenError {
-    constructor() {
-        super('The token has expired');
-        this.name = 'TokenExpiredError';
-    }
-}
-
-class TokenBrokenError extends TokenError {
-    constructor() {
-        super('The token is broken');
-        this.name = 'TokenBrokenError';
+    toJSON() {
+        return {
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message,
+                token_found: this.found,
+                token_broken: this.broken,
+                token_expired: this.expired
+            }
+        };
     }
 }
 
 class TokenNotFound extends TokenError {
     constructor() {
-        super('The token is missing');
+        super('The token is missing', false);
         this.name = 'TokenNotFound';
-        this.code = 400;
+    }
+}
+
+class TokenBrokenError extends TokenError {
+    constructor() {
+        super('The token is broken', true, true);
+        this.name = 'TokenBrokenError';
+    }
+}
+
+class TokenExpiredError extends TokenError {
+    constructor() {
+        super('The token has expired', true, false, true);
+        this.name = 'TokenExpiredError';
     }
 }
 
 module.exports = {
     TokenError,
-    TokenExpiredError,
+    TokenNotFound,
     TokenBrokenError,
-    TokenNotFound
+    TokenExpiredError
 };
