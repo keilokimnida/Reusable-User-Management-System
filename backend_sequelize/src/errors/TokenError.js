@@ -1,9 +1,10 @@
 const { BaseError } = require('./BaseError');
 
 class TokenError extends BaseError {
-    constructor(message, found, broken, expired) {
-        super(message);
+    constructor(found, broken, expired) {
+        super();
         this.name = 'TokenError';
+        this.message = 'Invalid JWT';
         this.generic = 'Invalid JWT';
         this.code = 401;
         this.found = found;
@@ -29,22 +30,25 @@ class TokenError extends BaseError {
 
 class TokenNotFoundError extends TokenError {
     constructor() {
-        super('The token is missing', false);
+        super(false);
         this.name = 'TokenNotFoundError';
+        this.message = 'The token is missing';
     }
 }
 
 class TokenBrokenError extends TokenError {
     constructor() {
-        super('The token is broken', true, true);
+        super(true, true);
         this.name = 'TokenBrokenError';
+        this.message = 'The token is broken';
     }
 }
 
 class TokenExpiredError extends TokenError {
     constructor() {
-        super('The token has expired', true, false, true);
+        super(true, false, true);
         this.name = 'TokenExpiredError';
+        this.message = 'The token has expired';
     }
 }
 

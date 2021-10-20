@@ -1,9 +1,10 @@
 const { BaseError } = require('./BaseError');
 
 class ParamError extends BaseError {
-    constructor(message) {
-        super(message);
+    constructor() {
+        super();
         this.name = 'ParamError';
+        this.message = 'Request syntax error';
         this.generic = 'Request syntax error';
         this.code = 400;
     }
@@ -17,15 +18,17 @@ class ParamTypeError extends ParamError {
      * @param {*} expectedValue An example value to derive its type from
      */
     constructor(paramName, paramValue, expectedValue) {
-        super(`Parameter '${paramName}' expected a ${Object.prototype.toString.call(expectedValue)} but got a ${Object.prototype.toString.call(paramValue)}`);
+        super();
         this.name = 'ParamTypeError';
+        this.message = `Parameter '${paramName}' expected a ${Object.prototype.toString.call(expectedValue)} but got a ${Object.prototype.toString.call(paramValue)}`;
     }
 }
 
 class ParamMissingError extends ParamError {
     constructor(paramName) {
-        super(`Parameter '${paramName}' is missing`);
+        super();
         this.name = 'ParamMissingError';
+        this.message = `Parameter '${paramName}' is missing`;
     }
 }
 
@@ -34,10 +37,12 @@ class ParamValueError extends ParamError {
      * Parameter '[...]' has an invalid value [expected ...]
      */
     constructor(paramName, correct) {
+        super();
+        this.name = 'ParamValueError';
+        
         let msg = `Parameter '${paramName}' has an invalid value`;
         if (correct) msg += `, expected ${correct}`;
-        super(msg);
-        this.name = 'ParamValueError';
+        this.message = msg;
     }
 }
 

@@ -1,12 +1,13 @@
 const { BaseError } = require('./BaseError');
 
 class InternalError extends BaseError {
-    constructor(error = null) {
-        super(error.message ?? 'An internal error has occured');
+    constructor(error) {
+        super();
         this.name = error.name ?? 'InternalError';
+        this.message = error.message ?? 'An internal error has occured';
         this.generic = 'Internal error';
         this.code = 500;
-        this.error = error;
+        this.original = error;
     }
 }
 

@@ -10,6 +10,8 @@ router.post('/login', authController.login);
 // REFRESH TOKEN
 router.post('/login/refresh', authController.refreshToken);
 
+router.get('/read-cookie', authController.readSecureCookies);
+
 // LOGOUT
 router.post('logout', authController.logout);
 

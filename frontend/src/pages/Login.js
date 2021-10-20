@@ -33,9 +33,9 @@ const Login = () => {
     setUserTriedToSubmit(true);
     // If captcha is not validated, don't allow 
     if (isRecaptchaValidated === false) return;
-    
+
     setLoading(true);
-    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/login`, values);
+    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/login`, values, { withCredentials: true });
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."

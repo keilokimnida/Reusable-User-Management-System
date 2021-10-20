@@ -6,9 +6,10 @@
 // https://stackoverflow.com/a/32750746
 
 class BaseError extends Error {
-    constructor(message = 'No message') {
-        super(message);
+    constructor() {
+        super();
         this.name = 'BaseError';
+        this.message = 'Error';
         this.generic = 'Error';
         this.code = 400;
     }

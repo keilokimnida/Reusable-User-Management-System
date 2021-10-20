@@ -186,6 +186,21 @@ module.exports.logout = async (req, res, next) => {
 
 // ============================================================
 
+// test the http only cookies
+// specifically refresh token
+module.exports.readSecureCookies = (req, res, next) => {
+    try {
+        console.log(req.signedCookies.refreshToken);
+        res.status(200).send(req.signedCookies.refreshToken);
+        return next();
+    }
+    catch (error) {
+        next(error);
+    }
+};
+
+// ============================================================
+
 /* SUPER ADMIN LOGIN
 module.exports.adminLogin = async (req, res, next) => {
     try {

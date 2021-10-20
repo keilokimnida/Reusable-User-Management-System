@@ -1,9 +1,10 @@
 const { BaseError } = require('./BaseError');
 
 class AccountError extends BaseError {
-    constructor(message, found, status) {
-        super(message);
+    constructor(found, status) {
+        super();
         this.name = 'PasswordError';
+        this.message = 'Account error';
         this.generic = 'Account error';
         this.code = 400;
         this.found = found;
@@ -27,8 +28,9 @@ class AccountError extends BaseError {
 
 class AccountNotFoundError extends AccountError {
     constructor() {
-        super('Account not found', false);
+        super(false);
         this.name = 'AccountNotFoundError';
+        this.message = 'Account not found';
         this.code = 404;
     }
 }
@@ -38,8 +40,9 @@ class AccountStatusError extends AccountError {
      * The account is currently [not active]
      */
     constructor(status) {
-        super('The account is currently not active', true, status);
+        super(true, status);
         this.name = 'AccountStatusError';
+        this.message = 'The account is currently not active';
         this.code = 403;
     }
 }
@@ -49,8 +52,9 @@ class AdminError extends AccountError {
      * User cannot [administrate this action]
      */
     constructor(action = 'perform this action') {
-        super(`User cannot ${action}`);
+        super();
         this.name = 'AdminError';
+        this.message = `User cannot ${action}`;
         this.generic = 'Forbidden action';
         this.code = 403;
     }
@@ -61,8 +65,9 @@ class PermissionError extends AccountError {
      * Account does not have permission to [...]
      */
     constructor(action = 'perform this action') {
-        super(`Employee does not have permission to ${action}`);
+        super();
         this.name = 'PermissionError';
+        this.message = `Employee does not have permission to ${action}`;
         this.generic = 'Forbidden action';
         this.code = 403;
     }

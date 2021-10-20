@@ -1,11 +1,12 @@
 const { BaseError } = require('./BaseError');
 
 class OtpError extends BaseError {
-    constructor(message, found, expired) {
-        super(message);
+    constructor(found, expired) {
+        super();
         this.name = 'OtpError';
+        this.message = 'OTP error';
         this.generic = 'OTP error';
-        this.code = found ? 401 : 400;
+        this.code = 400;
         this.found = found;
         this.expired = expired;
     }
@@ -25,22 +26,25 @@ class OtpError extends BaseError {
     }
 }
 
-class OtpExpiredError extends OtpError {
+class OtpNotFoundError extends OtpError {
     constructor() {
-        super('OTP has expired');
-        this.name = 'OtpExpiredError';
+        super(false);
+        this.name = 'OtpNotFoundError';
+        this.message = 'OTP not found';
+        this.code = 401;
     }
 }
 
-class OtpNotFoundError extends OtpError {
+class OtpExpiredError extends OtpError {
     constructor() {
-        super('OTP not found');
-        this.name = 'OtpNotFoundError';
+        super(true, true);
+        this.name = 'OtpExpiredError';
+        this.message = 'OTP has expired';
     }
 }
 
 module.exports = {
     OtpError,
-    OtpExpiredError,
-    OtpNotFoundError
+    OtpNotFoundError,
+    OtpExpiredError
 };

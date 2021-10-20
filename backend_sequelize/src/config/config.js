@@ -28,11 +28,12 @@ module.exports = {
     jwt: {
         secret: process.env.JWT_SECRET
     },
-    cookie:{
+    cookie: {
         secret: process.env.COOKIE_SECRET
     },
     cors: {
-        origin: '*',
+        origin: 'http://localhost:4001',
+        credentials: true,
         optionsSuccessStatus: 200
     }
 };

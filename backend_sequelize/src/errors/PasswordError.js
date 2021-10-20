@@ -1,32 +1,36 @@
 const { BaseError } = require('./BaseError');
 
 class PasswordError extends BaseError {
-    constructor(message) {
-        super(message);
+    constructor() {
+        super();
         this.name = 'PasswordError';
-        this.generic = 'Provided password is invalid';
+        this.message = 'Invalid password';
+        this.generic = 'Invalid password';
         this.code = 400;
     }
 }
 
 class RepeatPasswordError extends PasswordError {
     constructor() {
-        super('The password has been used before previously');
+        super();
         this.name = 'RepeatPasswordError';
+        this.message = 'The password has been used before previously';
     }
 }
 
 class PasswordStrengthError extends PasswordError {
     constructor() {
-        super('The password is not strong enough');
+        super();
         this.name = 'PasswordStrengthError';
+        this.message = 'The password is not strong enough';
     }
 }
 
 class WrongPasswordError extends PasswordError {
     constructor() {
-        super('The password is wrong');
+        super();
         this.name = 'WrongPasswordError';
+        this.message = 'The password is wrong';
     }
 }
 

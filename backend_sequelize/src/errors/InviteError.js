@@ -1,57 +1,47 @@
 const { BaseError } = require('./BaseError');
 
 class InviteError extends BaseError {
-    constructor(message) {
-        super(message);
+    constructor(found, expired) {
+        super();
         this.name = 'InviteError';
+        this.message = 'Invite error';
         this.generic = 'Invite error';
         this.code = 400;
+        this.found = found;
+        this.expired = expired;
+    }
+
+    toJSON() {
+        return {
+            OK: false,
+            status: this.code,
+            message: this.generic,
+            error: {
+                name: this.name,
+                message: this.message,
+                invite_found: this.found,
+                invite_expired: this.expired
+            }
+        };
     }
 }
 
 class InviteNotFoundError extends InviteError {
     constructor() {
-        super('Invite not found');
+        super(false);
         this.name = 'InviteNotFoundError';
-        this.generic = 'Invite not found';
+        this.message = 'Invite not found';
         this.code = 404;
     }
 
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                invite_found: false
-            }
-        };
-        return json;
-    }
+
 }
 
 class InviteExpiredError extends InviteError {
     constructor() {
-        super('Invite has expired');
+        super(true, true);
         this.name = 'InviteNotFoundError';
-        this.generic = 'Invite has expired';
-        this.code = 400;
-    }
-
-    toJSON() {
-        let json = {
-            OK: false,
-            status: this.code,
-            message: this.generic,
-            error: {
-                name: this.name,
-                message: this.message,
-                invite_expired: true
-            }
-        };
-        return json;
+        this.message = 'Invite has expired';
     }
 }
 
