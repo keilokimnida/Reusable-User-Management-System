@@ -5,8 +5,13 @@ const passwordController = require('../controllers/passwords');
 const { isLoggedIn } = require('../middlewares/login');
 
 // LOGIN
-router.post('/login', authController.clientLogin);
-router.post('/admin/login', authController.adminLogin);
+router.post('/login', authController.login);
+
+// REFRESH TOKEN
+router.post('/login/refresh', authController.refreshToken);
+
+// LOGOUT
+router.post('logout', authController.logout);
 
 // FORGOT PASSWORD
 router.post('/forgot-password/request', passwordController.forgotPassword);

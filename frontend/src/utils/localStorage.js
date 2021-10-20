@@ -20,9 +20,9 @@ export const setToken = (token) => localStorage.setItem("token", token);
  */
 export const clearToken = () => localStorage.removeItem("token");
 
-export const login = (data) => {
-    setToken(data.token);
-    Object.keys(data.data).forEach(key => localStorage.setItem(key, data.data[key]));
+export const login = (data = {}) => {
+    Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
+    setToken(data.access_token);
 }
 
 export const logout = () => localStorage.clear();

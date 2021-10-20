@@ -1,4 +1,4 @@
-const { findAccountByUsernameOrEmail } = require('../models/accounts');
+const { findAccountByIdentifier } = require('../models/accounts');
 
 const {
     createResetToken,
@@ -15,7 +15,7 @@ const { sendEmail, templates } = require('../utils/email');
 module.exports.forgotPassword = async (req, res, next) => {
     try {
         const { usernameOrEmail: unique } = req.body;
-        const account = await findAccountByUsernameOrEmail(unique);
+        const account = await findAccountByIdentifier(unique);
 
         const { token } = await createResetToken(account.account_id);
 
@@ -37,7 +37,7 @@ module.exports.forgotPassword = async (req, res, next) => {
 module.exports.changeForgottenPassword = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
-        if (!token) throw new E.TokenNotFound();
+        if (!token) throw new E.TokenNotFoundError();
 
         const { password: newPassword } = req.body;
         const { account_id } = validateResetToken(token);

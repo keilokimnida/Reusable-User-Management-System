@@ -35,7 +35,7 @@ const Login = () => {
     if (isRecaptchaValidated === false) return;
     
     setLoading(true);
-    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/admin/login`, values);
+    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/login`, values);
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."
@@ -43,7 +43,7 @@ const Login = () => {
       success: {
         render: ({ data: res }) => {
           setLoading(false);
-          login(res.data);
+          login(res.data.results);
           history.push("/");
           return "Logged in successfully";
         },

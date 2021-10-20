@@ -36,10 +36,20 @@ module.exports.findAccountByUsername = (username) => Accounts.findOne({
     }]
 });
 
-module.exports.findAccountByUsernameOrEmail = (unique) => Accounts.findOne({
+module.exports.findAccountByIdentifier = (identifier, password = false) => Accounts.findOne({
     where: {
-        [Op.or]: [{ username: unique }, { email: unique }]
-    }
+        [Op.or]: [
+            { account_id: identifier },
+            { username: identifier },
+            { email: identifier }
+        ]
+    },
+    include: password ? [{
+        model: Passwords,
+        as: 'passwords',
+        where: { active: true },
+        limit: 1
+    }] : []
 });
 
 module.exports.findAllAccounts = (where, include, attributes) =>

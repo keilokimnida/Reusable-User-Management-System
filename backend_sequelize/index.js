@@ -1,14 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
-const config = require('./src/config/config');
+const CONFIG = require('./src/config/config');
 const db = require('./src/config/connection');
 const mainRouter = require('./src/routes/main.routes');
 
 const app = express();
-const PORT = config.port ?? 5000;
+const PORT = CONFIG.port ?? 5000;
 
-app.use(cors(config.cors));
+app.use(cors(CONFIG.cors));
+app.use(cookieParser(CONFIG.cookie.secret));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

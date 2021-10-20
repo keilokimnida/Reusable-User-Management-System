@@ -43,7 +43,7 @@ module.exports.findAccountByID = async (req, res, next) => {
         const where = { account_id: accountID };
 
         const account = await findOneAccount(where);
-        if (!account) throw new E.AccountNotFound();
+        if (!account) throw new E.AccountNotFoundError();
 
         res.status(200).send(r.success200(account));
         return next();
@@ -95,7 +95,7 @@ module.exports.editAccount = async (req, res, next) => {
         };
 
         const account = await findOneAccount(where);
-        if (!account) throw new E.AccountNotFound();
+        if (!account) throw new E.AccountNotFoundError();
 
         let details = { firstname, lastname, email };
 

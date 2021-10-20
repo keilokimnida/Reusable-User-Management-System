@@ -20,7 +20,7 @@ module.exports.validateResetToken = async (token) => {
             where: { fk_account_id: decoded.account_id, token }
         });
 
-        if (!row) throw new E.TokenNotFound();
+        if (!row) throw new E.TokenNotFoundError();
     }
     catch (error) {
         // expired tokens should be removed from db

@@ -20,8 +20,6 @@ router.use('/documents', interestedParties);
 // we can have real central error handling if we mount this error handling middleware
 // and call next(error) instead in our middlewares/controllers
 router.use((error, req, res, next) => {
-    console.log('called here');
-    
     // check if there was already a response
     if (res.headersSent) return;
 

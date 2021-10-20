@@ -27,10 +27,10 @@ class TokenError extends BaseError {
     }
 }
 
-class TokenNotFound extends TokenError {
+class TokenNotFoundError extends TokenError {
     constructor() {
         super('The token is missing', false);
-        this.name = 'TokenNotFound';
+        this.name = 'TokenNotFoundError';
     }
 }
 
@@ -50,7 +50,7 @@ class TokenExpiredError extends TokenError {
 
 module.exports = {
     TokenError,
-    TokenNotFound,
+    TokenNotFoundError,
     TokenBrokenError,
     TokenExpiredError
 };

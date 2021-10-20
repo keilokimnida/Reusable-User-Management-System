@@ -23,4 +23,16 @@ class PasswordStrengthError extends PasswordError {
     }
 }
 
-module.exports = { PasswordError, RepeatPasswordError, PasswordStrengthError };
+class WrongPasswordError extends PasswordError {
+    constructor() {
+        super('The password is wrong');
+        this.name = 'WrongPasswordError';
+    }
+}
+
+module.exports = {
+    PasswordError,
+    RepeatPasswordError,
+    PasswordStrengthError,
+    WrongPasswordError
+};

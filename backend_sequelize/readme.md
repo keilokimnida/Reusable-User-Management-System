@@ -24,6 +24,7 @@
     NODEMIALER_PASSWORD=
 
     JWT_SECRET=superSecretJwtKey
+    COOKIE_SECRET=bestSecureCodingPractices
     ```
 
 ## Sequelize Sync

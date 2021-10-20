@@ -25,10 +25,10 @@ class AccountError extends BaseError {
     }
 }
 
-class AccountNotFound extends AccountError {
+class AccountNotFoundError extends AccountError {
     constructor() {
         super('Account not found', false);
-        this.name = 'AccountNotFound';
+        this.name = 'AccountNotFoundError';
         this.code = 404;
     }
 }
@@ -71,7 +71,7 @@ class PermissionError extends AccountError {
 module.exports = {
     AccountError,
     AccountStatusError,
-    AccountNotFound,
+    AccountNotFoundError,
     AdminError,
     PermissionError
 };
