@@ -2,6 +2,8 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { Accounts, Passwords } = require('../schemas/Schemas').User;
 
+const { ACCOUNT_STATUSES } = require('../config/enums');
+
 // ============================================================
 
 module.exports.createAccount = async (meta, avatar) => {
@@ -52,23 +54,22 @@ module.exports.findAccountByIdentifier = (identifier, password = false) => Accou
     }] : []
 });
 
-module.exports.findAllAccounts = (where, include, attributes) =>
-    Accounts.findAll({
-        where,
-        include,
-        attributes
-    });
+module.exports.findAllAccounts = ({ where, include, attributes, ...others } = {}) => Accounts.findAll({
+    where,
+    include,
+    attributes,
+    ...others
+});
 
-module.exports.findOneAccount = (where, include, attributes) =>
-    Accounts.findOne({
-        where,
-        include,
-        attributes
-    });
+module.exports.findOneAccount = ({ where, include, attributes, ...others } = {}) => Accounts.findOne({
+    where,
+    include,
+    attributes,
+    ...others
+});
 
-module.exports.lockAccount = (account) =>
-    account.update({
-        status: 'locked'
-    });
+module.exports.lockAccount = (account_id) => Accounts.update({
+    status: ACCOUNT_STATUSES.LOCKED
+}, { where: { account_id } });
 
-module.exports.updateAccount = (account, details) => account.update(details);
+module.exports.updateAccount = (account_id, details) => Accounts.update(details, { where: account_id });

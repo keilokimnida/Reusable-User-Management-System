@@ -23,24 +23,36 @@ const reset = false;
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
 // no top level await available here (only in es modules/mjs)
-(async function () {
+(async function main() {
     try {
-        // force: drop all tables and regen them
-        // alter: attempts to change tables to conform to models (doesn't always work)
+        await db.authenticate();
+        console.log('SUCCESSFULLY CONNECTED TO DB');
+
+        // force will drop all tables and recreate them
         await db.sync({ force: reset });
         console.log('SUCCESSFULLY SYNCED DB');
 
         // seeding data
         if (reset) {
-            console.log('LOADING SEEDER');
             // dynamic imports
             // should help with faster startup if not in use
-            const { seeder } = require('./database/seeder');
+            console.log('LOADING SEEDER');
+            const { seeder } = require('./src/database/seeder');
+
+            console.log('RUNNING SEEDER');
             await seeder();
+
+            console.log('FINISHED SEEDING');
         }
+
+        app.listen(PORT, (error) => error
+            ? console.log(`FAIL TO LISTEN ON PORT ${PORT}`)
+            : console.log(`LISTENING TO PORT ${PORT}`)
+        );
     }
     catch (error) {
-        console.log(error);
+        console.log('ERROR STARTING SERVER', error);
+        process.exit(1);
     }
 })();
 
@@ -49,11 +61,6 @@ const reset = false;
 // used for cleaning up the application and then shut down
 process.on('uncaughtException', (error, origin) => {
     console.log(`AN UNCAUGHT ERROR OCCURED AT ${origin}`);
-    console.log('ERROR', error);
+    console.log('THE UNCAUGHT ERROR', error);
     process.exit(1);
-});
-
-app.listen(PORT, (error) => {
-    if (error) console.log(`FAIL TO LISTEN ON PORT ${PORT}`);
-    else console.log(`LISTENING TO PORT ${PORT}`);
 });

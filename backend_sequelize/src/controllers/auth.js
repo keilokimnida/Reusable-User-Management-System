@@ -51,12 +51,11 @@ module.exports.login = async (req, res, next) => {
         // If password is not valid
         if (!valid) {
             const attempts = passwordAttempts + 1;
-
-            await updatePasswordAttempts(attempts, password_id);
+            await updatePasswordAttempts(password_id, attempts);
 
             // lock the account
             if (attempts >= 5) {
-                await lockAccount(account);
+                await lockAccount(account.account_id);
                 throw new E.AccountStatusError(ACCOUNT_STATUSES.LOCKED);
             }
 
@@ -68,7 +67,7 @@ module.exports.login = async (req, res, next) => {
 
         // reset password attempts
         // avoid unnecessary writing to database
-        if (passwordAttempts > 0) await updatePasswordAttempts(0, password_id);
+        if (passwordAttempts > 0) await updatePasswordAttempts(password_id, 0);
 
         // generate tokens
         const accessToken = jwt.sign(

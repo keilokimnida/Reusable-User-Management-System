@@ -37,13 +37,11 @@ module.exports.validateResetToken = async (token) => {
     }
 };
 
-module.exports.useResetTokens = (fk_account_id) =>
-    Otps.destroy({
-        where: { fk_account_id }
-    });
+module.exports.useResetTokens = (fk_account_id) => Otps.destroy({
+    where: { fk_account_id }
+});
 
-module.exports.updatePasswordAttempts = (attempts, password_id) =>
-    Passwords.update({ attempts }, { where: { password_id } });
+module.exports.updatePasswordAttempts = (password_id, attempts) => Passwords.update({ attempts }, { where: { password_id } });
 
 module.exports.changePassword = async (accountId, newPassword) => {
     const { passwords, ...account } = await Accounts.findByPk(accountId, {

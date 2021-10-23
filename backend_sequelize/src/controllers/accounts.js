@@ -7,8 +7,12 @@ const validator = require('validator');
 
 module.exports.createAccount = async (req, res, next) => {
     try {
-        const { username } = await createAccount(req.body);
-        res.status(201).send(r.success201({ username }));
+        // i prefer to destructure req.body as it declares what is required for this controller
+        const { firstname, lastname, username, password } = req.body;
+
+        const { username: u } = await createAccount({ firstname, lastname, username, password });
+
+        res.status(201).send(r.success201({ username: u }));
         return next();
     }
     catch (error) {
@@ -24,6 +28,7 @@ module.exports.findAllAccounts = async (req, res, next) => {
     try {
         const accounts = await findAllAccounts();
         const results = accounts.length === 0 ? undefined : accounts;
+
         res.status(200).send(r.success200(results));
         return next();
     }
@@ -40,9 +45,7 @@ module.exports.findAccountByID = async (req, res, next) => {
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', req.params.accountID, 1);
 
-        const where = { account_id: accountID };
-
-        const account = await findOneAccount(where);
+        const account = await findOneAccount({ where: { account_id: accountID } });
         if (!account) throw new E.AccountNotFoundError();
 
         res.status(200).send(r.success200(account));
@@ -85,16 +88,12 @@ module.exports.editAccount = async (req, res, next) => {
         // nobody should be manually locking an account
         if (account_status === 'locked') account_status = null;
 
-        let include = [];
+        const include = [];
 
         if (address) include.push('address');
         if (status !== null) include.push('account');
 
-        let where = {
-            account_id: accountID
-        };
-
-        const account = await findOneAccount(where);
+        const account = await findOneAccount({ where: { account_id: accountID } });
         if (!account) throw new E.AccountNotFoundError();
 
         let details = { firstname, lastname, email };
@@ -119,7 +118,7 @@ module.exports.editAccount = async (req, res, next) => {
             }
         }
 
-        await updateAccount(account, details);
+        await updateAccount(account.account_id, details);
 
         // update the address if necessary
         if (address) await account.address.update(address);
