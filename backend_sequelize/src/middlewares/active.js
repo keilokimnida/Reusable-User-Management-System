@@ -1,8 +1,8 @@
 const { findOneAccount } = require('../models/accounts');
 
-const r = require('../utils/response').responses;
-const E = require('../errors/Errors');
 const { ADMIN_LEVELS, ACCOUNT_STATUSES } = require('../config/enums');
+
+const E = require('../errors/Errors');
 
 module.exports.checkAccountStatus = async (req, res, next) => {
     try {

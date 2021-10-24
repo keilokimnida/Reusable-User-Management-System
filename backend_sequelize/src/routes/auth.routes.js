@@ -2,7 +2,7 @@ const router = require('express').Router();
 const authController = require('../controllers/auth');
 const passwordController = require('../controllers/passwords');
 
-const { isLoggedIn } = require('../middlewares/login');
+const { isLoggedIn } = require('../middlewares/auth');
 
 // LOGIN
 router.post('/login', authController.login);

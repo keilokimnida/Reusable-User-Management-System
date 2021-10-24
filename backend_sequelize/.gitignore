@@ -1,4 +1,9 @@
 .vscode
 .env
-tmp/*
 node_modules
+
+# temp files folder
+tmp/*
+
+# winston log files
+/*.log

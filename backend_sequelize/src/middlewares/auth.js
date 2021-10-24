@@ -1,9 +1,9 @@
 // this middleware is for validating a login token
 
 const jwt = require('jsonwebtoken');
+
 const { secret: jwtSecret } = require('../config/config').jwt;
 
-const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 
 module.exports.isLoggedIn = (req, res, next) => {

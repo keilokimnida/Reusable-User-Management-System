@@ -1,9 +1,9 @@
 // this middleware is for validating if the user has access to data they are trying to access
 // only admins can access all data
 
-const r = require('../utils/response').responses;
-const E = require('../errors/Errors');
 const { ADMIN_LEVELS } = require('../config/enums');
+
+const E = require('../errors/Errors');
 
 // only super admin can access
 module.exports.onlySuperAdminAccess = (req, res, next) => {
