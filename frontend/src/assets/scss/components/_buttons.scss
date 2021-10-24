@@ -7,6 +7,31 @@
     padding: 9px 23px;
     height: fit-content;
     white-space: nowrap;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    cursor: pointer;
+
+    &--stripe-purple {
+        color: white;
+        background-color: $stripe-purple;
+        border: 1px solid $stripe-purple;
+    }
+
+    &--stripe-purple-link {
+        color: $stripe-purple;
+        background-color: transparent;
+        border: 1px solid transparent;
+    }
+
+    &--stripe-purple-outlined {
+        background-color: white;
+        border: 1px solid $stripe-purple;
+        color:  $stripe-purple;
+    }
 
     &--alert {
         color: white;

@@ -67,7 +67,7 @@ const ManageUser = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout title = "Manage Account">
       {firstLoading
         ? <Loading />
         : error

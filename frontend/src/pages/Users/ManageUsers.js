@@ -60,7 +60,7 @@ const ManageUsers = () => {
   }];
 
   return (
-    <PageLayout>
+    <PageLayout title = "Manage Users">
       {firstLoading
         ? <Loading />
         : error

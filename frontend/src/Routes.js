@@ -7,10 +7,12 @@ import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ChangePassword from './pages/ForgotPassword/ChangePassword';
 import CreateAccount from './pages/CreateAccount';
 
-import Home from './pages/Home';
-import Account from './pages/Account';
 import ManageUsers from './pages/Users/ManageUsers';
 import ManagerUser from './pages/Users/ManageUser';
+
+import Account from './pages/Account';
+import Home from './pages/Home';
+import Plans from './pages/Plans';
 
 // this dummy is here so its more consistent
 // anecdote: i forgot to return JSX in render={} and only called the component 
@@ -38,11 +40,15 @@ const Routes = () => {
         {/* <Route path="/change-password/:username/:otp" render={(props) => <ChangePassword {...props} />} />
         <Route path="/create-account" render={(props) => <CreateAccount {...props} />} /> */}
 
-
+        {/* Home */}
         <Route exact path="/home" render={props => authGuard(Home)(props)} />
         <Route exact path="/" >
           <Redirect to="/home" />
         </Route>
+
+        {/* Plans */}
+        <Route path = "/plans" render={(props) => dummy(Plans)(props)} />
+        <Route path = "/checkout/:type" render={(props) => authGuard(Plans)(props)} />
 
         {/* User account settings */}
         <Route exact path="/me" render={props => authGuard(Account)(props)} />

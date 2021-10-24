@@ -14,9 +14,18 @@ import TOAST_CONFIG from './config/toastConfig';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 
+// Stripe elements
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import STRIPE_CONFIG from './config/stripeConfig';
+
+const stripePKTest = STRIPE_CONFIG.stripePKTest;
+const promise = loadStripe(stripePKTest);
+
 const App = () => {
   return (
-    <>
+    // Elements is here so that every React page can use Stripe elements
+    <Elements stripe={promise}>
       {/* The toast container is here so it is present through all interfaces */}
       <ToastContainer
         position="bottom-left"
@@ -29,11 +38,10 @@ const App = () => {
         draggable
         pauseOnHover
       />
-
       <ErrorBoundary fallbackRender={Fallback}>
         <Routes />
       </ErrorBoundary>
-    </>
+    </Elements>
   );
 }
 

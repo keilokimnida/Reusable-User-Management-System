@@ -32,7 +32,7 @@ const Home = () => {
   const dashboardItems = ["a", "b", "c", "d", "e", "f"];
 
   return (
-    <PageLayout>
+    <PageLayout title = "Home">
       {({ nav, setNav, toggleNav }) => (
         <div className="c-Home">
           <h1>User Management System</h1>

@@ -18,7 +18,7 @@ const ManageUser = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout title = "Manage User">
       <h1>User ID {userId}</h1>
       <Button onClick={handleClick}>Summon Toast {count}</Button>
       <hr />
