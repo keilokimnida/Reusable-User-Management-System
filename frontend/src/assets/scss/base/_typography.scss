@@ -1,15 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+// Font styles
+$font-family:  Calibri, Candara, Segoe, Segoe UI, Arial, sans-serif !important;
+$font-large: 34px;
+$font-medium: 21px;
+$font-small: 16px;
+
 html * {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: $font-family;
 }
 
 code, pre {
   font-family: 'Roboto Mono', monospace !important;
 }
-
-// Font styles
-$font-family: 'Roboto', sans-serif !important;
-$font-large: 34px;
-$font-medium: 21px;
-$font-small: 16px;

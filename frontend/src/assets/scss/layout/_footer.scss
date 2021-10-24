@@ -2,7 +2,8 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: aliceblue;
+  background-color: $stripe-purple;
+  color: white;
   flex-direction: column;
   padding: 20px 0;
   margin-bottom: 0;

@@ -19,8 +19,8 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
       className={`c-List-item`}
     >
       {sub
-        ? <div className="c-List-item__Indent">{name}</div>
-        : name
+        ? <h3 className="c-List-item__Indent">{name}</h3>
+        : <h2>{name}</h2>
       }
     </div>
   );
@@ -35,8 +35,8 @@ const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
       className={`c-List-item`}
     >
       {sub
-        ? <div className="c-List-item__Indent">{name}</div>
-        : name
+        ? <h3 className="c-List-item__Indent">{name}</h3>
+        : <h2>{name}</h2>
       }
     </Link>
   );
@@ -51,7 +51,7 @@ const NavList = ({ name, sub: items, setNav }) => {
         onClick={() => setCollapsed(!collapsed)}
       >
         {collapsed ? <CaretRightFill /> : <CaretDownFill />}
-        {name}
+        <span>{name}</span>
       </div >
 
       {collapsed

@@ -8,6 +8,10 @@ const NAV_LIST = [
         route: "/users"
     },
     {
+        name: "Plans",
+        route: "/plans"
+    },
+    {
         name: "Settings",
         sub: [
             {

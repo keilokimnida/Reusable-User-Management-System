@@ -15,11 +15,17 @@
 @import "components/avatar";
 @import "components/breadcrumb";
 @import "components/buttons";
+@import "components/checkout-success";
 @import "components/dashboard-bento-box";
+@import "components/error";
+@import "components/loading";
 @import "components/confirm-alert";
 @import "components/page-not-found";
+@import "components/plans-card";
 @import "components/scrollbar";
+@import "components/select-payment-method";
 @import "components/settings-bento-box";
+@import "components/setup-payment-method";
 
 // Layout styles
 @import "layout/header";
@@ -29,7 +35,9 @@
 // @import "layout/table";
 
 // Pages styles
-@import "pages/login";
 @import "pages/account";
-@import "pages/home";
+@import "pages/checkout";
 @import "pages/forgot-password";
+@import "pages/home";
+@import "pages/login";
+@import "pages/plans";

@@ -1,6 +1,6 @@
 .l-Main {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
   /* define the number of rows and columns in the grid */
   /* there are 2 rows, where the first is 64px tall and the second fills the rest */
@@ -58,6 +58,7 @@
         main {
           padding: 16px;
           flex-grow: 1;
+          min-height: calc(100vh - 64px);
         }
 
         footer {

@@ -3,21 +3,27 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: rgb(247, 247, 247);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  background-color: rgba(255, 255, 255, 0.72);
   height: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 999;
 
   &__Left {
     display: flex;
     flex-direction: row;
     button {
-      background-color: black;
+      background-color: $stripe-primary;
       display: flex;
       height: fit-content;
       justify-content: center;
       align-items: center;
 
       &:active, &:hover, &:visited, &:focus {
-        background-color: black;
+        background-color: $stripe-primary;
       }
 
     }
@@ -28,6 +34,9 @@
       align-items: center;
       h2 {
         margin-bottom: 0;
+        font-weight: bold;
+        font-size: $font-large;
+        color: $stripe-primary;
       }
     }
 

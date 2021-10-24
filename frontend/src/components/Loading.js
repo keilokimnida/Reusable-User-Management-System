@@ -1,10 +1,13 @@
+import React from 'react'
 import Spinner from 'react-bootstrap/Spinner';
-import styles from './Loading.module.css';
 
-const Loading = () => (
-  <div className={styles.container}>
-    <Spinner animation="border" />
-  </div>
-);
+const Loading = () => {
+    return (
+        <div className="c-Loading">
+            <Spinner animation="border" role="status" variant="secondary"/>
+            <p>Loading</p>
+        </div>
+    );
+};
 
 export default Loading;

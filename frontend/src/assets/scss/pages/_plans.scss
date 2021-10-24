@@ -1,0 +1,27 @@
+.c-Plans {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+    margin: auto;
+    flex-direction: column;
+    min-height: calc(100vh - 60px);
+
+    &__Top {
+        .c-Plans {
+            &__Heading {
+                color: $stripe-text-dark;
+                font-weight: bolder;
+            }
+        }
+        p {
+            text-align: center;
+        }
+    }
+
+    &__Cards {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+    }
+}

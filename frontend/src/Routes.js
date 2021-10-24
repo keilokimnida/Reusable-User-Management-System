@@ -11,6 +11,7 @@ import ManageUsers from './pages/Users/ManageUsers';
 import ManagerUser from './pages/Users/ManageUser';
 
 import Account from './pages/Account';
+import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Plans from './pages/Plans';
 
@@ -47,8 +48,8 @@ const Routes = () => {
         </Route>
 
         {/* Plans */}
-        <Route path = "/plans" render={(props) => dummy(Plans)(props)} />
-        <Route path = "/checkout/:type" render={(props) => authGuard(Plans)(props)} />
+        <Route exact path = "/plans" render={(props) => dummy(Plans)(props)} />
+        <Route path = "/plans/payment/:type" render={(props) => authGuard(Checkout)(props)} />
 
         {/* User account settings */}
         <Route exact path="/me" render={props => authGuard(Account)(props)} />

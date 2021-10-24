@@ -1,10 +1,11 @@
-import styles from './Error.module.css';
-import { ExclamationSquare } from 'react-bootstrap-icons';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-const Error = ({ error }) => (
-  <div className={styles.container}>
-    <ExclamationSquare size={36} />
-    <p className="text-center">An error has occured</p>
+const Error = ({ heading, description, displayLink, link }) => (
+  <div className="c-Error">
+    <h1>{heading ? heading : "Something went Wrong!"}</h1>
+    <p>{description ? description : "Try again later."}</p>
+    <NavLink to={link ? link : "/home"}>{displayLink ? displayLink : "Go to Home"}</NavLink>
   </div>
 );
 
