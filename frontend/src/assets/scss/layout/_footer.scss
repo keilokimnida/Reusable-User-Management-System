@@ -2,12 +2,68 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: $stripe-purple;
+  background-color: $stripe-secondary;
   color: white;
   flex-direction: column;
   padding: 20px 0;
   margin-bottom: 0;
-  p {
-    margin-bottom: 0;
+  width: 100%;
+
+  .c-Footer {
+    display: flex;
+    width: 75%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    &__Top {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      h1 {
+        font-size: $font-medium;
+        font-weight: bold;
+      }
+    }
+
+    hr {
+      margin: 20px 0;
+      border-top: none;
+      border-right: none;
+      border-left: none;
+      border-image: initial;
+      border-bottom: 1px solid rgb(255, 255, 255);
+      width: 100%;
+    }
+
+    .c-Bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      &__Left {
+        display: flex;
+        flex-direction: row;
+
+      }
+
+      &__Right {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        img {
+          margin-right: 10px;
+          width: 25px;
+          border-radius: 2px;
+        }
+      }
+    }
+
+
   }
+
 }

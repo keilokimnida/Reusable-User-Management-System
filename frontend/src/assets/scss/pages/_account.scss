@@ -1,10 +1,323 @@
 .c-Account {
-    &__Heading {
-        font-size: $font-large;
+
+    // General styles
+    &__Section {
+        margin-top: 50px;
+
+        .c-Account__Heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .c-Heading__Text {
+                width: 100%;
+
+                h1 {
+                    color: $stripe-text-dark;
+                    font-weight: bold;
+                    font-size: $font-large;
+                }
+
+                p {
+                    width: 100%;
+                    color: $stripe-text-dark;
+                    font-size: $font-small;
+                }
+            }
+
+            h1 {
+                width: 100%;
+                color: $stripe-text-dark;
+                font-weight: bold;
+                font-size: $font-large;
+            }
+
+            .c-Heading__Btn {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+
+                button {
+                    cursor: pointer;
+                    box-shadow: none;
+                    background-color: $stripe-purple;
+                    color: white;
+
+                    &:hover {
+                        opacity: 0.9;
+                    }
+
+                    &:active {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+
+        hr {
+            opacity: 0.7;
+        }
+
+        .c-SVG__Visa {
+            svg {
+                width: 30.799px;
+                height: 10px;
+            }
+        }
+
+        .c-SVG__Master {
+            svg {
+                width: 30.799px;
+                height: 21.8px;
+            }
+        }
+
+        .c-SVG__Amex {
+            svg {
+                width: 35px;
+                height: 35px;
+            }
+        }
     }
 
-    &__Description {
-        font-size: $font-small;
+    &__Payment-method {
+
+        .c-Account__Credit-card {
+            width: 100%;
+            display: inline-flex;
+            flex-direction: row;
+            overflow-y: auto;
+        }
+
+        .c-Account__Payment-method-table {
+            p {
+                color: $anchor-enabled;
+                font-weight: 600;
+                font-size: $font-small;
+                cursor: pointer;
+
+                &:hover {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+
+    &__Subscription {
+        margin: 50px 0;
+
+        h1 {
+            color: $stripe-text-dark;
+            font-weight: bold;
+            font-size: $font-large;
+        }
+        ::-webkit-scrollbar {
+            width: 20px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d6dee1;
+            border-radius: 20px;
+            border: 6px solid transparent;
+            background-clip: content-box;
+
+            &:hover {
+                background-color: #a8bbbf;
+            }
+        }
+
+        .l-Subscription__Info {
+
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            overflow-x: auto;
+            h2 {
+                font-size: $font-small;
+                color:rgb(0, 0, 0);
+            }
+            .c-Info {
+                display: flex;
+                margin: 20px 0;
+                max-width: 800px;
+                min-width: 500px;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                overflow-x: auto;
+                &__Card {
+                    border-radius: 5px;
+                    padding: 30px;
+                    width: 250px;
+                    border: 0.01px solid #6b6b6b;
+                    height: 100%;
+                    min-height: 235.6px;
+                    display: flex;
+                    justify-content: center;
+                    flex-direction: column;
+
+                    h2 {
+                        font-size: $font-small;
+                        color:rgb(0, 0, 0);
+                    }
+
+                    h3 {
+                        font-size: $font-large;
+                        color:$stripe-primary;
+                        font-weight: bold;
+                    }
+
+                    .c-Info__Card-chip {
+                        margin-top: 10px;
+                    }
+
+                }
+    
+                &__Btns {
+                    display: flex;
+                    flex-direction: column;
+                    a {
+                        margin-bottom: 10px;
+                        text-align: center;
+                        color: white;
+                    }
+                    button {
+                        margin-bottom: 10px;
+                    }
+                }
+            }
+        }
+
+        .l-Subscription__No-subscription {
+            margin-bottom: 20px;
+        }
+
+        .l-Subscription__Payment-method {
+            overflow-x: auto;
+            .c-Payment-method {
+                display: flex;
+                margin: 20px 0;
+                max-width: 800px;
+                min-width: 450px;
+                width: 100%;
+                flex-direction: column;
+     
+                &__Top {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                    .c-Payment-method__Left {
+                        display: flex;
+                        flex-direction: column;
+                        .c-SVG__Visa {
+                            svg {
+                                width: 30.799px;
+                                height: 10px;
+                            }
+                        }
+                
+                        .c-SVG__Master {
+                            svg {
+                                width: 30.799px;
+                                height: 21.8px;
+                            }
+                        }
+                
+                        .c-SVG__Amex {
+                            svg {
+                                width: 35px;
+                                height: 35px;
+                            }
+                        }
+        
+                        .c-Left__Info {
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+        
+                            p {
+                                margin-left: 20px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+        
+                    .c-Payment-method__Right {
+        
+                    }
+                }
+
+                &__Change {
+                    h1 {
+                        font-size: $font-small;
+                    }
+                    max-width: 450px;
+                    min-width: 450px;
+                    width: 100%;
+                    margin: 20px 0;
+
+                    .c-Change {
+                        &__Payment-methods {
+                            margin: 10px 0;
+                        }
+
+                        &__Btns {
+                            margin: 10px 0;
+                        }
+                    }
+                }
+    
+            }
+    
+        }
+
+        .c-Billing-history {
+            &__Warning {
+                max-width: 800px;
+            }
+            &__Table {
+
+                .c-SVG__Visa {
+                    svg {
+                        width: 30.799px;
+                        height: 10px;
+                    }
+                }
+        
+                .c-SVG__Master {
+                    svg {
+                        width: 30.799px;
+                        height: 21.8px;
+                    }
+                }
+        
+                .c-SVG__Amex {
+                    svg {
+                        width: 35px;
+                        height: 35px;
+                    }
+                }
+            }
+
+        }
+
+
+        hr {
+            opacity: 0.7;
+        }
+        h2 {
+            color: $stripe-text-dark;
+            font-weight: bold;
+            font-size: $font-medium;
+        }
     }
 
     &__Form {
@@ -12,7 +325,7 @@
 
             &__Heading {
                 font-size: $font-medium;
-                font-weight: 100px;
+                font-weight: bold;
             }
             &__Col {
                 margin-bottom: 10px;
