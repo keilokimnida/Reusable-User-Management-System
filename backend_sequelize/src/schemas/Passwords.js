@@ -13,7 +13,6 @@ const Passwords = db.define(
         },
         fk_account_id: {
             type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             references: {
                 model: Accounts,
@@ -63,7 +62,6 @@ const Otps = db.define(
         },
         fk_account_id: {
             type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             references: {
                 model: Accounts,
