@@ -5,9 +5,9 @@ const Accounts = db.define(
     'Accounts',
     {
         account_id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
+            type: DataTypes.INTEGER.UNSIGNED,
+            primaryKey: true,
+            autoIncrement: true
         },
         firstname: {
             type: DataTypes.STRING(255),
