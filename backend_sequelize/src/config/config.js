@@ -35,5 +35,10 @@ module.exports = {
         origin: 'http://localhost:4001',
         credentials: true,
         optionsSuccessStatus: 200
+    },
+    aws: {
+        region: process.env.AWS_DEFAULT_REGION,
+        accessKeyId: process.env.AWS_ACESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }
 };
