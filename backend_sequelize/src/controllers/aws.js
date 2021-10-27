@@ -6,9 +6,9 @@ const E = require('../errors/Errors');
 const config = require('../config/config.js');
 
 AWS.config.update({
-    region: 'us-east-2',
-    accessKeyId: 'AKIAYPUAL4JFLUKRKKJG',
-    secretAccessKey: '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'
+    region: config.region,
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey
 });
 
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
