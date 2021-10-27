@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1', mainRouter);
 
 // setting this to true will drop all tables and seed new data
-const reset = true;
+const reset = false;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
