@@ -41,6 +41,7 @@ module.exports.processAddCustomer = async (req, res, next) => {
     console.log(items);
     const params = {
         TableName: TABLE_NAME,
+        //Key in data in the new JSON Dynamo format
         Item: items
     };
 
