@@ -6,9 +6,9 @@ const {
     lockAccount
 } = require('../models/accounts');
 
-const { updatePasswordAttempts } = require('../models/passwords');
+const { updatePasswordAttempts } = require('../models/password');
 
-const { ACCOUNT_STATUSES } = require('../config/enums');
+const { ACCOUNT_STATUS } = require('../config/enums');
 
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
@@ -39,11 +39,11 @@ module.exports.login = async (req, res, next) => {
 
         // if the account is locked or
         // the password has been attempted for more than 5 times
-        if (account.status === ACCOUNT_STATUSES.LOCKED || passwordAttempts > 5)
-            throw new E.AccountStatusError(ACCOUNT_STATUSES.LOCKED);
+        if (account.status === ACCOUNT_STATUS.LOCKED || passwordAttempts > 5)
+            throw new E.AccountStatusError(ACCOUNT_STATUS.LOCKED);
 
-        if (account.status === ACCOUNT_STATUSES.DEACTIVATED)
-            throw new E.AccountStatusError(ACCOUNT_STATUSES.DEACTIVATED);
+        if (account.status === ACCOUNT_STATUS.DEACTIVATED)
+            throw new E.AccountStatusError(ACCOUNT_STATUS.DEACTIVATED);
 
         // Check if password is correct
         const valid = bcrypt.compareSync(password, hash);
@@ -56,7 +56,7 @@ module.exports.login = async (req, res, next) => {
             // lock the account
             if (attempts >= 5) {
                 await lockAccount(account.account_id);
-                throw new E.AccountStatusError(ACCOUNT_STATUSES.LOCKED);
+                throw new E.AccountStatusError(ACCOUNT_STATUS.LOCKED);
             }
 
             // incorrect password but less than 5 password attempts

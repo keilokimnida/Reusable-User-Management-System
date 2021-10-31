@@ -11,6 +11,10 @@ const PORT = CONFIG.port ?? 5000;
 
 app.use(cors(CONFIG.cors));
 app.use(cookieParser(CONFIG.cookie.secret));
+
+// exclude parsing of request body on this specific route
+app.use('/api/v1/webhooks/stripe', express.raw({ type: '*/*' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,7 +22,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1', mainRouter);
 
 // setting this to true will drop all tables and seed new data
-const reset = true;
+// if you use "node . R" it will set reset to true
+// the dot just means current directory
+// or just set the RHS boolean
+const reset = process.argv[2] === 'R' || false;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
@@ -45,10 +52,13 @@ const reset = true;
             console.log('FINISHED SEEDING');
         }
 
-        app.listen(PORT, (error) => error
-            ? console.log(`FAIL TO LISTEN ON PORT ${PORT}`)
-            : console.log(`LISTENING TO PORT ${PORT}`)
-        );
+        app.listen(PORT, (error) => {
+            if (error) {
+                console.log(`FAIL TO LISTEN ON PORT ${PORT}`);
+                process.exit(1);
+            }
+            console.log(`LISTENING TO PORT ${PORT}`);
+        });
     }
     catch (error) {
         console.log('ERROR STARTING SERVER', error);

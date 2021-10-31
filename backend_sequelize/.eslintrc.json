@@ -10,27 +10,32 @@
     },
     "rules": {
         "quotes": [
-            "error",
+            "warn",
             "single"
         ],
         "indent": [
-            "error",
-            4
+            "warn",
+            4,
+            {
+                "SwitchCase": 1
+            }
         ],
         "semi": [
             "error",
             "always"
         ],
         "comma-dangle": [
-            "error",
+            "warn",
             "never"
         ],
         "brace-style": [
             "error",
             "stroustrup"
         ],
+        "eqeqeq": "warn",
         "no-unused-vars": "warn",
         "arrow-parens": "warn",
+        "prefer-const": "warn",
         "eol-last": "warn"
     }
 }

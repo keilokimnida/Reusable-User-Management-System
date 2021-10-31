@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth');
-const passwordController = require('../controllers/passwords');
+const passwordController = require('../controllers/password');
 
 const { isLoggedIn } = require('../middlewares/auth');
 
@@ -8,12 +8,12 @@ const { isLoggedIn } = require('../middlewares/auth');
 router.post('/login', authController.login);
 
 // REFRESH TOKEN
-router.post('/login/refresh', authController.refreshToken);
+router.post('/refresh', authController.refreshToken);
 
 router.get('/read-cookie', authController.readSecureCookies);
 
 // LOGOUT
-router.post('logout', authController.logout);
+router.post('/logout', authController.logout);
 
 // FORGOT PASSWORD
 router.post('/forgot-password/request', passwordController.forgotPassword);

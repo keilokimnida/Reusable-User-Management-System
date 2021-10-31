@@ -1,3 +1,5 @@
+const { ACCOUNT_STATUS } = require('../config/enums');
+
 const { DataTypes } = require('sequelize');
 const db = require('../config/connection');
 
@@ -5,9 +7,13 @@ const Accounts = db.define(
     'Accounts',
     {
         account_id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        account_uuid: {
             type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
+            defaultValue: DataTypes.UUIDV4
         },
         firstname: {
             type: DataTypes.STRING(255),
@@ -28,21 +34,39 @@ const Accounts = db.define(
             unique: true
         },
         status: {
-            // active is the default state for the account
-            // locked is when the password is invalidated
-            // deactivated is when the account is closed, but the associated account is not deleted for record tracking purposes
-            type: DataTypes.ENUM(['active', 'locked', 'deactivated']),
+            type: DataTypes.ENUM(Object.values(ACCOUNT_STATUS)),
             allowNull: false,
             defaultValue: 'active'
         },
         admin_level: {
-            // the admin level the accounts has
-            // 0 -> normal (Cannot manage system)
-            // 1 -> super admin (Manage system, admin users, and normal users)
-            // 2 -> admin (manage normal users)
+            // see config/enums.js
             type: DataTypes.TINYINT.UNSIGNED,
             allowNull: false,
             defaultValue: 0
+        },
+        // Stripe
+        has_trialed: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        },
+        balance: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: true
+        },
+        stripe_customer_id: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            unique: true
+        },
+        stripe_payment_intent_id: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: true
+        },
+        stripe_payment_intent_client_secret: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: true
         }
     },
     {

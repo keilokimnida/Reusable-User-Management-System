@@ -17,12 +17,12 @@ const logger = createLogger({
 const convertToLiteral = (e) => ({ name: e.name, message: e.message, stack: e.stack });
 
 module.exports.accessLogger = (req, res, next) => {
-    const log = {
+    const log = JSON.stringify({
         ip: req.ip,
         url: req.originalUrl
-    };
+    });
 
-    logger.info(JSON.stringify(log));
+    logger.info(log);
     return next();
 };
 

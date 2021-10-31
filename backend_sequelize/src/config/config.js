@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-    port: process.env.PORT,
+    port: process.env.PORT || 8000,
     db: {
         host: process.env.DB_HOST,
         name: process.env.DB_NAME,
@@ -20,7 +20,13 @@ module.exports = {
         cloudName: process.env.CLOUDINARY_CLOUD_NAME,
         apiKey: process.env.CLOUDINARY_API_KEY,
         apiSecret: process.env.CLOUDINARY_API_SECRET,
-        baseFolderPath: process.env.CLOUDINARY_BASE_FOLDER_PATH ?? 'User Management System'
+        baseFolderPath: process.env.CLOUDINARY_BASE_FOLDER_PATH || 'User Management System'
+    },
+    stripe: {
+        test: {
+            secretKey: process.env.STRIPE_TEST_SK,
+            webhookSecret: process.env.STRIPE_TEST_WEBHOOK_SECRET
+        }
     },
     frontend: {
         baseUrl: 'http://localhost:4001'

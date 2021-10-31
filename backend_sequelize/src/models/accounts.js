@@ -1,22 +1,27 @@
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
-const { Accounts, Passwords } = require('../schemas/Schemas').User;
+const { Accounts, Passwords, PaymentMethods } = require('../schemas/Schemas').User;
 
-const { ACCOUNT_STATUSES } = require('../config/enums');
+const { ACCOUNT_STATUS } = require('../config/enums');
 
 // ============================================================
 
 module.exports.createAccount = async (meta, avatar) => {
-    let { firstname, lastname, username, password } = meta;
+    const {
+        firstname, lastname, username, email, password,
+        stripe_customer_id
+    } = meta;
 
     const hash = bcrypt.hashSync(password, 10);
 
-    let newAccount = await Accounts.create({
-        firstname,
-        lastname,
-        username,
+    const newAccount = await Accounts.create({
+        firstname, lastname, username, email,
         status: 'active',
-        passwords: [{ password: hash }]
+        passwords: [{ password: hash }],
+        // stripe
+        has_trialed: false,
+        balance: 0,
+        stripe_customer_id
     }, { include: 'passwords' });
 
     if (avatar) {
@@ -54,22 +59,37 @@ module.exports.findAccountByIdentifier = (identifier, password = false) => Accou
     }] : []
 });
 
-module.exports.findAllAccounts = ({ where, include, attributes, ...others } = {}) => Accounts.findAll({
-    where,
-    include,
-    attributes,
-    ...others
-});
+module.exports.findAllAccounts = ({ where, include, attributes, ...others } = {}) =>
+    Accounts.findAll({
+        where,
+        include,
+        attributes,
+        ...others
+    });
 
-module.exports.findOneAccount = ({ where, include, attributes, ...others } = {}) => Accounts.findOne({
-    where,
-    include,
-    attributes,
-    ...others
-});
+module.exports.findOneAccount = ({ where, include, attributes, ...others } = {}) =>
+    Accounts.findOne({
+        where,
+        include,
+        attributes,
+        ...others
+    });
 
-module.exports.lockAccount = (account_id) => Accounts.update({
-    status: ACCOUNT_STATUSES.LOCKED
-}, { where: { account_id } });
+module.exports.findAccountByStripeCustID = (stripeCustomerID) =>
+    Accounts.findOne({
+        where: {
+            stripe_customer_id: stripeCustomerID
+        },
+        include: [{
+            model: PaymentMethods,
+            as: 'payment_accounts'
+        }]
+    });
 
-module.exports.updateAccount = (account_id, details) => Accounts.update(details, { where: account_id });
+module.exports.lockAccount = (account_id) =>
+    Accounts.update({
+        status: ACCOUNT_STATUS.LOCKED
+    }, { where: { account_id } });
+
+module.exports.updateAccount = (account_id, details) =>
+    Accounts.update(details, { where: account_id });

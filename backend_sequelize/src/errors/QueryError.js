@@ -11,10 +11,10 @@ class QueryError extends BaseError {
 }
 
 class NotFoundError extends QueryError {
-    constructor() {
+    constructor(item) {
         super();
         this.name = 'NotFoundError';
-        this.message = 'Not found';
+        this.message = item ? `Cannot find ${item}` : 'Not found';
         this.code = 404;
     }
 }

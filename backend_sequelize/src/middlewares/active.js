@@ -1,6 +1,6 @@
 const { findOneAccount } = require('../models/accounts');
 
-const { ADMIN_LEVELS, ACCOUNT_STATUSES } = require('../config/enums');
+const { ADMIN_LEVEL, ACCOUNT_STATUS } = require('../config/enums');
 
 const E = require('../errors/Errors');
 
@@ -11,7 +11,7 @@ module.exports.checkAccountStatus = async (req, res, next) => {
         } = res.locals.auth;
 
         // super admin can bypass this check
-        if (admin_level === ADMIN_LEVELS.SUPER_ADMIN) return next();
+        if (admin_level === ADMIN_LEVEL.SUPER_ADMIN) return next();
 
         const search = {
             where: { account_id },
@@ -21,7 +21,7 @@ module.exports.checkAccountStatus = async (req, res, next) => {
         const account = await findOneAccount(search);
 
         // check if account is active
-        if (account.status !== ACCOUNT_STATUSES.ACTIVE)
+        if (account.status !== ACCOUNT_STATUS.ACTIVE)
             throw E.AccountStatusError(account.status);
 
         return next();

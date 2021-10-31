@@ -5,7 +5,7 @@ const {
     validateResetToken,
     useResetTokens,
     changePassword
-} = require('../models/passwords');
+} = require('../models/password');
 
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');

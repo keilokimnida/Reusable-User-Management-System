@@ -1,5 +1,13 @@
-const { findAllAccounts, findOneAccount, updateAccount } = require('../models/accounts');
-const { createAccount } = require('../models/accounts');
+const {
+    findAllAccounts,
+    findOneAccount,
+    createAccount,
+    updateAccount
+} = require('../models/accounts');
+
+const { findActiveSubscription } = require('../models/subscription');
+const { createStripeCustomer, updateStripeCustomer } = require('../services/stripe');
+
 
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
@@ -8,9 +16,15 @@ const validator = require('validator');
 module.exports.createAccount = async (req, res, next) => {
     try {
         // i prefer to destructure req.body as it declares what is required for this controller
-        const { firstname, lastname, username, password } = req.body;
+        const { firstname, lastname, username, email, password } = req.body;
 
-        const { username: u } = await createAccount({ firstname, lastname, username, password });
+        // stripe customer
+        const customer = await createStripeCustomer(email, username);
+
+        const { username: u } = await createAccount({
+            firstname, lastname, username, email, password,
+            stripe_customer_id: customer.id
+        });
 
         res.status(201).send(r.success201({ username: u }));
         return next();
@@ -48,7 +62,9 @@ module.exports.findAccountByID = async (req, res, next) => {
         const account = await findOneAccount({ where: { account_id: accountID } });
         if (!account) throw new E.AccountNotFoundError();
 
-        res.status(200).send(r.success200(account));
+        const active_subscription = await findActiveSubscription(accountID);
+
+        res.status(200).send(r.success200({ ...account, active_subscription }));
         return next();
     }
     catch (error) {
@@ -77,12 +93,11 @@ module.exports.editAccount = async (req, res, next) => {
         let {
             firstname,
             lastname,
-            title,
+            username,
             email,
             status,
             admin_level = null,
-            account_status = null,
-            address = null
+            account_status = null
         } = req.body;
 
         // nobody should be manually locking an account
@@ -90,7 +105,6 @@ module.exports.editAccount = async (req, res, next) => {
 
         const include = [];
 
-        if (address) include.push('address');
         if (status !== null) include.push('account');
 
         const account = await findOneAccount({ where: { account_id: accountID } });
@@ -100,7 +114,6 @@ module.exports.editAccount = async (req, res, next) => {
 
         // as an admin...
         if (decoded.admin_level === 2) {
-            details.title = title;
             details.status = status;
 
             // dont allow admin to change their own admin_level
@@ -110,9 +123,11 @@ module.exports.editAccount = async (req, res, next) => {
                     admin_level = parseInt(admin_level);
                     if (isNaN(admin_level))
                         throw new E.ParamTypeError('admin_level', admin_level, 1);
+
                     // if (admin_level === 1 || admin_level === 2) return res.status(400).send(r.error400({
                     //     message: "\"admin_level\" invalid value"
                     // }));
+
                     details.admin_level = admin_level;
                 }
             }
@@ -120,8 +135,15 @@ module.exports.editAccount = async (req, res, next) => {
 
         await updateAccount(account.account_id, details);
 
-        // update the address if necessary
-        if (address) await account.address.update(address);
+        if (email) {
+            // Update email in Stripe
+            await updateStripeCustomer(account.stripe_customer_id, { email });
+        }
+
+        if (username) {
+            // Update username in Stripe
+            await updateStripeCustomer(account.stripe_customer_id, { name: username });
+        }
 
         // update the account status only when its necessary
         if (account_status !== null) {

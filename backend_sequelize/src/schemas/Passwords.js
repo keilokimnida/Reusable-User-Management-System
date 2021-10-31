@@ -12,7 +12,7 @@ const Passwords = db.define(
             autoIncrement: true
         },
         fk_account_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
             references: {
                 model: Accounts,
@@ -61,7 +61,7 @@ const Otps = db.define(
             autoIncrement: true
         },
         fk_account_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
             references: {
                 model: Accounts,

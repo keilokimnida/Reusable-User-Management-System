@@ -6,7 +6,10 @@ const { isLoggedIn } = require('../middlewares/auth');
 const { checkAccountStatus } = require('../middlewares/active');
 
 // CREATE ACCOUNT
-router.post('/account', accountsController.createAccount);
+router.post(
+    '/account',
+    accountsController.createAccount
+);
 
 router.get(
     '/account/:accountID',
