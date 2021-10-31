@@ -4,9 +4,11 @@ const auth = require('./auth.routes');
 const users = require('./users.routes');
 const admin = require('./admin.routes');
 const stripe = require('./stripe.routes');
+const aws = require('./aws.routes');
 
 const { accessLogger, errorLogger } = require('../middlewares/logging');
 const { errorHandler } = require('../middlewares/errorHandler');
+const { route } = require('./auth.routes');
 
 router.use(accessLogger);
 
@@ -22,6 +24,7 @@ router.get('/boom', (req, res, next) => {
 router.use('/auth', auth);
 router.use('/users', users);
 router.use('/admin', admin);
+router.use('/aws', aws);
 router.use(stripe);
 
 router.use(errorLogger);
