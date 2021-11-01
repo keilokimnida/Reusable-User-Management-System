@@ -25,7 +25,7 @@ app.use('/api/v1', mainRouter);
 // if you use "node . R" it will set reset to true
 // the dot just means current directory
 // or just set the RHS boolean
-const reset = process.argv[2] === 'R' || true;
+const reset = process.argv[2] === 'R' || false;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
