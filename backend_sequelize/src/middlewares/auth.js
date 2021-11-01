@@ -5,8 +5,9 @@ const jwt = require('jsonwebtoken');
 const { secret: jwtSecret } = require('../config/config').jwt;
 
 const E = require('../errors/Errors');
+const { findAccountByIdentifier } = require('../models/accounts');
 
-module.exports.isLoggedIn = (req, res, next) => {
+module.exports.isLoggedIn = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) throw new E.TokenNotFoundError();
@@ -26,9 +27,13 @@ module.exports.isLoggedIn = (req, res, next) => {
             throw error;
         }
 
+        // Find account_id
+        const account = await findAccountByIdentifier(decoded.account_uuid);
+        const accountID = account.account_id;
+
         // store the auth in the request so that the callback chain can access this data if necessary
         // https://expressjs.com/en/api.html#res.locals
-        res.locals.auth = { token, decoded };
+        res.locals.auth = { token, decoded, accountID };
 
         return next();
     }

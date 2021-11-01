@@ -2,6 +2,7 @@
 // only admins can access all data
 
 const { ADMIN_LEVEL, CONTENT_ACCESS_LEVEL, STRIPE_STATUS } = require('../config/enums');
+const { findAccountByIdentifier } = require('../models/accounts');
 
 const {
     secretKey: stripeSecret,
@@ -21,6 +22,24 @@ module.exports.onlySuperAdminAccess = (req, res, next) => {
         if (decoded.admin_level !== ADMIN_LEVEL.SUPER_ADMIN)
             throw E.AdminError('access this feature');
 
+        return next();
+    }
+    catch (error) {
+        return next(error);
+    }
+};
+
+// Checks whether account_id == decoded account_id
+// Find account_id with account_uuid
+module.exports.findAccountID = async (req, res, next) => {
+    try {
+        const { decoded } = res.locals.auth;
+        const accountUUID = req.params.accountUUID;
+        // If it is admin skip the step below
+        // Check whether account_id == decoded account_id
+        if (decoded.account_uuid !== accountUUID && decoded.admin_level === 0) {
+            throw E.PermissionError();
+        }
         return next();
     }
     catch (error) {

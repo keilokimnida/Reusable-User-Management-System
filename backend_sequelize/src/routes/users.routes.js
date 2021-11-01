@@ -3,6 +3,7 @@ const accountsController = require('../controllers/accounts');
 
 // MIDDLEWARES
 const { isLoggedIn } = require('../middlewares/auth');
+const { findAccountID } = require('../middlewares/access');
 const { checkAccountStatus } = require('../middlewares/active');
 
 // CREATE ACCOUNT
@@ -14,6 +15,7 @@ router.post(
 router.get(
     '/account/:accountID',
     isLoggedIn,
+    // findAccountID,
     checkAccountStatus,
     accountsController.findAccountByID
 );
@@ -21,6 +23,7 @@ router.get(
 router.put(
     '/account/:accountID',
     isLoggedIn,
+    // findAccountID,
     checkAccountStatus,
     accountsController.editAccount
 );

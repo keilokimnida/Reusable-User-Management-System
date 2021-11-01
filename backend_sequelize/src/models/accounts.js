@@ -48,7 +48,8 @@ module.exports.findAccountByIdentifier = (identifier, password = false) => Accou
         [Op.or]: [
             { account_id: identifier },
             { username: identifier },
-            { email: identifier }
+            { email: identifier },
+            { account_uuid: identifier }
         ]
     },
     include: password ? [{
