@@ -34,6 +34,31 @@ module.exports.processGetCustomer = async (req, res, next) => {
 
 };
 
+module.exports.processGetOneCustomer = async (req, res, next) => {
+    const id = req.params.customerId
+    console.log(id);
+    const params = {
+        TableName: TABLE_NAME,
+        KeyConditionExpression: "customerId = :customerId",
+        ExpressionAttributeValues: {
+            ":customerId": id
+        }
+    };
+
+    try {
+        let characters = await dynamoClient.query(params).promise();
+        console.log(characters)
+        return res.status(200).send(characters);
+
+    } catch (error) {
+        let message = 'Server is unable to process your request.';
+        return res.status(500).send({
+            message: error
+        });
+    }
+
+};
+
 //ADD CUSTOMER
 module.exports.processAddCustomer = async (req, res, next) => {
     const items = req.body;
