@@ -22,7 +22,7 @@ module.exports.checkAccountStatus = async (req, res, next) => {
 
         // check if account is active
         if (account.status !== ACCOUNT_STATUS.ACTIVE)
-            throw E.AccountStatusError(account.status);
+            throw new E.AccountStatusError(account.status);
 
         return next();
     }

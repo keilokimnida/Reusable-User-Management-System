@@ -1,4 +1,5 @@
-const AccountError = require('./AccountError');
+const AccountErrors = require('./AccountError');
+const AuthErrors = require('./AuthError');
 const BaseError = require('./BaseError');
 const InternalErrors = require('./InternalError');
 const InviteErrors = require('./InviteError');
@@ -9,7 +10,8 @@ const QueryErrors = require('./QueryError');
 const TokenErrors = require('./TokenError');
 
 module.exports = {
-    ...AccountError,
+    ...AccountErrors,
+    ...AuthErrors,
     ...BaseError,
     ...InternalErrors,
     ...InviteErrors,

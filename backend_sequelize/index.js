@@ -22,9 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1', mainRouter);
 
 // setting this to true will drop all tables and seed new data
-// if you use "node . R" it will set reset to true
-// the dot just means current directory
-// or just set the RHS boolean
+// use "node index.js R" to quickly reset database
 const reset = process.argv[2] === 'R' || false;
 
 // sync sequelize with sql db

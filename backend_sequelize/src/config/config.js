@@ -24,8 +24,18 @@ module.exports = {
     },
     stripe: {
         test: {
-            secretKey: process.env.STRIPE_TEST_SK,
-            webhookSecret: process.env.STRIPE_TEST_WEBHOOK_SECRET
+            secretKey: process.env.STRIPE_TEST_SECRET_KEY,
+            webhookSecret: process.env.STRIPE_TEST_WEBHOOK_SECRET,
+            subscriptions: {
+                standard: [
+                    process.env.STRIPE_PLAN_STANDARD_PRODUCT_ID,
+                    process.env.STRIPE_PLAN_STANDARD_PRICE_ID
+                ],
+                premium: [
+                    process.env.STRIPE_PLAN_PREMIUM_PRODUCT_ID,
+                    process.env.STRIPE_PLAN_PREMIUM_PRICE_ID
+                ]
+            }
         }
     },
     frontend: {

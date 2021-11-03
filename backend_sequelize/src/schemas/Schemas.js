@@ -4,7 +4,6 @@ const { PaymentMethods, Accounts_PaymentMethods } = require('./PaymentMethods');
 const { Plans } = require('./Plans');
 const { Subscriptions } = require('./Subscriptions');
 const { Invoices } = require('./Invoices');
-const { Products } = require('./Products');
 const { ExclusiveContents } = require('./ExclusiveContents');
 
 module.exports = {
@@ -15,6 +14,5 @@ module.exports = {
         PaymentMethods,
         Accounts_PaymentMethods
     },
-    Plans, Subscriptions, Invoices,
-    Products, ExclusiveContents
+    Plans, Subscriptions, Invoices, ExclusiveContents
 };

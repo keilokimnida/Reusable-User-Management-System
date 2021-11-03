@@ -37,4 +37,4 @@ const Products = db.define(
     }
 );
 
-module.exports = { Products };
+// module.exports = { Products };

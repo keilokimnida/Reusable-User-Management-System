@@ -3,7 +3,7 @@ const { BaseError } = require('./BaseError');
 class AccountError extends BaseError {
     constructor(found, status) {
         super();
-        this.name = 'PasswordError';
+        this.name = 'AccountError';
         this.message = 'Account error';
         this.generic = 'Account error';
         this.code = 400;
@@ -47,37 +47,8 @@ class AccountStatusError extends AccountError {
     }
 }
 
-class AdminError extends AccountError {
-    /**
-     * User cannot [administrate this action]
-     */
-    constructor(action = 'perform this action') {
-        super();
-        this.name = 'AdminError';
-        this.message = `User cannot ${action}`;
-        this.generic = 'Forbidden action';
-        this.code = 403;
-    }
-}
-
-class PermissionError extends AccountError {
-    /**
-     * Account does not have permission to [...]
-     */
-    constructor(action = 'perform this action') {
-        super();
-        this.name = 'PermissionError';
-        this.message = `Employee does not have permission to ${action}`;
-        this.generic = 'Forbidden action';
-        this.code = 403;
-    }
-}
-
 module.exports = {
     AccountError,
     AccountStatusError,
-    AccountNotFoundError,
-    AdminError,
-    PermissionError
-    
+    AccountNotFoundError
 };
