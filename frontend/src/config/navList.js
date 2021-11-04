@@ -1,3 +1,5 @@
+import { useLogout } from '../hooks/useLogout';
+
 const NAV_LIST = [
     {
         name: "Home",
@@ -20,7 +22,7 @@ const NAV_LIST = [
             },
             {
                 name: "Logout",
-                handleClick: () => alert("log out")
+                type: "logout"
             }
         ]
     }

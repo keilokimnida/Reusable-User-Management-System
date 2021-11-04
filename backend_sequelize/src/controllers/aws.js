@@ -154,8 +154,7 @@ module.exports.processDeleteCustomer = async (req, res, next) => {
         //STUPID FUCKING KEY
         Key: {
             "customerId": id,
-            "date": "2020
-            "
+            "date": "2020"
         },
         ConditionExpression:"customerId = :id",
         ExpressionAttributeValues: {

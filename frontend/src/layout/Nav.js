@@ -5,16 +5,26 @@ import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
 
 import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
+import { logout } from "../utils/localStorage";
+import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
 
-const NavItem = ({ name, route, handleClick: customClick, sub, setNav }) => {
+const NavItem = ({ name, route, type, sub, setNav }) => {
   // this is to close the nav when it is on a smaller screen and occupies the entire viewport
   const collapseNavIfSmall = () => window.innerWidth < BREAKPOINTS.lg ? setNav(false) : null;
+  const history = useHistory();
 
-  if (customClick) return (
+  const handleLogout = () => {
+    logout();
+    toast("Logged out successfully");
+    history.push("/login");
+  };
+
+  if (type === "logout") return (
     <div
       onClick={() => {
         collapseNavIfSmall();
-        customClick();
+        handleLogout();
       }}
       className={`c-List-item`}
     >
