@@ -6,7 +6,7 @@ const {
     lockAccount
 } = require('../models/accounts');
 
-const { updatePasswordAttempts } = require('../models/password');
+const { updatePasswordAttempts } = require('../models/passwords.js');
 
 const { ACCOUNT_STATUS } = require('../config/enums');
 

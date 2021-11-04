@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth');
-const passwordController = require('../controllers/password');
+const passwordController = require('../controllers/passwords');
 
 const { isLoggedIn } = require('../middlewares/auth');
 

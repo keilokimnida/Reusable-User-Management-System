@@ -28,7 +28,7 @@ module.exports.isLoggedIn = async (req, res, next) => {
         }
 
         // Find account_id
-        const account = await findAccountByIdentifier(decoded.account_uuid);
+        const account = await findAccountByIdentifier(decoded.account_id);
         const accountID = account.account_id;
 
         // store the auth in the request so that the callback chain can access this data if necessary

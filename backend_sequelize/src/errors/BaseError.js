@@ -1,4 +1,4 @@
-// extending Error and making customer errors
+// extending Error and making custom errors
 // ive always had this idea to do this but its a bit late now
 // ill leave this in, perhaps to be picked up again in the future
 
@@ -9,13 +9,13 @@ class BaseError extends Error {
     constructor() {
         super();
         this.name = 'BaseError';
-        this.message = 'Error';
-        this.generic = 'Error';
-        this.code = 400;
+        this.message = 'Error'; // detailed error
+        this.generic = 'Error'; // error summary
+        this.code = 400; // status code
     }
 
     toJSON() {
-        let json = {
+        return {
             OK: false,
             status: this.code,
             message: this.generic,
@@ -24,7 +24,6 @@ class BaseError extends Error {
                 message: this.message
             }
         };
-        return json;
     }
 }
 

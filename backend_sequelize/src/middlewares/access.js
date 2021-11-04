@@ -18,9 +18,10 @@ const E = require('../errors/Errors');
 // only super admin can access
 module.exports.onlySuperAdminAccess = (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
+        const { decoded } = res.locals.auth; // jwt token
+
         if (decoded.admin_level !== ADMIN_LEVEL.SUPER_ADMIN)
-            throw E.AdminError('access this feature');
+            throw new E.AdminError('access this feature');
 
         return next();
     }
