@@ -15,7 +15,7 @@ const { sendEmail, templates } = require('../utils/email');
 module.exports.forgotPassword = async (req, res, next) => {
     try {
         const { usernameOrEmail: unique } = req.body;
-        const account = await findAccountBy.Identifiers(['username', 'email'], unique);
+        const account = await findAccountBy.identifiers(['username', 'email'], unique);
 
         const { token } = await createResetToken(account.account_id);
 

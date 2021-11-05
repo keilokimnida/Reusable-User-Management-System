@@ -7,12 +7,9 @@ const r = require('../utils/response').responses;
 // 'active', 'trialing', 'past_due', 'canceling'
 module.exports.findActiveSubscription = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
-        if (isNaN(accountID))
-            throw new E.ParamTypeError('accountID', accountID, 1);
+        const { account_id } = res.locals.account;
 
-        const activeSubscription = await findActiveSubscription(accountID);
+        const activeSubscription = await findActiveSubscription(account_id);
         if (!activeSubscription) return res.status(204).send();
 
         res.status(200).send(r.success200(activeSubscription));

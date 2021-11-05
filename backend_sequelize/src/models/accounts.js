@@ -41,35 +41,35 @@ const includeActivePassword = (bool) => bool
 // type Identifier = 'account_id' | 'account_uuid' | 'username' | 'email';
 
 module.exports.findAccountBy = {
-    AccountId: (account_id, password = false) => Accounts.findOne({
+    id: (account_id, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
+        ...others,
         where: { account_id },
-        include: includeActivePassword(password)
+        include: [...includeActivePassword(includePassword), ...include]
     }),
-    AccountUuid: (account_uuid, password = false) => Accounts.findOne({
+    uuid: (account_uuid, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
+        ...others,
         where: { account_uuid },
-        include: includeActivePassword(password)
+        include: [...includeActivePassword(includePassword), ...include]
     }),
-    Username: (username, password = false) => Accounts.findOne({
+    username: (username, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
+        ...others,
         where: { username },
-        include: includeActivePassword(password)
+        include: [...includeActivePassword(includePassword), ...include]
     }),
-    Email: (email, password = false) => Accounts.findOne({
+    email: (email, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
+        ...others,
         where: { email },
-        include: includeActivePassword(password)
+        include: [...includeActivePassword(includePassword), ...include]
     }),
-    StripeCustomerId: (stripe_customer_id, paymentMethods = true) => Accounts.findOne({
+    stripeCustomerId: (stripe_customer_id, includePaymentMethods = true) => Accounts.findOne({
         where: { stripe_customer_id },
-        include: paymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
+        include: includePaymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
     }),
-    /** 
-     * Finds one account with a value across multiple columns/identifiers
-     * @param {Array} identifiers Columns in model
-     * @param {any} value Unique value
-     * @param {boolean} password To include the active password
-     */
-    Identifiers: (identifiers = [], value, password = false) => Accounts.findOne({
+    /** Finds one account with a value across multiple columns/identifiers */
+    identifiers: (identifiers = [], value, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
+        ...others,
         where: { [Op.or]: identifiers.map((identifer) => ({ [identifer]: value })) },
-        include: includeActivePassword(password)
+        include: [...includeActivePassword(includePassword), ...include]
     })
 };
 

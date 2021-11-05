@@ -1,5 +1,3 @@
-const { findAccountBy } = require('../models/accounts');
-
 const { ADMIN_LEVEL, ACCOUNT_STATUS } = require('../config/enums');
 
 const E = require('../errors/Errors');

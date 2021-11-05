@@ -24,7 +24,7 @@ module.exports.login = async (req, res, next) => {
         const { username, password } = req.body;
 
         // Check if user exists
-        const account = await findAccountBy.Username(username, true);
+        const account = await findAccountBy.username(username, { includePassword: true });
         const activePassword = account.passwords[0];
 
         // no account matching username
@@ -102,7 +102,7 @@ module.exports.useRefreshToken = async (req, res, next) => {
 
         const { account_uuid } = jwt.verify(refreshToken, cookieSecret);
 
-        const account = await findAccountBy.AccountUuid(account_uuid);
+        const account = await findAccountBy.uuid(account_uuid);
         if (!account) throw new E.AccountNotFoundError();
 
         // generate tokens
@@ -151,9 +151,9 @@ module.exports.logout = async (req, res, next) => {
         const { refreshToken } = req.signedCookies;
         if (refreshToken === undefined) throw new E.TokenNotFoundError();
 
-        const { account_id } = jwt.verify(refreshToken, cookieSecret);
+        const { account_uuid } = jwt.verify(refreshToken, cookieSecret);
 
-        const account = await findAccountBy.AccountId(account_id);
+        const account = await findAccountBy.uuid(account_uuid);
         if (!account) throw new E.AccountNotFoundError();
 
         res.clearCookie('refreshToken');

@@ -28,7 +28,7 @@ module.exports.isLoggedIn = async (req, res, next) => {
         }
 
         // Find account_id
-        const account = await findAccountBy.AccountUuid(decoded.account_uuid);
+        const account = await findAccountBy.uuid(decoded.account_uuid);
 
         // store the auth in the request so that the callback chain can access this data if necessary
         // https://expressjs.com/en/api.html#res.locals

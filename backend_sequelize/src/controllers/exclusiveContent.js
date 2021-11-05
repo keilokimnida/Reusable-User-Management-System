@@ -6,7 +6,6 @@ const r = require('../utils/response').responses;
 // Get exclusive content
 module.exports.findExclusiveContent = async (req, res, next, accessLevel) => {
     try {
-
         const exclusiveContent = await findExclusiveContent(accessLevel);
 
         if (!exclusiveContent)
