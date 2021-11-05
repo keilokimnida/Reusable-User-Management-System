@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { secret: jwtSecret } = require('../config/config').jwt;
 
 const E = require('../errors/Errors');
-const { findAccountByIdentifier } = require('../models/accounts');
+const { findAccountBy } = require('../models/accounts');
 
 module.exports.isLoggedIn = async (req, res, next) => {
     try {
@@ -28,7 +28,7 @@ module.exports.isLoggedIn = async (req, res, next) => {
         }
 
         // Find account_id
-        const account = await findAccountByIdentifier(decoded.account_id);
+        const account = await findAccountBy.AccountId(decoded.account_id);
         const accountID = account.account_id;
 
         // store the auth in the request so that the callback chain can access this data if necessary

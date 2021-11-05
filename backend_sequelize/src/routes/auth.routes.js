@@ -8,7 +8,7 @@ const { isLoggedIn } = require('../middlewares/auth');
 router.post('/login', authController.login);
 
 // REFRESH TOKEN
-router.post('/refresh', authController.refreshToken);
+router.post('/refresh', authController.useRefreshToken);
 
 router.get('/read-cookie', authController.readSecureCookies);
 

@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const {
-    findAccountByIdentifier,
+    findAccountBy,
     lockAccount
 } = require('../models/accounts');
 
@@ -24,34 +24,27 @@ module.exports.login = async (req, res, next) => {
         const { username, password } = req.body;
 
         // Check if user exists
-        const account = await findAccountByIdentifier(username, true);
+        const account = await findAccountBy.Username(username, true);
+        const activePassword = account.passwords[0];
 
         // no account matching username
         if (!account) throw new E.AccountNotFoundError();
 
-        // because of the one-to-many r/s btw account and passwords,
-        // passwords is an array even though theres only one active password
-        const {
-            password_id,
-            password: hash,
-            attempts: passwordAttempts
-        } = account.passwords[0];
-
         // if the account is locked or
         // the password has been attempted for more than 5 times
-        if (account.status === ACCOUNT_STATUS.LOCKED || passwordAttempts > 5)
+        if (account.status === ACCOUNT_STATUS.LOCKED || activePassword.attempts > 5)
             throw new E.AccountStatusError(ACCOUNT_STATUS.LOCKED);
 
         if (account.status === ACCOUNT_STATUS.DEACTIVATED)
             throw new E.AccountStatusError(ACCOUNT_STATUS.DEACTIVATED);
 
         // Check if password is correct
-        const valid = bcrypt.compareSync(password, hash);
+        const valid = bcrypt.compareSync(password, activePassword.password);
 
         // If password is not valid
         if (!valid) {
-            const attempts = passwordAttempts + 1;
-            await updatePasswordAttempts(password_id, attempts);
+            const attempts = activePassword.attempts + 1;
+            await updatePasswordAttempts(activePassword.password_id, attempts);
 
             // lock the account
             if (attempts >= 5) {
@@ -63,29 +56,20 @@ module.exports.login = async (req, res, next) => {
             throw new E.WrongPasswordError();
         }
 
-        // If password is valid
-
+        // correct password
         // reset password attempts
         // avoid unnecessary writing to database
-        if (passwordAttempts > 0) await updatePasswordAttempts(password_id, 0);
+        if (activePassword.attempts > 0) await updatePasswordAttempts(activePassword.password_id, 0);
 
-        // generate tokens
-        const accessToken = jwt.sign(
-            {
-                account_id: account.account_id,
-                username: account.username,
-                email: account.email,
-                admin_level: account.admin_level
-            },
-            jwtSecret,
-            { expiresIn: '6h' }
-        );
+        const accessToken = jwt.sign({
+            account_uuid: account.account_uuid,
+            username: account.username,
+            admin_level: account.admin_level
+        }, jwtSecret, { expiresIn: '6h' });
 
-        const refreshToken = jwt.sign(
-            { account_id: account.account_id },
-            cookieSecret,
-            { expiresIn: '3d' }
-        );
+        const refreshToken = jwt.sign({
+            account_uuid: account.account_uuid
+        }, cookieSecret, { expiresIn: '3d' });
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -110,7 +94,7 @@ module.exports.login = async (req, res, next) => {
 
 // ============================================================
 
-module.exports.refreshToken = async (req, res, next) => {
+module.exports.useRefreshToken = async (req, res, next) => {
     try {
         // get the refresh token from the cookies in the request
         const { refreshToken } = req.signedCookies;
@@ -118,15 +102,14 @@ module.exports.refreshToken = async (req, res, next) => {
 
         const { account_id } = jwt.verify(refreshToken, cookieSecret);
 
-        const account = await findAccountByIdentifier(account_id);
+        const account = await findAccountBy.AccountId(account_id);
         if (!account) throw new E.AccountNotFoundError();
 
         // generate tokens
         const newAccessToken = jwt.sign(
             {
-                account_id: account.account_id,
+                account_uuid: account.account_uuid,
                 username: account.username,
-                email: account.email,
                 admin_level: account.admin_level
             },
             jwtSecret,
@@ -134,7 +117,7 @@ module.exports.refreshToken = async (req, res, next) => {
         );
 
         const newRefreshToken = jwt.sign(
-            { account_id: account.account_id },
+            { account_uuid: account.account_uuid },
             cookieSecret,
             { expiresIn: '3d' }
         );
@@ -170,7 +153,7 @@ module.exports.logout = async (req, res, next) => {
 
         const { account_id } = jwt.verify(refreshToken, cookieSecret);
 
-        const account = await findAccountByIdentifier(account_id);
+        const account = await findAccountBy.AccountId(account_id);
         if (!account) throw new E.AccountNotFoundError();
 
         res.clearCookie('refreshToken');
@@ -197,119 +180,3 @@ module.exports.readSecureCookies = (req, res, next) => {
         next(error);
     }
 };
-
-// ============================================================
-
-/* SUPER ADMIN LOGIN
-module.exports.adminLogin = async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-
-        // Check if user exists
-        const account = await findAccountByUsername(username);
-
-        // no account matching username
-        if (!account)
-            return res.status(404).json({
-                message: 'Account not found',
-                found: false,
-                locked: null,
-                token: null,
-                data: null
-            });
-
-        if (account.admin_level !== ADMIN_LEVELS.SUPER_ADMIN)
-            return res.status(403).json({
-                message: 'Incorrect login endpoint'
-            });
-
-        // because of the one-to-many r/s btw account and passwords,
-        // passwords is an array even though theres only one active password
-        const {
-            password_id,
-            password: hash,
-            attempts: passwordAttempts
-        } = account.passwords[0];
-
-        // if the account is locked or
-        // the password has been attempted for more than 5 times
-        if (account.status === 'locked' || passwordAttempts > 5)
-            return res.status(403).json({
-                message: 'Account is locked',
-                found: true,
-                locked: true,
-                token: null,
-                data: null
-            });
-
-        if (account.status === 'deactivated')
-            return res.status(403).json({
-                message: 'Account is deactivated'
-            });
-
-        const valid = bcrypt.compareSync(password, hash);
-
-        // If password is not valid
-        if (!valid) {
-            const attempts = passwordAttempts + 1;
-
-            await updatePasswordAttempts(attempts, password_id);
-
-            // lock the account
-            if (attempts >= 5) {
-                await lockAccount(account);
-
-                return res.status(403).json({
-                    message: 'Account is now locked',
-                    found: true,
-                    locked: true,
-                    token: null,
-                    data: null
-                });
-            }
-
-            // incorrect password but less than 5 password attempts
-            return res.status(401).json({
-                message: 'Invalid password',
-                found: true,
-                locked: false,
-                token: null,
-                data: null
-            });
-        }
-
-        // valid password below
-
-        // reset password attempts
-        // avoid unnecessary writing to database
-        if (passwordAttempts > 0) await updatePasswordAttempts(0, password_id);
-
-        // generate token
-        const token = jwt.sign(
-            {
-                account_id: account.account_id,
-                username: account.username,
-                email: account.email,
-                admin_level: account.admin_level
-            },
-            jwtSecret,
-            { expiresIn: '12h' }
-        );
-
-        res.status(200).json({
-            message: 'Success',
-            found: true,
-            locked: false,
-            token,
-            data: {
-                username: account.username,
-                email: account.email
-            }
-        });
-
-        return next();
-    }
-    catch (error) {
-        return next(error);
-    }
-}; */

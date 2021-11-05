@@ -33,32 +33,45 @@ module.exports.createAccount = async (meta, avatar) => {
 
 // ============================================================
 
-module.exports.findAccountByUsername = (username) => Accounts.findOne({
-    where: { username },
-    include: [{
-        model: Passwords,
-        as: 'passwords',
-        where: { active: true },
-        limit: 1
-    }]
-});
+const includeActivePassword = (bool) => bool
+    ? [{ association: 'passwords', where: { active: true }, limit: 1 }]
+    : [];
 
-module.exports.findAccountByIdentifier = (identifier, password = false) => Accounts.findOne({
-    where: {
-        [Op.or]: [
-            { account_id: identifier },
-            { username: identifier },
-            { email: identifier },
-            { account_uuid: identifier }
-        ]
-    },
-    include: password ? [{
-        model: Passwords,
-        as: 'passwords',
-        where: { active: true },
-        limit: 1
-    }] : []
-});
+// typescript
+// type Identifier = 'account_id' | 'account_uuid' | 'username' | 'email';
+
+module.exports.findAccountBy = {
+    AccountId: (account_id, password = false) => Accounts.findOne({
+        where: { account_id },
+        include: includeActivePassword(password)
+    }),
+    AccountUuid: (account_uuid, password = false) => Accounts.findOne({
+        where: { account_uuid },
+        include: includeActivePassword(password)
+    }),
+    Username: (username, password = false) => Accounts.findOne({
+        where: { username },
+        include: includeActivePassword(password)
+    }),
+    Email: (email, password = false) => Accounts.findOne({
+        where: { email },
+        include: includeActivePassword(password)
+    }),
+    StripeCustomerId: (stripe_customer_id, paymentMethods = true) => Accounts.findOne({
+        where: { stripe_customer_id },
+        include: paymentMethods ? [{ association: 'payment_accounts' }] : []
+    }),
+    /** 
+     * Finds one account with a value across multiple columns/identifiers
+     * @param {Array} identifiers Columns in model
+     * @param {any} value Unique value
+     * @param {boolean} password To include the active password
+     */
+    Identifiers: (identifiers = [], value, password = false) => Accounts.findOne({
+        where: { [Op.or]: identifiers.map((identifer) => ({ [identifer]: value })) },
+        include: includeActivePassword(password)
+    })
+};
 
 module.exports.findAllAccounts = ({ where, include, attributes, ...others } = {}) =>
     Accounts.findAll({
@@ -74,17 +87,6 @@ module.exports.findOneAccount = ({ where, include, attributes, ...others } = {})
         include,
         attributes,
         ...others
-    });
-
-module.exports.findAccountByStripeCustID = (stripeCustomerID) =>
-    Accounts.findOne({
-        where: {
-            stripe_customer_id: stripeCustomerID
-        },
-        include: [{
-            model: PaymentMethods,
-            as: 'payment_accounts'
-        }]
     });
 
 module.exports.lockAccount = (account_id) =>

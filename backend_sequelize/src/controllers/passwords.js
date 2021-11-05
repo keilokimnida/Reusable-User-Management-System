@@ -1,4 +1,4 @@
-const { findAccountByIdentifier } = require('../models/accounts');
+const { findAccountBy } = require('../models/accounts');
 
 const {
     createResetToken,
@@ -15,7 +15,7 @@ const { sendEmail, templates } = require('../utils/email');
 module.exports.forgotPassword = async (req, res, next) => {
     try {
         const { usernameOrEmail: unique } = req.body;
-        const account = await findAccountByIdentifier(unique);
+        const account = await findAccountBy.Identifiers(['username', 'email'], unique);
 
         const { token } = await createResetToken(account.account_id);
 

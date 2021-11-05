@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 
 // Imports
 const { createPaymentIntent, updatePaymentIntent, detachPaymentMethod, createSetupIntent, findPaymentMethodFromStripe, updateSubscriptionInStripe, findPaymentIntent, createSubscriptionInStripe, cancelSubscription, findInvoiceInStripe, findSubscriptionInStripe } = require('../services/stripe');
-const { findAccountByID, updateAccountByID, findAccountByStripeCustID } = require('../models/accounts');
+const { findAccountBy, updateAccountByID } = require('../models/accounts');
 const { findPaymentMethod, findDuplicatePaymentMethod, insertPaymentMethod, removePaymentMethod, updatePaymentMethod } = require('../models/paymentMethod');
 const { deleteSubscription, updateSubscription, createSubscription, findActiveSubscription } = require('../models/subscription');
 const { findPlanByPriceID } = require('../models/plan');
@@ -20,7 +20,7 @@ module.exports.createPaymentIntent = async (req, res, next) => {
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
 
-        const account = await findAccountByID(accountID);
+        const account = await findAccountBy.AccountId(accountID);
 
         if (!account) throw new E.NotFoundError('account');
 
@@ -82,7 +82,7 @@ module.exports.createSetupIntent = async (req, res, next) => {
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
 
-        const account = await findAccountByID(accountID);
+        const account = await findAccountBy.AccountId(accountID);
         if (!account) throw new E.NotFoundError('account');
 
         const setupIntent = await createSetupIntent(account.stripe_customer_id);
@@ -200,7 +200,7 @@ module.exports.createSubscription = async (req, res, next) => {
             throw new E.ParamTypeError('accountID', accountID, 1);
 
         // Get account information
-        const account = await findAccountByID(accountID);
+        const account = await findAccountBy.AccountId(accountID);
         if (!account) throw new E.NotFoundError('account');
 
         // Check if account has active subscription
@@ -271,7 +271,7 @@ module.exports.updateSubscription = async (req, res, next) => {
             throw new E.ParamTypeError('accountID', accountID, 1);
 
         // Get account information
-        const account = await findAccountByID(accountID);
+        const account = await findAccountBy.AccountId(accountID);
         if (!account) throw new E.NotFoundError('account');
 
         // Check if user has active subscriptions
@@ -421,7 +421,7 @@ module.exports.handleWebhook = async (req, res, next) => {
                 const customerID = customer.id;
 
                 // Find accoutn by customer id
-                const account = await findAccountByStripeCustID(customerID);
+                const account = await findAccountBy.StripeCustomerId(customerID);
                 await updateAccountByID(account.account_id, {
                     balance: parseFloat(customer.balance / 100).toFixed(2)
                 });
@@ -435,7 +435,7 @@ module.exports.handleWebhook = async (req, res, next) => {
                 const paymentIntent = event.data.object;
 
                 const stripeCustomerID = paymentIntent.customer;
-                const account = await findAccountByStripeCustID(stripeCustomerID);
+                const account = await findAccountBy.StripeCustomerId(stripeCustomerID);
 
                 // Check if payment intent belongs to one-time payment's paymemt intent
                 if (paymentIntent.id === account.stripe_payment_intent_id) {
@@ -469,7 +469,7 @@ module.exports.handleWebhook = async (req, res, next) => {
 
             case 'invoice.paid': {
                 const invoice = event.data.object;
-                const account = await findAccountByStripeCustID(invoice.customer);
+                const account = await findAccountBy.StripeCustomerId(invoice.customer);
                 const accountID = account.account_id;
                 // If this is user's first time subscribing
                 if (!account.trialed) {

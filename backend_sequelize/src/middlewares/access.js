@@ -2,7 +2,6 @@
 // only admins can access all data
 
 const { ADMIN_LEVEL, CONTENT_ACCESS_LEVEL, STRIPE_STATUS } = require('../config/enums');
-const { findAccountByIdentifier } = require('../models/accounts');
 
 const {
     secretKey: stripeSecret,
