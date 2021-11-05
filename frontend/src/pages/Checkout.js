@@ -14,8 +14,10 @@ import SetupPaymentMethod from '../components/SetupPaymentMethod';
 import SelectPaymentMethod from '../components/SelectPaymentMethod';
 import PageLayout from "../layout/PageLayout";
 import { getToken } from '../utils/localStorage';
+import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
 const Checkout = ({ match }) => {
+    useWatchLoginStatus();
     const history = useHistory();
     const [token] = getToken();
     let accountID;

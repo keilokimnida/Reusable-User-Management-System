@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 
 import { Link } from 'react-router-dom';
 import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
@@ -8,13 +9,27 @@ import NAV_LIST from '../config/navList';
 import { logout } from "../utils/localStorage";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
+import APP_CONFIG from '../config/appConfig';
+import tokenManager from '../utils/tokenManager';
 
 const NavItem = ({ name, route, type, sub, setNav }) => {
   // this is to close the nav when it is on a smaller screen and occupies the entire viewport
   const collapseNavIfSmall = () => window.innerWidth < BREAKPOINTS.lg ? setNav(false) : null;
   const history = useHistory();
+  const { setToken } = tokenManager();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${APP_CONFIG.baseUrl}/auth/logout`, {}, {
+        withCredentials: true
+      });
+
+      window.localStorage.setItem("logout", Date.now());
+      setToken(null);
+    } catch (error) {
+      console.log(error);
+    };
+
     logout();
     toast("Logged out successfully");
     history.push("/login");

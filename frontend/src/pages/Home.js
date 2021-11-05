@@ -1,14 +1,15 @@
-import { useState } from 'react';
-
-import PageLayout from '../layout/PageLayout';
+import { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
-
 import { toast } from 'react-toastify';
 
+import PageLayout from '../layout/PageLayout';
 import APP_CONFIG from '../config/appConfig';
-import axios from 'axios';
+import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const Home = () => {
+
+const Home = ({TokenManager}) => {
+  useWatchLoginStatus();
 
   const readCookie = async () => {
     try {

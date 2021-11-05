@@ -9,10 +9,9 @@ import * as Yup from 'yup';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import APP_CONFIG from '../config/appConfig';
-import { login } from '../utils/localStorage';
 import ReCAPTCHA from "react-google-recaptcha";
 
-const Login = () => {
+const Login = ({TokenManager}) => {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
@@ -43,7 +42,7 @@ const Login = () => {
       success: {
         render: ({ data: res }) => {
           setLoading(false);
-          login(res.data.results);
+          TokenManager.setToken(res.data.results.access_token);
           history.push("/");
           return "Logged in successfully";
         },

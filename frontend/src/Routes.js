@@ -15,18 +15,21 @@ import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Plans from './pages/Plans';
 
-// this dummy is here so its more consistent
-// anecdote: i forgot to return JSX in render={} and only called the component 
-// as if it was a function and has lead to at least 2 hours being wasted
-const dummy = (Component) => (props) => (<Component {...props} />);
 
-const authGuard = (Component) => (props) => {
-  let [token] = getToken();
-  if (!token) return (<Redirect to="/login" {...props} />);
-  return (<Component {...props} />);
-}
 
-const Routes = () => {
+const Routes = ({ TokenManager }) => {
+
+  // this dummy is here so its more consistent
+  // anecdote: i forgot to return JSX in render={} and only called the component 
+  // as if it was a function and has lead to at least 2 hours being wasted
+  const dummy = (Component) => (props) => (<Component {...props} TokenManager={TokenManager} />);
+
+  const authGuard = (Component) => (props) => {
+    const token = TokenManager.getToken();
+    if (!token) return (<Redirect to="/login" {...props} TokenManager={TokenManager} />);
+    return (<Component {...props} TokenManager={TokenManager} />);
+  }
+
   return (
     <Router>
       <Switch>
@@ -48,8 +51,8 @@ const Routes = () => {
         </Route>
 
         {/* Plans */}
-        <Route exact path = "/plans" render={(props) => dummy(Plans)(props)} />
-        <Route path = "/plans/payment/:type" render={(props) => authGuard(Checkout)(props)} />
+        <Route exact path="/plans" render={(props) => dummy(Plans)(props)} />
+        <Route path="/plans/payment/:type" render={(props) => authGuard(Checkout)(props)} />
 
         {/* User account settings */}
         <Route exact path="/me" render={props => authGuard(Account)(props)} />

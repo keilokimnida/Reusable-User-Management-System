@@ -1,5 +1,3 @@
-import { useLogout } from '../hooks/useLogout';
-
 const NAV_LIST = [
     {
         name: "Home",

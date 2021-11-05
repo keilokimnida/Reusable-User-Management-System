@@ -4,10 +4,11 @@ import { toast } from 'react-toastify';
 
 import PlansCard from '../components/PlansCard';
 import PageLayout from '../layout/PageLayout';
-
 import APP_CONFIG from '../config/appConfig';
+import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
 const Plans = () => {
+    useWatchLoginStatus();
     return (
         <PageLayout title="Plans">
             <div className="c-Plans">
