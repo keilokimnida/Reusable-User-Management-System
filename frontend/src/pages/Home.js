@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
@@ -7,13 +7,12 @@ import PageLayout from '../layout/PageLayout';
 import APP_CONFIG from '../config/appConfig';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-
 const Home = ({TokenManager}) => {
   useWatchLoginStatus();
 
   const readCookie = async () => {
     try {
-      const res = await axios.get(`${APP_CONFIG.baseUrl}/auth/read-cookie`, { withCredentials: true });
+      const res = await axios.get(`${APP_CONFIG.baseUrl}/auth/read-cookie`);
       toast.info(res.data);
       console.log(res.data);
     }
@@ -25,7 +24,7 @@ const Home = ({TokenManager}) => {
   const dashboardItems = ["a", "b", "c", "d", "e", "f"];
 
   return (
-    <PageLayout title = "Home">
+    <PageLayout title = "Home" TokenManager={TokenManager}>
       {({ nav, setNav, toggleNav }) => (
         <div className="c-Home">
           <h1>User Management System</h1>

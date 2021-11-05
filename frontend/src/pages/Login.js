@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import Button from 'react-bootstrap/Button';
 import Title from '../layout/Title';
 import { toast } from 'react-toastify';
@@ -34,7 +33,7 @@ const Login = ({TokenManager}) => {
     if (isRecaptchaValidated === false) return;
 
     setLoading(true);
-    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/login`, values, { withCredentials: true });
+    const promise = axios.post(`${APP_CONFIG.baseUrl}/auth/login`, values);
     toast.promise(promise, {
       pending: {
         render: () => "Logging you in..."

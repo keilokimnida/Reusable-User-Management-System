@@ -1,7 +1,5 @@
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 
-import { getToken } from './utils/localStorage';
-
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ChangePassword from './pages/ForgotPassword/ChangePassword';
@@ -15,10 +13,9 @@ import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Plans from './pages/Plans';
 
-
-
 const Routes = ({ TokenManager }) => {
-
+  const token = TokenManager.getToken();
+  console.log(token);
   // this dummy is here so its more consistent
   // anecdote: i forgot to return JSX in render={} and only called the component 
   // as if it was a function and has lead to at least 2 hours being wasted
@@ -26,9 +23,10 @@ const Routes = ({ TokenManager }) => {
 
   const authGuard = (Component) => (props) => {
     const token = TokenManager.getToken();
+    console.log(token);
     if (!token) return (<Redirect to="/login" {...props} TokenManager={TokenManager} />);
     return (<Component {...props} TokenManager={TokenManager} />);
-  }
+  };
 
   return (
     <Router>

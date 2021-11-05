@@ -16,18 +16,14 @@ import PageLayout from "../layout/PageLayout";
 import { getToken } from '../utils/localStorage';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const Checkout = ({ match }) => {
+const Checkout = ({ match, TokenManager }) => {
     useWatchLoginStatus();
+
     const history = useHistory();
-    const [token] = getToken();
-    let accountID;
-    if (token) {
-        const decodedToken = jwt_decode(token);
-        accountID = decodedToken.account_id;
-    }
+    const decodedToken = TokenManager.getDecodedToken();
+    const accountUUID = decodedToken.account_uuid;
 
     let displayPrice;
-
     let type = match.params.type;
     if (type) {
         if (type === "standard" || type === "premium") {
@@ -69,11 +65,7 @@ const Checkout = ({ match }) => {
 
         (async () => {
             try {
-                const response = await axios.get(`${APP_CONFIG.baseUrl}/account/${accountID}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get(`${APP_CONFIG.baseUrl}/account/${accountUUID}`);
                 const responseData = response.data;
                 console.log(responseData);
                 const account = responseData.account;
@@ -106,11 +98,7 @@ const Checkout = ({ match }) => {
                         } else {
                             // Create new subscription to be charged within 23hrs
                             // after 23 hours, if invoice has not been paid, subscription will be deleted from database
-                            const subscription = await axios.post(`${APP_CONFIG.baseUrl}/stripe/subscriptions/${match.params.type}`, {}, {
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
+                            const subscription = await axios.post(`${APP_CONFIG.baseUrl}/stripe/subscriptions/${match.params.type}`, {});
                             console.log(subscription);
 
                             setClientSecret(() => subscription.data.clientSecret);
@@ -173,10 +161,6 @@ const Checkout = ({ match }) => {
             try {
                 await axios.post(`${APP_CONFIG.baseUrl}/stripe/subscriptions/${type}`, {
                     paymentMethodID: selectedPaymentMethod
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
                 });
 
                 setPaymentError(() => null);
@@ -220,7 +204,7 @@ const Checkout = ({ match }) => {
     return (
         <>
             <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowSetupPaymentMethod} setRerender={setRerender} />
-            <PageLayout>
+            <PageLayout title="Checkout" TokenManager={TokenManager}>
                 <div className="c-Checkout">
                     {
                         pageError ?

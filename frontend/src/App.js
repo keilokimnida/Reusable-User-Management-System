@@ -29,30 +29,33 @@ const stripePKTest = STRIPE_CONFIG.stripePKTest;
 const promise = loadStripe(stripePKTest);
 
 const App = () => {
-  const [loading, setLoading] = useState(null);
-
-  const TokenManager = tokenManager();
-  
+  const [loading, setLoading] = useState(true);
+  // bopian, token manager should be stored in state to prevent it from being lost
+  const [TokenManager, setTokenManager] = useState(tokenManager());
 
   const verifyUser = useCallback(async () => {
-    setLoading(true);
+    setLoading(() => true);
     await getRefreshToken();
-    setLoading(false);
+    setLoading(() => false);
   }, []);
 
   const getRefreshToken = async () => {
     try {
-      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`, {}, { withCredentials: true })
+      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`, {}, { withCredentials: true });
+      console.log(res);
       if (res.status === 200) {
         const accessToken = res.data.results.access_token;
+
         TokenManager.setToken(accessToken);
         axios.defaults.headers.common = {'Authorization': `bearer ${accessToken}`};
+        axios.defaults.withCredentials = true;
         // call refreshToken every 3 minutes to renew the authentication token.
-        TokenManager.setTimeout(verifyUser, 3 * 60 * 1000);
+        setTimeout(verifyUser, 3 * 60 * 1000);
       } else {
-        TokenManager.setToken(null);
+        TokenManager.logout();
       }
     } catch (error) {
+      console.log(error);
       TokenManager.setMessage(error.response?.data.message);
     }
   };

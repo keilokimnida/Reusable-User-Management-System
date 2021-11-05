@@ -6,33 +6,23 @@ import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons';
 
 import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
-import { logout } from "../utils/localStorage";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
-import APP_CONFIG from '../config/appConfig';
-import tokenManager from '../utils/tokenManager';
 
-const NavItem = ({ name, route, type, sub, setNav }) => {
+const NavItem = ({ name, route, type, sub, setNav, TokenManager }) => {
   // this is to close the nav when it is on a smaller screen and occupies the entire viewport
   const collapseNavIfSmall = () => window.innerWidth < BREAKPOINTS.lg ? setNav(false) : null;
   const history = useHistory();
-  const { setToken } = tokenManager();
 
   const handleLogout = async () => {
-    try {
-      await axios.post(`${APP_CONFIG.baseUrl}/auth/logout`, {}, {
-        withCredentials: true
-      });
+    const res = await TokenManager.logout();
+    if (res) {
+      toast("Logged out successfully");
+      history.push("/login");
+    } else {
+      toast("Logged out failed");
+    }
 
-      window.localStorage.setItem("logout", Date.now());
-      setToken(null);
-    } catch (error) {
-      console.log(error);
-    };
-
-    logout();
-    toast("Logged out successfully");
-    history.push("/login");
   };
 
   if (type === "logout") return (
@@ -67,7 +57,7 @@ const NavItem = ({ name, route, type, sub, setNav }) => {
   );
 }
 
-const NavList = ({ name, sub: items, setNav }) => {
+const NavList = ({ name, sub: items, setNav, TokenManager }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div className = "c-Nav__List c-List">
@@ -81,18 +71,18 @@ const NavList = ({ name, sub: items, setNav }) => {
 
       {collapsed
         ? null
-        : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} />)
+        : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} TokenManager={TokenManager}/>)
       }
     </div>
   );
 };
 
-const Nav = ({ setNav }) => {
+const Nav = ({ setNav, TokenManager }) => {
   return (
     <nav className="c-Nav">
       {NAV_LIST.map((item, i) => item.sub
-        ? <NavList setNav={setNav} {...item} key={i} />
-        : <NavItem setNav={setNav} {...item} key={i} />
+        ? <NavList setNav={setNav} {...item} key={i} TokenManager={TokenManager}/>
+        : <NavItem setNav={setNav} {...item} key={i} TokenManager={TokenManager} />
       )}
     </nav>
   );

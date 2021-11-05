@@ -6,31 +6,28 @@ import Loading from '../../components/Loading';
 import Error from '../../components/Error';
 import Button from 'react-bootstrap/Button';
 import BootstrapTable from 'react-bootstrap-table-next';
-
-import { getAll, logout } from '../../utils/localStorage';
+import useWatchLoginStatus from '../../hooks/useWatchLoginStatus';
 import axios from 'axios';
 import APP_CONFIG from '../../config/appConfig';
-import { toast } from 'react-toastify';
 
-const ManageUsers = () => {
+const ManageUsers = ({TokenManager}) => {
+
+  useWatchLoginStatus();
+
   const history = useHistory();
   const [users, setUsers] = useState([]);
   const [firstLoading, setFirstLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { token } = getAll();
-
   const getUsers = async () => {
     try {
-      const res = await axios.get(`${APP_CONFIG.baseUrl}/admin/accounts`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      const res = await axios.get(`${APP_CONFIG.baseUrl}/admin/accounts`);
       setUsers(res.data.results);
     }
     catch (err) {
       const reauth = err.response?.status === 401;
       if (reauth) {
-        logout();
+        TokenManager.logout();
         alert("Reauthentication is required");
         return history.push("/login");
       }
@@ -60,7 +57,7 @@ const ManageUsers = () => {
   }];
 
   return (
-    <PageLayout title = "Manage Users">
+    <PageLayout title = "Manage Users" TokenManager={TokenManager}>
       {firstLoading
         ? <Loading />
         : error
@@ -70,7 +67,7 @@ const ManageUsers = () => {
             <p>Users at a glance</p>
             <hr />
             <BootstrapTable
-              keyField="employee_id"
+              keyField="email"
               columns={columns}
               data={users}
             />

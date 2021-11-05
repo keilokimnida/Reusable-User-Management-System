@@ -25,16 +25,17 @@ import Loading from '../components/Loading';
 import Error from '../components/Error';
 import APP_CONFIG from '../config/appConfig';
 import { billingHistoryColumn, paymentMethodsColumn } from '../config/tableColumns';
-import { getAll, logout } from '../utils/localStorage';
 import PageLayout from '../layout/PageLayout';
+import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const ManageUser = () => {
+const ManageUser = ({TokenManager}) => {
+  // Used for watching whether user is logged in
+  useWatchLoginStatus();
   // States used for fetching user details
   const [account, setAccount] = useState(null);
   const [firstLoading, setFirstLoading] = useState(true);  // when the page first loads and fetches user details
   const [pageError, setPageError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [token, setToken] = useState(null);
   const history = useHistory();
 
   // States used for Stripe
@@ -48,21 +49,18 @@ const ManageUser = () => {
   const [rerender, setRerender] = useState(false);
   const [failedPaymentExist, setFailedPaymentExist] = useState(false);
 
-  const getAccount = async () => {
-    const { token } = getAll();
-    setToken(() => token);
-    const { account_id } = jwtDecode(token);
+  const decodedToken = TokenManager.getDecodedToken();
+  const accountUUID = decodedToken.account_uuid;
 
+  const getAccount = async () => {
     try {
-      const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${account_id}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
       setAccount(() => res.data.results);
     }
     catch (error) {
       const reauth = error.response?.status === 401;
       if (reauth) {
-        logout();
+        TokenManager.logout();
         alert("Reauthentication is required");
         return history.push("/login");
       }
@@ -135,11 +133,7 @@ const ManageUser = () => {
     const executeRemoveCard = async (onClose) => {
       console.log(paymentMethodID);
       try {
-        await axios.delete(`${APP_CONFIG.baseUrl}/stripe/payment_methods/${paymentMethodID}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        await axios.delete(`${APP_CONFIG.baseUrl}/stripe/payment_methods/${paymentMethodID}`);
         toast.success("Card has been successfully detached!");
         setRerender((prevState) => !prevState)
       } catch (error) {
@@ -171,11 +165,7 @@ const ManageUser = () => {
     // Call endpoint to cancel subscription
     const performCancelSubscription = async (onClose) => {
       try {
-        await axios.delete(`${APP_CONFIG.baseUrl}/stripe/subscriptions`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        await axios.delete(`${APP_CONFIG.baseUrl}/stripe/subscriptions`);
         onClose();
         toast.success("Successfully cancelled subscription!");
         setRerender((prevState) => !prevState);
@@ -209,10 +199,6 @@ const ManageUser = () => {
         try {
           await axios.put(`${APP_CONFIG.baseUrl}/stripe/subscriptions`, {
             paymentMethodID: selectedPaymentMethod
-          }, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
           });
           toast.success("Payment method changed successfully");
           setSelectedPaymentMethod(() => null);
@@ -237,7 +223,7 @@ const ManageUser = () => {
   return (
     <>
       <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowPaymentMethod} setRerender={setRerender} />
-      <PageLayout title="Manage Account">
+      <PageLayout title="Manage Account" TokenManager={TokenManager}>
         {firstLoading
           ? <Loading />
           : pageError

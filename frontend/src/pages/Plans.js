@@ -7,10 +7,10 @@ import PageLayout from '../layout/PageLayout';
 import APP_CONFIG from '../config/appConfig';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const Plans = () => {
+const Plans = ({TokenManager}) => {
     useWatchLoginStatus();
     return (
-        <PageLayout title="Plans">
+        <PageLayout title="Plans" TokenManager={TokenManager}>
             <div className="c-Plans">
                 <div className="c-Plans__Top">
                     <h1 className="c-Plans__Heading">Choose the Plan that's Right for You</h1>

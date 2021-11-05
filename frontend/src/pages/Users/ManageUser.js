@@ -3,10 +3,12 @@ import { useParams } from 'react-router';
 
 import PageLayout from '../../layout/PageLayout';
 import Button from 'react-bootstrap/Button';
-
+import useWatchLoginStatus from '../../hooks/useWatchLoginStatus';
 import { toast } from 'react-toastify';
 
 const ManageUser = () => {
+  useWatchLoginStatus();
+
   const { userId } = useParams();
   const [count, setCount] = useState(0);
 
