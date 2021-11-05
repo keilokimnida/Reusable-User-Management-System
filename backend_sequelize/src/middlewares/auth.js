@@ -28,12 +28,17 @@ module.exports.isLoggedIn = async (req, res, next) => {
         }
 
         // Find account_id
-        const account = await findAccountBy.AccountId(decoded.account_id);
-        const accountID = account.account_id;
+        const account = await findAccountBy.AccountUuid(decoded.account_uuid);
 
         // store the auth in the request so that the callback chain can access this data if necessary
         // https://expressjs.com/en/api.html#res.locals
-        res.locals.auth = { token, decoded, accountID };
+        res.locals = {
+            // store the original and decoded jwt
+            auth: { token, decoded },
+            // store the active record of account as well
+            // https://en.wikipedia.org/wiki/Active_record_pattern
+            account
+        };
 
         return next();
     }

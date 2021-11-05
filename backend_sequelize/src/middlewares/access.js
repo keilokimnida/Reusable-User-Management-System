@@ -17,29 +17,11 @@ const E = require('../errors/Errors');
 // only super admin can access
 module.exports.onlySuperAdminAccess = (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth; // jwt token
+        const { account } = res.locals;
 
-        if (decoded.admin_level !== ADMIN_LEVEL.SUPER_ADMIN)
+        if (account.admin_level !== ADMIN_LEVEL.SUPER_ADMIN)
             throw new E.AdminError('access this feature');
 
-        return next();
-    }
-    catch (error) {
-        return next(error);
-    }
-};
-
-// Checks whether account_id == decoded account_id
-// Find account_id with account_uuid
-module.exports.findAccountID = async (req, res, next) => {
-    try {
-        const { decoded } = res.locals.auth;
-        const accountUUID = req.params.accountUUID;
-        // If it is admin skip the step below
-        // Check whether account_id == decoded account_id
-        if (decoded.account_uuid !== accountUUID && decoded.admin_level === 0) {
-            throw E.PermissionError();
-        }
         return next();
     }
     catch (error) {

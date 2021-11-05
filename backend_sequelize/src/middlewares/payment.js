@@ -5,13 +5,6 @@ const E = require('../errors/Errors');
 // This middleware double checks the total price before creating a payment intent
 module.exports.calculateProductsTotalPrice = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-
-        const accountID = parseInt(decoded.account_id);
-
-        if (isNaN(accountID))
-            throw new E.ParamTypeError('accountID', accountID, 1);
-
         // Get all the items 
         const { items } = req.body;
         if (!items || items.length === 0) {

@@ -3,7 +3,6 @@ const accountsController = require('../controllers/accounts');
 
 // MIDDLEWARES
 const { isLoggedIn } = require('../middlewares/auth');
-const { findAccountID } = require('../middlewares/access');
 const { checkAccountStatus } = require('../middlewares/active');
 
 // CREATE ACCOUNT
