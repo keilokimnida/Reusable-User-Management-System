@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
-const { Accounts, Passwords, PaymentMethods } = require('../schemas/Schemas').User;
+const { Accounts, PaymentMethods } = require('../schemas/Schemas').User;
 
 const { ACCOUNT_STATUS } = require('../config/enums');
 
@@ -59,7 +59,7 @@ module.exports.findAccountBy = {
     }),
     StripeCustomerId: (stripe_customer_id, paymentMethods = true) => Accounts.findOne({
         where: { stripe_customer_id },
-        include: paymentMethods ? [{ association: 'payment_accounts' }] : []
+        include: paymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
     }),
     /** 
      * Finds one account with a value across multiple columns/identifiers
