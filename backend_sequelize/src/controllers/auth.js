@@ -19,6 +19,9 @@ const {
 } = require('../config/config');
 
 // TODO: Implement checking for validating refresh and access token
+// perhaps either with redis or dynamodb, we need something that can temporarily store
+// some jwt tokens in a database (like a black-/whitelist)
+// because when comes time to refresh both tokens, the old tokens may still be valid
 
 // CLIENT LOGIN
 module.exports.login = async (req, res, next) => {

@@ -59,12 +59,13 @@ module.exports.findAccountByID = async (req, res, next) => {
     try {
         const accountUUID = req.params.accountUUID;
 
-        const account = await findAccountBy.uuid(accountUUID, { attributes: { exclude: ['account_id'] } });
+        const account = await findAccountBy.uuid(accountUUID);
         if (!account) throw new E.AccountNotFoundError();
 
-        const active_subscription = await findActiveSubscription(account.account_id);
+        const { account_id, ...a } = account.toJSON();
+        const active_subscription = await findActiveSubscription(account_id);
 
-        res.status(200).send(r.success200({ ...account.toJSON(), active_subscription }));
+        res.status(200).send(r.success200({ ...a, active_subscription }));
         return next();
     }
     catch (error) {
