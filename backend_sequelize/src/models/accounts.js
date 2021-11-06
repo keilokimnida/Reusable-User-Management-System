@@ -44,32 +44,37 @@ module.exports.findAccountBy = {
     id: (account_id, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
         ...others,
         where: { account_id },
-        include: [...includeActivePassword(includePassword), ...include]
+        include: [...include, ...includeActivePassword(includePassword)]
     }),
+
     uuid: (account_uuid, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
         ...others,
         where: { account_uuid },
-        include: [...includeActivePassword(includePassword), ...include]
+        include: [...include, ...includeActivePassword(includePassword)]
     }),
+
     username: (username, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
         ...others,
         where: { username },
-        include: [...includeActivePassword(includePassword), ...include]
+        include: [...include, ...includeActivePassword(includePassword)]
     }),
+
     email: (email, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
         ...others,
         where: { email },
-        include: [...includeActivePassword(includePassword), ...include]
+        include: [...include, ...includeActivePassword(includePassword)]
     }),
-    stripeCustomerId: (stripe_customer_id, includePaymentMethods = true) => Accounts.findOne({
-        where: { stripe_customer_id },
-        include: includePaymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
-    }),
+
     /** Finds one account with a value across multiple columns/identifiers */
     identifiers: (identifiers = [], value, { includePassword = false, include = [], ...others } = {}) => Accounts.findOne({
         ...others,
         where: { [Op.or]: identifiers.map((identifer) => ({ [identifer]: value })) },
-        include: [...includeActivePassword(includePassword), ...include]
+        include: [...include, ...includeActivePassword(includePassword)]
+    }),
+    
+    stripeCustomerId: (stripe_customer_id, includePaymentMethods = true) => Accounts.findOne({
+        where: { stripe_customer_id },
+        include: includePaymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
     })
 };
 
