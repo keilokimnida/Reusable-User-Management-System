@@ -23,6 +23,7 @@ const tokenManager = () => {
     };
 
     const logout = async () => {
+        console.log()
         try {
             await axios.post(`${APP_CONFIG.baseUrl}/auth/logout`);
             window.localStorage.setItem("logout", Date.now());
@@ -30,6 +31,7 @@ const tokenManager = () => {
             return true;
         } catch (error) {
             console.log(error);
+            console.log(error.response)
             return false;
         };
     };

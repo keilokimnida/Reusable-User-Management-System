@@ -12,7 +12,7 @@ router.post(
 );
 
 router.get(
-    '/account/:accountID',
+    '/account/:accountUUID',
     isLoggedIn,
     // findAccountID,
     checkAccountStatus,
@@ -20,7 +20,7 @@ router.get(
 );
 
 router.put(
-    '/account/:accountID',
+    '/account/:accountUUID',
     isLoggedIn,
     // findAccountID,
     checkAccountStatus,

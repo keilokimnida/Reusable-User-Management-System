@@ -18,6 +18,8 @@ const {
     cookie: { secret: cookieSecret }
 } = require('../config/config');
 
+// TODO: Implement checking for validating refresh and access token
+
 // CLIENT LOGIN
 module.exports.login = async (req, res, next) => {
     try {

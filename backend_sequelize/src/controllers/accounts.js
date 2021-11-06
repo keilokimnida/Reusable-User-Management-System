@@ -57,7 +57,7 @@ module.exports.findAllAccounts = async (req, res, next) => {
 
 module.exports.findAccountByID = async (req, res, next) => {
     try {
-        const accountUUID = parseInt(req.params.accountID);
+        const accountUUID = req.params.accountUUID;
 
         const account = await findAccountBy.uuid(accountUUID, { attributes: { exclude: ['account_id'] } });
         if (!account) throw new E.AccountNotFoundError();
@@ -83,7 +83,7 @@ module.exports.editAccount = async (req, res, next) => {
         const { decoded } = res.locals.auth;
         const { account } = res.locals;
 
-        const accountUUID = parseInt(req.params.accountID);
+        const accountUUID = req.params.accountUUID;
 
         const isSelf = account.account_uuid === accountUUID;
 

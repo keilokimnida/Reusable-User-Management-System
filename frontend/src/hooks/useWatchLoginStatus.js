@@ -10,6 +10,7 @@ const useWatchLoginStatus = () => {
     useEffect(() => {
         window.addEventListener("storage", syncLogout)
         return () => {
+            window.localStorage.removeItem("logout");
             window.removeEventListener("storage", syncLogout)
         }
 

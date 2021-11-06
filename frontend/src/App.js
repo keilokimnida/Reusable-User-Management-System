@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import APP_CONFIG from './config/appConfig';
 import tokenManager from './utils/tokenManager';
+import Error from './components/Error';
 
 // error boundary
 import { ErrorBoundary } from 'react-error-boundary';
@@ -30,11 +31,11 @@ const promise = loadStripe(stripePKTest);
 
 const App = () => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   // bopian, token manager should be stored in state to prevent it from being lost
   const [TokenManager, setTokenManager] = useState(tokenManager());
 
   const verifyUser = useCallback(async () => {
-    setLoading(() => true);
     await getRefreshToken();
     setLoading(() => false);
   }, []);
@@ -42,20 +43,24 @@ const App = () => {
   const getRefreshToken = async () => {
     try {
       const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`, {}, { withCredentials: true });
-      console.log(res);
       if (res.status === 200) {
         const accessToken = res.data.results.access_token;
-
+ 
         TokenManager.setToken(accessToken);
-        axios.defaults.headers.common = {'Authorization': `bearer ${accessToken}`};
+        axios.defaults.headers.common = { 'Authorization': `bearer ${accessToken}` };
         axios.defaults.withCredentials = true;
         // call refreshToken every 3 minutes to renew the authentication token.
         setTimeout(verifyUser, 3 * 60 * 1000);
       } else {
         TokenManager.logout();
       }
+      setError(() => false);
     } catch (error) {
       console.log(error);
+      if (error.response.status !== 401) {
+        setError(() => true);
+        TokenManager.logout();
+      }
       TokenManager.setMessage(error.response?.data.message);
     }
   };
@@ -81,9 +86,12 @@ const App = () => {
       />
       <ErrorBoundary fallbackRender={Fallback}>
         {
-          loading ?
-          <Loading /> :
-          <Routes TokenManager={TokenManager}/>
+          error ?
+            <Error />
+            :
+            loading ?
+              <Loading /> :
+              <Routes TokenManager={TokenManager} />
         }
       </ErrorBoundary>
     </Elements>

@@ -429,27 +429,6 @@ module.exports.handleWebhook = async (req, res, next) => {
                 break;
             }
 
-            // This case is only applicable for one time payment
-            case 'payment_intent.succeeded': {
-                // event.data.object returns payment intent
-                const paymentIntent = event.data.object;
-
-                const stripeCustomerID = paymentIntent.customer;
-                const account = await findAccountBy.stripeCustomerId(stripeCustomerID);
-
-                // Check if payment intent belongs to one-time payment's paymemt intent
-                if (paymentIntent.id === account.stripe_payment_intent_id) {
-                    const accountID = account.account_id;
-
-                    // Remove customer payment intent and client secret
-                    await updateAccountByID(accountID, {
-                        stripe_payment_intent_client_secret: null,
-                        stripe_payment_intent_id: null
-                    });
-                }
-                break;
-            }
-
             case 'payment_method.automatically_updated': {
                 // Purpose of listening to this event: https://stripe.com/docs/saving-cards#automatic-card-updates
                 const paymentMethod = event.data.object;
