@@ -15,7 +15,7 @@ const Registrations = db.define(
         }
     },
     {
-        tableName: 'accounts',
+        tableName: 'registrations',
         timestamps: true,
         createdAt: 'created_at',
         updatedAt: 'updated_at'

@@ -106,5 +106,5 @@ module.exports.updateAccount = (account_id, details) =>
     Accounts.update(details, { where: account_id });
 
 module.exports.createSignup = (username, email) => {
-    jwt.sign({ username, email }, jwtSecret, { expiresIn: '7d' });
+    const token = jwt.sign({ username, email }, jwtSecret, { expiresIn: '7d' });
 };
