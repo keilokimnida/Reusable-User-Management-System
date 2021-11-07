@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 
 // Imports
 const { createPaymentIntent, updatePaymentIntent, detachPaymentMethod, createSetupIntent, findPaymentMethodFromStripe, updateSubscriptionInStripe, findPaymentIntent, createSubscriptionInStripe, cancelSubscription, findInvoiceInStripe, findSubscriptionInStripe } = require('../services/stripe');
-const { findAccountBy, updateAccountByID } = require('../models/accounts');
+const { findAccountBy, updateAccount } = require('../models/accounts');
 const { findPaymentMethod, findDuplicatePaymentMethod, insertPaymentMethod, removePaymentMethod, updatePaymentMethod } = require('../models/paymentMethod');
 const { deleteSubscription, updateSubscription, createSubscription, findActiveSubscription } = require('../models/subscription');
 const { findPlanByPriceID } = require('../models/plan');
@@ -41,21 +41,21 @@ module.exports.createPaymentMethod = async (req, res, next) => {
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
 
-        const { paymentMethodID } = req.body;
-        if (!paymentMethodID) throw new E.ParamMissingError('paymentMethodID');
+        const { stripePaymentMethodID } = req.body;
+        if (!stripePaymentMethodID) throw new E.ParamMissingError('stripePaymentMethodID');
 
         // Obtain more details about payment method from Stripe
-        const paymentMethod = await findPaymentMethodFromStripe(paymentMethodID);
+        const paymentMethod = await findPaymentMethodFromStripe(stripePaymentMethodID);
         if (!paymentMethod) throw new E.NotFoundError('paymentMethod');
 
         // Every card has a unique fingerprint
         const cardFingerprint = paymentMethod.card.fingerprint;
 
         // Check if new payment method already exists in our database
-        const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, cardFingerprint, paymentMethodID);
+        const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, cardFingerprint, stripePaymentMethodID);
 
         if (duplicatedPaymentMethod) {
-            await detachPaymentMethod(paymentMethodID); // Detach payment method from Stripe database
+            await detachPaymentMethod(stripePaymentMethodID); // Detach payment method from Stripe database
 
             // TODO STRIPE ERROR
             return res.status(400).json({
@@ -72,7 +72,7 @@ module.exports.createPaymentMethod = async (req, res, next) => {
         const cardExpDate = cardExpMonth + '/' + cardExpYear.charAt(2) + cardExpYear.charAt(3);
 
         // Insert payment method in our database
-        await insertPaymentMethod(accountID, paymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate);
+        await insertPaymentMethod(accountID, stripePaymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate);
 
         res.status(200).send(r.success200({ duplicate: false }));
         return next();
@@ -116,7 +116,7 @@ module.exports.createSubscription = async (req, res, next) => {
     try {
 
         const { account, plan } = res.locals;
-        const { paymentMethodID } = req.body;
+        const { stripePaymentMethodID } = req.body;
         const { type } = req.params;
         const accountID = parseInt(account.account_id);
 
@@ -140,10 +140,10 @@ module.exports.createSubscription = async (req, res, next) => {
 
         // If account has not used its free trial yet
         if (!account.trialed) {
-            if (!paymentMethodID) throw new E.ParamMissingError('paymentMethodID');
+            if (!stripePaymentMethodID) throw new E.ParamMissingError('paymentMethodID');
 
             // Check if payment method exists
-            const paymentMethod = findPaymentMethod(paymentMethodID);
+            const paymentMethod = findPaymentMethod(stripePaymentMethodID);
             if (!paymentMethod) throw new E.NotFoundError('paymentMethod');
 
             // Unix time now + 7 days
@@ -153,7 +153,7 @@ module.exports.createSubscription = async (req, res, next) => {
             // Create subscription in Stripe
             const subscription = await createSubscriptionInStripe(account.stripe_customer_id, priceID, {
                 trial_end: tempTrialEndDate,
-                default_payment_method: paymentMethodID
+                default_payment_method: stripePaymentMethodID
             });
 
             subscriptionID = subscription.id;
@@ -162,7 +162,7 @@ module.exports.createSubscription = async (req, res, next) => {
             // Create subscription in our Database
             await createSubscription(subscriptionID, planID, accountID, 'trialing', {
                 trial_end: dayjs((tempTrialEndDate + 3600) * 1000).toDate(), // for testing, trial lasts for 3 mins + 1hr delay for Stripe to charge
-                fk_payment_method: paymentMethodID
+                fk_payment_method: paymentMethod.payment_method_id
             });
 
         }
@@ -185,7 +185,7 @@ module.exports.createSubscription = async (req, res, next) => {
 module.exports.updateSubscription = async (req, res, next) => {
     try {
         const { account, plan } = res.locals;
-        const { paymentMethodID } = req.body;
+        const { stripePaymentMethodID } = req.body;
         const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
@@ -235,24 +235,24 @@ module.exports.updateSubscription = async (req, res, next) => {
         }
 
         // Change default payment method
-        if (paymentMethodID) {
+        if (stripePaymentMethodID) {
             // Check if payment method exists in our database
-            const paymentMethod = await findPaymentMethod(paymentMethodID);
+            const paymentMethod = await findPaymentMethod(stripePaymentMethodID);
             if (!paymentMethod)
                 throw new E.ParamMissingError('paymentMethod');
 
             // Check if payment method is the same payment method
             const defaultPaymentMethodID = activeSubscription.fk_payment_method;
             // TODO STRIPE ERROR
-            if (paymentMethodID === defaultPaymentMethodID) return res.status(400).json({
+            if (paymentMethod.payment_method_id === defaultPaymentMethodID) return res.status(400).json({
                 message: 'Error! Payment method is the same as current default payment method'
             });
 
             // Update subscription payment method in Stripe
-            await updateSubscriptionInStripe(subscriptionID, { default_payment_method: paymentMethodID });
+            await updateSubscriptionInStripe(subscriptionID, { default_payment_method: stripePaymentMethodID });
 
             // Update subscription payment method in our database
-            await updateSubscription(subscriptionID, { fk_payment_method: paymentMethodID });
+            await updateSubscription(subscriptionID, { fk_payment_method: paymentMethod.payment_method_id });
         }
 
         res.status(200).send(r.success200());
@@ -339,7 +339,7 @@ module.exports.handleWebhook = async (req, res, next) => {
 
                 // Find accoutn by customer id
                 const account = await findAccountBy.stripeCustomerId(customerID);
-                await updateAccountByID(account.account_id, {
+                await updateAccount(account.account_id, {
                     balance: parseFloat(customer.balance / 100).toFixed(2)
                 });
 
@@ -370,8 +370,8 @@ module.exports.handleWebhook = async (req, res, next) => {
                 // If this is user's first time subscribing
                 if (!account.trialed) {
                     // Update user trialed status to prevent user from access to free trial multiple times
-                    await updateAccountByID(accountID, {
-                        trialed: true
+                    await updateAccount(accountID, {
+                        has_trialed: true
                     });
                 }
                 else {

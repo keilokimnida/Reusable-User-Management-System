@@ -103,7 +103,7 @@ module.exports.lockAccount = (account_id) =>
     }, { where: { account_id } });
 
 module.exports.updateAccount = (account_id, details) =>
-    Accounts.update(details, { where: account_id });
+    Accounts.update(details, { where: { account_id } });
 
 module.exports.createSignup = (username, email) => {
     const token = jwt.sign({ username, email }, jwtSecret, { expiresIn: '7d' });

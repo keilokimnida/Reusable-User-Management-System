@@ -57,7 +57,7 @@ module.exports.findPaymentMethod = (paymentMethodID) =>
 
 
 // Find Duplicate Payment Method
-module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, paymentMethodID) =>
+module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, stripePaymentMethodID) =>
     Accounts.findOne({
         where: { account_id: accountID },
         include: {
@@ -66,7 +66,7 @@ module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, payment
             where: {
                 stripe_payment_method_fingerprint: cardFingerprint,
                 stripe_payment_method_id: {
-                    [Op.ne]: paymentMethodID
+                    [Op.ne]: stripePaymentMethodID
                 }
             }
         }

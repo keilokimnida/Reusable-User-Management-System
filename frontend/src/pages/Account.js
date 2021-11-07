@@ -238,7 +238,7 @@ const ManageUser = ({ TokenManager }) => {
       } else {
         try {
           await axios.put(`${APP_CONFIG.baseUrl}/stripe/subscriptions`, {
-            paymentMethodID: selectedPaymentMethod
+            stripePaymentMethodID: selectedPaymentMethod
           });
           toast.success("Payment method changed successfully");
           setSelectedPaymentMethod(() => null);

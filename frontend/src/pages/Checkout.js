@@ -159,7 +159,7 @@ const Checkout = ({ match, TokenManager }) => {
         if (freeTrial) {
             try {
                 await axios.post(`${APP_CONFIG.baseUrl}/stripe/subscriptions/${type}`, {
-                    paymentMethodID: selectedPaymentMethod
+                    stripePaymentMethodID: selectedPaymentMethod
                 });
 
                 setPaymentError(() => null);
