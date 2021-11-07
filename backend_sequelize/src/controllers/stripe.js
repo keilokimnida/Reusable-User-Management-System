@@ -11,79 +11,14 @@ const { findInvoice, createInvoice, updateInvoice } = require('../models/invoice
 const E = require('../errors/Errors');
 const r = require('../utils/response').responses;
 
-// Create payment intent
-module.exports.createPaymentIntent = async (req, res, next) => {
-    try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
-
-        if (isNaN(accountID))
-            throw new E.ParamTypeError('accountID', accountID, 1);
-
-        const account = await findAccountBy.id(accountID);
-
-        if (!account) throw new E.NotFoundError('account');
-
-        const { totalPrice } = res.locals;
-
-        let clientSecret;
-        let paymentIntentID;
-
-        // Check if user already has a payment intent
-        if (account.stripe_payment_intent_id === null) {
-            const paymentIntent = await createPaymentIntent(totalPrice, account.stripe_customer_id, account.email);
-
-            clientSecret = paymentIntent.client_secret;
-            paymentIntentID = paymentIntent.id;
-
-            const meta = {
-                stripe_payment_intent_id: paymentIntentID,
-                stripe_payment_intent_client_secret: clientSecret
-            };
-            // Update account with the new payment intent and client secret
-            await updateAccountByID(accountID, meta);
-        }
-        else {
-            clientSecret = account.stripe_payment_intent_client_secret;
-            paymentIntentID = account.stripe_payment_intent_id;
-        }
-
-        res.status(200).send(r.success200({ clientSecret, paymentIntentID }));
-        return next();
-    }
-    catch (error) {
-        return next(error);
-    }
-};
-
-// Update payment intent
-module.exports.updatePaymentIntent = async (req, res, next) => {
-    try {
-        const { paymentIntentID } = req.body;
-        if (!paymentIntentID) throw new E.ParamMissingError('paymentIntentID');
-        const { totalPrice } = res.locals;
-
-        await updatePaymentIntent(paymentIntentID, totalPrice);
-
-        res.status(200).send(r.success200());
-        return next();
-    }
-    catch (error) {
-        return next(error);
-    }
-};
-
 // Create setup intent
 module.exports.createSetupIntent = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
-
-        const account = await findAccountBy.id(accountID);
-        if (!account) throw new E.NotFoundError('account');
 
         const setupIntent = await createSetupIntent(account.stripe_customer_id);
         const clientSecret = setupIntent.client_secret;
@@ -100,8 +35,8 @@ module.exports.createSetupIntent = async (req, res, next) => {
 // Create payment method
 module.exports.createPaymentMethod = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
@@ -135,15 +70,7 @@ module.exports.createPaymentMethod = async (req, res, next) => {
         const cardExpMonth = paymentMethod.card.exp_month.toString();
         const cardExpYear = paymentMethod.card.exp_year.toString();
         const cardExpDate = cardExpMonth + '/' + cardExpYear.charAt(2) + cardExpYear.charAt(3);
-        console.log(
-            `
-            ---------------
-            cardType: ${cardType}
-            cardLastFourDigit: ${cardLastFourDigit}
-            cardFingerprint: ${cardFingerprint}
-            ---------------
-            `
-        );
+
         // Insert payment method in our database
         await insertPaymentMethod(accountID, paymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate);
 
@@ -158,8 +85,8 @@ module.exports.createPaymentMethod = async (req, res, next) => {
 // Remove payment method
 module.exports.removePaymentMethod = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
@@ -188,20 +115,15 @@ module.exports.removePaymentMethod = async (req, res, next) => {
 module.exports.createSubscription = async (req, res, next) => {
     try {
 
-        const { decoded } = res.locals.auth;
-        const plan = res.locals.plan;
+        const { account, plan } = res.locals;
         const { paymentMethodID } = req.body;
-        const accountID = parseInt(decoded.account_id);
         const { type } = req.params;
+        const accountID = parseInt(account.account_id);
 
         if (!type) throw new E.ParamMissingError('type');
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
-
-        // Get account information
-        const account = await findAccountBy.id(accountID);
-        if (!account) throw new E.NotFoundError('account');
 
         // Check if account has active subscription
         const activeSubscription = await findActiveSubscription(accountID);
@@ -262,17 +184,12 @@ module.exports.createSubscription = async (req, res, next) => {
 // Update Subscription
 module.exports.updateSubscription = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const plan = res.locals.plan;
-        const accountID = parseInt(decoded.account_id);
+        const { account, plan } = res.locals;
         const { paymentMethodID } = req.body;
+        const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
-
-        // Get account information
-        const account = await findAccountBy.id(accountID);
-        if (!account) throw new E.NotFoundError('account');
 
         // Check if user has active subscriptions
         // active means 'subscription status' / 'stripe_status' can be:
@@ -349,8 +266,8 @@ module.exports.updateSubscription = async (req, res, next) => {
 // Cancel Subscription
 module.exports.cancelSubscription = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-        const accountID = parseInt(decoded.account_id);
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);

@@ -21,26 +21,13 @@ const Home = ({TokenManager}) => {
     }
   };
 
-  const dashboardItems = ["a", "b", "c", "d", "e", "f"];
-
   return (
     <PageLayout title = "Home" TokenManager={TokenManager}>
       {({ nav, setNav, toggleNav }) => (
         <div className="c-Home">
           <h1>User Management System</h1>
           <hr />
-{/* 
-          <div className="c-Home__Dashboard">
-            {/* Render dashboard items *
-            {dashboardItems.map(item => (
-              <div className="c-Home__Dashboard-item c-Dashboard-item" key={item}>
-                Dashboard item {item}
-              </div>
-            ))}
-          </div> 
 
-          <hr />
-          */}
           <p>Sends a request to the backend with the refresh token cookie</p>
           <Button onClick={() => readCookie()}>Check refresh token HTTP only cookie</Button>
 

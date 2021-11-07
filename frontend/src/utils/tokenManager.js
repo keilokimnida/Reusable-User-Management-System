@@ -25,7 +25,7 @@ const tokenManager = () => {
     const logout = async () => {
         console.log()
         try {
-            await axios.post(`${APP_CONFIG.baseUrl}/auth/logout`);
+            await axios.post(`${APP_CONFIG.baseUrl}/auth/logout`, {}, {withCredentials: true});
             window.localStorage.setItem("logout", Date.now());
             accessToken = null;
             return true;

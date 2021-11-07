@@ -28,12 +28,6 @@ router.get('/exclusive-contents/premium', isLoggedIn, checkPremiumAccess, (req, 
 
 // STRIPE PAYMENT
 
-// Create payment intent
-// router.post('/stripe/payment_intents', isLoggedIn, calculateProductsTotalPrice, stripeController.createPaymentIntent);
-
-// Update payment intent
-// router.put('/stripe/payment_intents', isLoggedIn, calculateProductsTotalPrice, stripeController.updatePaymentIntent);
-
 // Create setup intent
 router.post('/stripe/setup_intents', isLoggedIn, stripeController.createSetupIntent);
 
@@ -54,8 +48,5 @@ router.put('/stripe/subscriptions', isLoggedIn, stripeController.updateSubscript
 
 // Cancel Subscription
 router.delete('/stripe/subscriptions', isLoggedIn, stripeController.cancelSubscription);
-
-// PRODUCTS
-// router.get('/products', isLoggedIn, productController.findAllProducts);
 
 module.exports = router;

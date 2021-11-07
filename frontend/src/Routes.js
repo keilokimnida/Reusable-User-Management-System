@@ -14,8 +14,6 @@ import Home from './pages/Home';
 import Plans from './pages/Plans';
 
 const Routes = ({ TokenManager }) => {
-  const token = TokenManager.getToken();
-  console.log(token);
   // this dummy is here so its more consistent
   // anecdote: i forgot to return JSX in render={} and only called the component 
   // as if it was a function and has lead to at least 2 hours being wasted
@@ -23,7 +21,6 @@ const Routes = ({ TokenManager }) => {
 
   const authGuard = (Component) => (props) => {
     const token = TokenManager.getToken();
-    console.log(token);
     if (!token) return (<Redirect to="/login" {...props} TokenManager={TokenManager} />);
     return (<Component {...props} TokenManager={TokenManager} />);
   };

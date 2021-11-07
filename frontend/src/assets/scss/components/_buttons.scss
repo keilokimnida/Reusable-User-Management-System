@@ -111,6 +111,11 @@
     &:active {
         opacity: 0.8;
     }
+    
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 
     &--alert-border {
         color: $button-alert;

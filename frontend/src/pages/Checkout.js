@@ -5,7 +5,6 @@ import { useHistory } from 'react-router';
 import * as BiIcons from 'react-icons/bi';
 import { IconContext } from 'react-icons';
 import { useStripe } from "@stripe/react-stripe-js";
-import jwt_decode from "jwt-decode";
 
 import APP_CONFIG from '../config/appConfig';
 import CheckoutSuccess from '../components/CheckoutSuccess';
@@ -13,13 +12,14 @@ import Error from '../components/Error';
 import SetupPaymentMethod from '../components/SetupPaymentMethod';
 import SelectPaymentMethod from '../components/SelectPaymentMethod';
 import PageLayout from "../layout/PageLayout";
-import { getToken } from '../utils/localStorage';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
 const Checkout = ({ match, TokenManager }) => {
-    useWatchLoginStatus();
 
     const history = useHistory();
+
+    // Token management
+    useWatchLoginStatus();
     const decodedToken = TokenManager.getDecodedToken();
     const accountUUID = decodedToken.account_uuid;
 
@@ -65,11 +65,10 @@ const Checkout = ({ match, TokenManager }) => {
 
         (async () => {
             try {
-                const response = await axios.get(`${APP_CONFIG.baseUrl}/account/${accountUUID}`);
-                const responseData = response.data;
-                console.log(responseData);
-                const account = responseData.account;
-                const activeSubscription = responseData.activeSubscription;
+                const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
+                console.log(res)
+                const account = res.data.results;
+                const activeSubscription = res.data.activeSubscription;
 
                 if (componentMounted) {
                     // Check if user has any payment methods type stored already
@@ -107,7 +106,7 @@ const Checkout = ({ match, TokenManager }) => {
                 }
             } catch (error) {
                 console.log(error);
-                const errCode = error.response.status;
+                const errCode = error.response?.status;
                 if (errCode === 401) {
                     history.push("/logged-out");
                 }

@@ -42,22 +42,23 @@ const App = () => {
 
   const getRefreshToken = async () => {
     try {
-      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`, {}, { withCredentials: true });
+      axios.defaults.withCredentials = true;
+      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`);
       if (res.status === 200) {
         const accessToken = res.data.results.access_token;
  
         TokenManager.setToken(accessToken);
         axios.defaults.headers.common = { 'Authorization': `bearer ${accessToken}` };
-        axios.defaults.withCredentials = true;
-        // call refreshToken every 3 minutes to renew the authentication token.
-        setTimeout(verifyUser, 3 * 60 * 1000);
+
+        // call refreshToken every 30 minutes to renew the authentication token.
+        setTimeout(verifyUser, 30 * 60 * 1000);
       } else {
         TokenManager.logout();
       }
       setError(() => false);
     } catch (error) {
       console.log(error);
-      if (error.response.status !== 401) {
+      if (error.response?.status !== 401) {
         setError(() => true);
         TokenManager.logout();
       }

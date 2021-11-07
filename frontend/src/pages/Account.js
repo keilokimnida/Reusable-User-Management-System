@@ -28,7 +28,7 @@ import { billingHistoryColumn, paymentMethodsColumn } from '../config/tableColum
 import PageLayout from '../layout/PageLayout';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const ManageUser = ({TokenManager}) => {
+const ManageUser = ({ TokenManager }) => {
   // Used for watching whether user is logged in
   useWatchLoginStatus();
   // States used for fetching user details
@@ -55,7 +55,30 @@ const ManageUser = ({TokenManager}) => {
   const getAccount = async () => {
     try {
       const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
-      setAccount(() => res.data.results);
+      console.log(res);
+      const accountData = res.data.results;
+      setAccount(() => ({
+        email: accountData.email,
+        username: accountData.username,
+        firstname: accountData.firstname,
+        lastname: accountData.lastname,
+        displayBalance: "S$" + Math.abs(parseFloat(accountData.balance)).toFixed(2),
+        realBalance: parseFloat(accountData.balance).toFixed(2)
+      }));
+
+      setPaymentMethods(() => accountData.payment_accounts.map((paymentAccount, index) => {
+        console.log(paymentAccount);
+        return {
+          serialNo: index + 1,
+          cardType: paymentAccount.stripe_card_type,
+          last4: paymentAccount.stripe_card_last_four_digit,
+          expDate: paymentAccount.stripe_card_exp_date,
+          stripePaymentMethodID: paymentAccount.stripe_payment_method_id,
+          createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A"),
+          action_delete: paymentAccount.stripe_payment_method_id,
+        }
+      }));
+
     }
     catch (error) {
       const reauth = error.response?.status === 401;
@@ -68,11 +91,28 @@ const ManageUser = ({TokenManager}) => {
       setPageError(() => error);
       console.error("ERROR", { ...error });
     }
-  }
+  };
+  console.log(paymentMethods);
 
   useEffect(() => {
-    setFirstLoading(() => true);
-    getAccount().then(() => setFirstLoading(() => false));
+    let componentMounted = true;
+
+    (async () => {
+      try {
+        if (componentMounted) {
+          setFirstLoading(() => true);
+          await getAccount();
+          setFirstLoading(() => false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+
+    return (() => {
+      componentMounted = false;
+    });
+
     // eslint-disable-next-line
   }, [rerender]);
 
@@ -218,7 +258,6 @@ const ManageUser = ({TokenManager}) => {
     setSelectedPaymentMethod(() => null);
     setShowChangeCard((prevState) => !prevState);
   };
-
 
   return (
     <>
@@ -397,7 +436,7 @@ const ManageUser = ({TokenManager}) => {
                           bordered={false}
                           keyField="serialNo"
                           data={paymentMethods}
-                          columns={() => paymentMethodsColumn(handleRemoveCard)}
+                          columns={paymentMethodsColumn(handleRemoveCard)}
                         />
                       </div>
                     </>

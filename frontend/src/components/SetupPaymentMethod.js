@@ -4,7 +4,6 @@ import Spinner from 'react-bootstrap/Spinner'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
 import APP_CONFIG from '../config/appConfig';
-import { getToken } from '../utils/localStorage';
 
 
 const SetupPaymentMethod = ({ show, handleClose, setRerender }) => {
@@ -15,7 +14,6 @@ const SetupPaymentMethod = ({ show, handleClose, setRerender }) => {
     const [cardSetupSuccess, setCardSetupSuccess] = useState(false);
     const [setupIntentID, setSetupIntentID] = useState(null);
     const [clientSecret, setClientSecret] = useState(null);
-    const token = getToken();
 
     useEffect(() => {
         let componentMounted = true;
@@ -25,14 +23,10 @@ const SetupPaymentMethod = ({ show, handleClose, setRerender }) => {
                 if (componentMounted) {
                     if (show) {
                         // Retrieve client secret here
-                        const setupIntent = await axios.post(`${APP_CONFIG.baseUrl}/stripe/setup_intents`, {}, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
+                        const setupIntent = await axios.post(`${APP_CONFIG.baseUrl}/stripe/setup_intents`);
                         console.log(setupIntent);
-                        setClientSecret(() => setupIntent.data.clientSecret);
-                        setSetupIntentID(() => setupIntent.data.setupIntentID);
+                        setClientSecret(() => setupIntent.data.results.clientSecret);
+                        setSetupIntentID(() => setupIntent.data.results.setupIntentID);
                     }
                 }
             } catch (error) {
@@ -103,10 +97,6 @@ const SetupPaymentMethod = ({ show, handleClose, setRerender }) => {
                 try {
                     await axios.post(`${APP_CONFIG.baseUrl}/stripe/payment_methods`, {
                         paymentMethodID
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
                     });
 
                     elements.getElement(CardElement).clear();

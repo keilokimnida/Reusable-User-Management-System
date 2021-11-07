@@ -13,7 +13,7 @@ const Subscriptions = db.define(
         subscription_id: {
             type: DataTypes.INTEGER.UNSIGNED,
             primaryKey: true,
-            autoIncrement: false
+            autoIncrement: true
         },
         stripe_subscription_id: {
             type: DataTypes.STRING(255),
