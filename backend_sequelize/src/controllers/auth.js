@@ -153,13 +153,13 @@ module.exports.useRefreshToken = async (req, res, next) => {
 module.exports.logout = async (req, res, next) => {
     try {
         // get the refresh token from the cookies in the request
-        const { refreshToken } = req.signedCookies;
-        if (refreshToken === undefined) throw new E.TokenNotFoundError();
+        // const { refreshToken } = req.signedCookies;
+        // if (refreshToken === undefined) throw new E.TokenNotFoundError();
 
-        const { account_uuid } = jwt.verify(refreshToken, cookieSecret);
+        // const { account_uuid } = jwt.verify(refreshToken, cookieSecret);
 
-        const account = await findAccountBy.uuid(account_uuid);
-        if (!account) throw new E.AccountNotFoundError();
+        // const account = await findAccountBy.uuid(account_uuid);
+        // if (!account) throw new E.AccountNotFoundError();
 
         res.clearCookie('refreshToken');
         res.status(200).send(r.success200());
