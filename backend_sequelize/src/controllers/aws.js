@@ -22,7 +22,6 @@ module.exports.processGetCustomer = async (req, res, next) => {
 
     try {
         let characters = await dynamoClient.scan(params).promise();
-        console.log(characters)
         return res.status(200).send(characters);
 
     } catch (error) {
@@ -48,7 +47,6 @@ module.exports.processGetOneCustomer = async (req, res, next) => {
 
     try {
         let characters = await dynamoClient.query(params).promise();
-        console.log(characters)
         return res.status(200).send(characters);
 
     } catch (error) {
@@ -74,7 +72,6 @@ module.exports.processAddCustomer = async (req, res, next) => {
 
     try {
         let characters = await dynamoClient.put(params).promise();
-        console.log(characters)
         return res.status(200).send(characters);
 
     } catch (error) {
@@ -99,40 +96,6 @@ module.exports.processAddCustomer = async (req, res, next) => {
 
     try {
         let characters = await dynamoClient.put(params).promise();
-        console.log(characters)
-        return res.status(200).send(characters);
-
-    } catch (error) {
-        let message = 'Server is unable to process your request.';
-        return res.status(500).send({
-            message: error
-        });
-    }
-
-};
-
-//UPDATE CUSTOMER
-//UPDATE CUSTOMER IS ALSO NOT WORKING
-//SOMEONE END ME PLEASE WHY IS ALL THE GUIDES WRONG
-module.exports.processUpdateCustomer = async (req, res, next) => {
-    const id = req.params.customerId;
-    const name = req.body.name;
-
-    const params = {
-        TableName: TABLE_NAME,
-        //WHY ISNT THIS FUCKING KEY WORKING AND I HAVE NO IDEA WHAT IM PUTTING IN THE EXPRESSION
-        Key: { "customerId": id},
-        UpdateExpression: 'set #name = :name',
-        ConditionExpression: '#name = :name',
-        ExpressionAttributeNames: { '#name': name },
-        ExpressionAttributeValues: {
-            ':name': JSON.stringify(name)
-        }
-    };
-    console.log(params)
-    try {
-        let characters = await dynamoClient.update(params).promise();
-        console.log(characters)
         return res.status(200).send(characters);
 
     } catch (error) {
@@ -145,13 +108,11 @@ module.exports.processUpdateCustomer = async (req, res, next) => {
 };
 
 //DELETE CUSTOMER
-//DELETE IS CURRENTLY NOT WORKING I WILL FIX IT ANOTHER TIME
 module.exports.processDeleteCustomer = async (req, res, next) => {
     const id = req.params.customerId;
 
     const params = {
         TableName: TABLE_NAME,
-        //STUPID FUCKING KEY
         Key: {
             "customerId": id,
             "date": "2020"
@@ -164,7 +125,6 @@ module.exports.processDeleteCustomer = async (req, res, next) => {
     console.log(params)
     try {
         let characters = await dynamoClient.delete(params).promise();
-        console.log(characters)
         return res.status(200).send(characters);
 
     } catch (error) {
