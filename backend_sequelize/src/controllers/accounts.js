@@ -13,6 +13,19 @@ const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 const validators = require('../middlewares/validator');
 
+module.exports.signup = async (req, res, next) => {
+    try {
+        const { username, email } = req.body;
+
+
+    }
+    catch (error) {
+        return next(error);
+    }
+};
+
+// ============================================================
+
 module.exports.createAccount = async (req, res, next) => {
     try {
         // i prefer to destructure req.body as it declares what is required for this controller
@@ -61,7 +74,7 @@ module.exports.findAccountByID = async (req, res, next) => {
     try {
         const accountUUID = req.params.accountUUID;
 
-        const account = await findAccountBy.uuid(accountUUID);
+        const account = await findAccountBy.uuid(accountUUID, { include: ['payment_accounts'] });
         if (!account) throw new E.AccountNotFoundError();
 
         const { account_id, ...a } = account.toJSON();

@@ -1,6 +1,9 @@
-const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { Accounts, PaymentMethods } = require('../schemas/Schemas').User;
+
+const { secret: jwtSecret } = require('../config/config').jwt;
+const { Op } = require('sequelize');
+const { Accounts, Registrations, PaymentMethods } = require('../schemas/Schemas').User;
 
 const { ACCOUNT_STATUS } = require('../config/enums');
 
@@ -71,7 +74,7 @@ module.exports.findAccountBy = {
         where: { [Op.or]: identifiers.map((identifer) => ({ [identifer]: value })) },
         include: [...include, ...includeActivePassword(includePassword)]
     }),
-    
+
     stripeCustomerId: (stripe_customer_id, includePaymentMethods = true) => Accounts.findOne({
         where: { stripe_customer_id },
         include: includePaymentMethods ? [{ model: PaymentMethods, as: 'payment_accounts' }] : []
@@ -101,3 +104,7 @@ module.exports.lockAccount = (account_id) =>
 
 module.exports.updateAccount = (account_id, details) =>
     Accounts.update(details, { where: account_id });
+
+module.exports.createSignup = (username, email) => {
+    jwt.sign({ username, email }, jwtSecret, { expiresIn: '7d' });
+};
