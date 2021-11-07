@@ -29,7 +29,7 @@
     "nodemailer": "^6.6.3",
     "sequelize": "^6.6.5",
     "stripe": "^8.184.0",
-    "validator": "^13.6.0",
+    "validator": "^13.7.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {

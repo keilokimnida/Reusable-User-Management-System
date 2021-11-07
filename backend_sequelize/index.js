@@ -23,7 +23,7 @@ app.use('/api/v1', mainRouter);
 
 // setting this to true will drop all tables and seed new data
 // use "node index.js R" to quickly reset database
-const reset = process.argv[2] === 'R' || false;
+const reset = process.argv[2] === 'R' || true;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code

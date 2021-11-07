@@ -12,11 +12,15 @@ const { ADMIN_LEVEL } = require('../config/enums');
 const r = require('../utils/response').responses;
 const E = require('../errors/Errors');
 // const validator = require('validator');
+const validators = require('../middlewares/validator');
 
 module.exports.createAccount = async (req, res, next) => {
     try {
         // i prefer to destructure req.body as it declares what is required for this controller
         const { firstname, lastname, username, email, password } = req.body;
+        const { lastname, username, email, password } = req.body;
+        //TESTING VALIDATORS, MIGHT CHANGE THIS
+        const { firstname } = validators.validateText(req.body.firstname);
 
         // stripe customer
         const customer = await createStripeCustomer(email, username);
