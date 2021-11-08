@@ -9,8 +9,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import useWatchLoginStatus from '../../hooks/useWatchLoginStatus';
 import axios from 'axios';
 import APP_CONFIG from '../../config/appConfig';
+import TokenManager from '../../utils/tokenManager';
 
-const ManageUsers = ({TokenManager}) => {
+const ManageUsers = () => {
 
   useWatchLoginStatus();
 
@@ -25,12 +26,7 @@ const ManageUsers = ({TokenManager}) => {
       setUsers(res.data.results);
     }
     catch (err) {
-      const reauth = err.response?.status === 401;
-      if (reauth) {
-        TokenManager.logout();
-        alert("Reauthentication is required");
-        return history.push("/login");
-      }
+      // const reauth = err.response?.status === 401;
       setError(err);
       console.error("ERROR", { ...err });
     }

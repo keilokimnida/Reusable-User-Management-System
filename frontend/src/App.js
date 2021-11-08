@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import APP_CONFIG from './config/appConfig';
-import tokenManager from './utils/tokenManager';
+import TokenManager from './utils/tokenManager';
 import Error from './components/Error';
 
 // error boundary
@@ -33,9 +33,10 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   // bopian, token manager should be stored in state to prevent it from being lost
-  const [TokenManager, setTokenManager] = useState(tokenManager());
+  // const [TokenManager, setTokenManager] = useState(tokenManager());
 
   const verifyUser = useCallback(async () => {
+    setLoading(() => true);
     await getRefreshToken();
     setLoading(() => false);
   }, []);
@@ -43,7 +44,7 @@ const App = () => {
   const getRefreshToken = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`);
+      const res = await axios.post(`${APP_CONFIG.baseUrl}/auth/refresh`, {}, { withCredentials: true });
       if (res.status === 200) {
         const accessToken = res.data.results.access_token;
  
@@ -51,7 +52,7 @@ const App = () => {
         axios.defaults.headers.common = { 'Authorization': `bearer ${accessToken}` };
 
         // call refreshToken every 30 minutes to renew the authentication token.
-        setTimeout(verifyUser, 30 * 60 * 1000);
+        setTimeout(getRefreshToken,  30 * 60 * 1000);
       } else {
         TokenManager.logout();
       }

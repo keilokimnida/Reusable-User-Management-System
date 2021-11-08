@@ -8,8 +8,9 @@ import BREAKPOINTS from '../config/breakpoints';
 import NAV_LIST from '../config/navList';
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
+import TokenManager from '../utils/tokenManager';
 
-const NavItem = ({ name, route, type, sub, setNav, TokenManager }) => {
+const NavItem = ({ name, route, type, sub, setNav }) => {
   // this is to close the nav when it is on a smaller screen and occupies the entire viewport
   const collapseNavIfSmall = () => window.innerWidth < BREAKPOINTS.lg ? setNav(false) : null;
   const history = useHistory();
@@ -57,7 +58,7 @@ const NavItem = ({ name, route, type, sub, setNav, TokenManager }) => {
   );
 }
 
-const NavList = ({ name, sub: items, setNav, TokenManager }) => {
+const NavList = ({ name, sub: items, setNav }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div className = "c-Nav__List c-List">
@@ -71,18 +72,18 @@ const NavList = ({ name, sub: items, setNav, TokenManager }) => {
 
       {collapsed
         ? null
-        : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} TokenManager={TokenManager}/>)
+        : items.map((item, i) => <NavItem setNav={setNav} sub {...item} key={i} />)
       }
     </div>
   );
 };
 
-const Nav = ({ setNav, TokenManager }) => {
+const Nav = ({ setNav }) => {
   return (
     <nav className="c-Nav">
       {NAV_LIST.map((item, i) => item.sub
-        ? <NavList setNav={setNav} {...item} key={i} TokenManager={TokenManager}/>
-        : <NavItem setNav={setNav} {...item} key={i} TokenManager={TokenManager} />
+        ? <NavList setNav={setNav} {...item} key={i} />
+        : <NavItem setNav={setNav} {...item} key={i} />
       )}
     </nav>
   );

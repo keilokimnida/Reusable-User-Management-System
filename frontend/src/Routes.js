@@ -12,17 +12,21 @@ import Account from './pages/Account';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Plans from './pages/Plans';
+import LoggedOut from './pages/LoggedOut';
 
-const Routes = ({ TokenManager }) => {
+import TokenManager from './utils/tokenManager';
+
+const Routes = () => {
   // this dummy is here so its more consistent
   // anecdote: i forgot to return JSX in render={} and only called the component 
   // as if it was a function and has lead to at least 2 hours being wasted
-  const dummy = (Component) => (props) => (<Component {...props} TokenManager={TokenManager} />);
+  const dummy = (Component) => (props) => (<Component {...props} />);
 
   const authGuard = (Component) => (props) => {
     const token = TokenManager.getToken();
-    if (!token) return (<Redirect to="/login" {...props} TokenManager={TokenManager} />);
-    return (<Component {...props} TokenManager={TokenManager} />);
+   
+    if (!token) return (<Redirect to="/logged-out" {...props} />);
+    return (<Component {...props} />);
   };
 
   return (
@@ -54,6 +58,8 @@ const Routes = ({ TokenManager }) => {
 
         <Route exact path="/users" render={props => authGuard(ManageUsers)(props)} />
         <Route path="/users/:userId" render={props => authGuard(ManagerUser)(props)} />
+
+        <Route path="/logged-out" render={(props) => dummy(LoggedOut)(props)} />
       </Switch>
     </Router>
   );

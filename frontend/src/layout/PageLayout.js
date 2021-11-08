@@ -7,7 +7,7 @@ import Nav from './Nav';
 import Footer from './Footer';
 import Title from './Title';
 
-const PageLayout = ({ children, title, TokenManager }) => {
+const PageLayout = ({ children, title }) => {
   const [nav, setNav] = useState(window.innerWidth < BREAKPOINTS.lg ? false : true);
   const toggleNav = () => setNav(!nav);
   return (
@@ -17,7 +17,7 @@ const PageLayout = ({ children, title, TokenManager }) => {
 
       <div className="l-Main__View l-View">
         <div className={`l-View__Nav--${nav ? "display" : "hide"} l-View__Nav`}>
-          <Nav setNav={setNav} TokenManager={TokenManager} />
+          <Nav setNav={setNav} />
         </div>
 
         <div className={`l-View__Content--${nav ? "hide" : "display"} l-View__Content`}>

@@ -7,7 +7,7 @@ import PageLayout from '../layout/PageLayout';
 import APP_CONFIG from '../config/appConfig';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
 
-const Home = ({TokenManager}) => {
+const Home = () => {
   useWatchLoginStatus();
 
   const readCookie = async () => {
@@ -22,7 +22,7 @@ const Home = ({TokenManager}) => {
   };
 
   return (
-    <PageLayout title = "Home" TokenManager={TokenManager}>
+    <PageLayout title = "Home">
       {({ nav, setNav, toggleNav }) => (
         <div className="c-Home">
           <h1>User Management System</h1>

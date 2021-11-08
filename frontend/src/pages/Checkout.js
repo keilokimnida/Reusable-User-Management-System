@@ -13,8 +13,9 @@ import SetupPaymentMethod from '../components/SetupPaymentMethod';
 import SelectPaymentMethod from '../components/SelectPaymentMethod';
 import PageLayout from "../layout/PageLayout";
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
+import TokenManager from '../utils/tokenManager';
 
-const Checkout = ({ match, TokenManager }) => {
+const Checkout = ({ match }) => {
 
     const history = useHistory();
 

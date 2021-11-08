@@ -27,8 +27,9 @@ import APP_CONFIG from '../config/appConfig';
 import { billingHistoryColumn, paymentMethodsColumn } from '../config/tableColumns';
 import PageLayout from '../layout/PageLayout';
 import useWatchLoginStatus from '../hooks/useWatchLoginStatus';
+import TokenManager from '../utils/tokenManager';
 
-const ManageUser = ({ TokenManager }) => {
+const ManageUser = () => {
   // Used for watching whether user is logged in
   useWatchLoginStatus();
   // States used for fetching user details
@@ -81,12 +82,7 @@ const ManageUser = ({ TokenManager }) => {
 
     }
     catch (error) {
-      const reauth = error.response?.status === 401;
-      if (reauth) {
-        TokenManager.logout();
-        alert("Reauthentication is required");
-        return history.push("/login");
-      }
+      // const reauth = error.response?.status === 401;
 
       setPageError(() => error);
       console.error("ERROR", { ...error });

@@ -9,8 +9,9 @@ import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import APP_CONFIG from '../config/appConfig';
 import ReCAPTCHA from "react-google-recaptcha";
+import TokenManager from '../utils/tokenManager';
 
-const Login = ({TokenManager}) => {
+const Login = () => {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 

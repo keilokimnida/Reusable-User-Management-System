@@ -9,7 +9,12 @@ const tokenManager = () => {
     const getToken = () => accessToken;
 
     const getDecodedToken = () => {
-        return jwtDecode(accessToken);
+        if (accessToken) {
+            return jwtDecode(accessToken);
+        } else {
+            return null;
+        }
+
     };
 
     const setToken = (pToken) => {
@@ -54,4 +59,4 @@ const tokenManager = () => {
     };
 };
 
-export default tokenManager;
+export default tokenManager();
