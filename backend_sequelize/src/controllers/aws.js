@@ -83,30 +83,6 @@ module.exports.processAddCustomer = async (req, res, next) => {
 
 };
 
-//ADD CUSTOMER
-module.exports.processAddCustomer = async (req, res, next) => {
-    const items = req.body;
-    console.log("processAddCustomer is Running.");
-    console.log(items);
-    const params = {
-        TableName: TABLE_NAME,
-        //Key in data in the new JSON Dynamo format
-        Item: items
-    };
-
-    try {
-        let characters = await dynamoClient.put(params).promise();
-        return res.status(200).send(characters);
-
-    } catch (error) {
-        let message = 'Server is unable to process your request.';
-        return res.status(500).send({
-            message: error
-        });
-    }
-
-};
-
 //DELETE CUSTOMER
 module.exports.processDeleteCustomer = async (req, res, next) => {
     const id = req.params.customerId;
@@ -115,7 +91,9 @@ module.exports.processDeleteCustomer = async (req, res, next) => {
         TableName: TABLE_NAME,
         Key: {
             "customerId": id,
-            "date": "2020"
+            //THIS SHOULD NOT BE HARD CODED, BUT DUE TO THE SAMPLE
+            //DATABASE DESIGN I HAVE TO IMPLEMENT IT LIKE THIS
+            "date": "2019"
         },
         ConditionExpression:"customerId = :id",
         ExpressionAttributeValues: {

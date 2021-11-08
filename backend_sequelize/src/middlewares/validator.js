@@ -1,13 +1,13 @@
 const validator = require('validator');
 
 module.exports.validateText = (input) => {
-    if (validators.isEmpty(text))
+    if (validators.isEmpty(input))
         throw new Error('Missing Field');
-    if (validators.isAlpha(text))
+    if (validators.isAlpha(input))
         throw new Error('Input is not alphebetic');
 
-    text = validator.escape(text);
-    text = validator.trim(text);
+    input = validator.escape(input);
+    input = validator.trim(input);
 
-    return text;
+    return input;
 }
