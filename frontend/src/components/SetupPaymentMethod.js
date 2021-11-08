@@ -92,11 +92,11 @@ const SetupPaymentMethod = ({ show, handleClose, setRerender }) => {
                 // card to a Customer
 
                 // Obtain payment method id
-                const stripePaymentMethodID = result.setupIntent.payment_method;
-                console.log(stripePaymentMethodID);
+                const paymentMethodID = result.setupIntent.payment_method;
+                console.log(paymentMethodID);
                 try {
                     await axios.post(`${APP_CONFIG.baseUrl}/stripe/payment_methods`, {
-                        stripePaymentMethodID
+                        paymentMethodID
                     });
 
                     elements.getElement(CardElement).clear();

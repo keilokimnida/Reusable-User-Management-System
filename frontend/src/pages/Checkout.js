@@ -69,7 +69,7 @@ const Checkout = ({ match }) => {
                 const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
                 console.log(res)
                 const account = res.data.results;
-                const activeSubscription = res.data.activeSubscription;
+                const activeSubscription = res.data.results.active_subscription;
 
                 if (componentMounted) {
                     // Check if user has any payment methods type stored already
@@ -91,7 +91,7 @@ const Checkout = ({ match }) => {
                         setIsSubscriber(() => true);
                     } else {
                         // Check if it's user's first time subscribing
-                        if (!account.trialed) {
+                        if (!account.has_trialed) {
                             setFreeTrial(() => true);   // inform handleFormSubmit to start free trial instead of charging card
                             // Don't create subscription here
                             // Create it when user clicks on pay
@@ -160,7 +160,7 @@ const Checkout = ({ match }) => {
         if (freeTrial) {
             try {
                 await axios.post(`${APP_CONFIG.baseUrl}/stripe/subscriptions/${type}`, {
-                    stripePaymentMethodID: selectedPaymentMethod
+                    paymentMethodID: selectedPaymentMethod
                 });
 
                 setPaymentError(() => null);
@@ -215,7 +215,7 @@ const Checkout = ({ match }) => {
                                     heading="Error!"
                                     description="You already have an existing plan!"
                                     displayLink="Manage Account"
-                                    link="/account"
+                                    link="/me"
                                 />
                                 :
                                 paymentSuccess ?

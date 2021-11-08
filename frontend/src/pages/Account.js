@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 import { ReactSVG } from 'react-svg';
 import jwtDecode from 'jwt-decode';
 import * as Yup from 'yup';
-
+import { useStripe } from "@stripe/react-stripe-js";
 import amexSVG from "../assets/svg/Amex.svg";
 import MCSVG from "../assets/svg/MC.svg";
 import visaSVG from "../assets/svg/Visa_2021.svg";
@@ -50,35 +50,100 @@ const ManageUser = () => {
   const [rerender, setRerender] = useState(false);
   const [failedPaymentExist, setFailedPaymentExist] = useState(false);
 
+  const stripe = useStripe();
+
   const decodedToken = TokenManager.getDecodedToken();
   const accountUUID = decodedToken.account_uuid;
 
   const getAccount = async () => {
     try {
-      const res = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
-      console.log(res);
-      const accountData = res.data.results;
-      setAccount(() => ({
-        email: accountData.email,
-        username: accountData.username,
-        firstname: accountData.firstname,
-        lastname: accountData.lastname,
-        displayBalance: "S$" + Math.abs(parseFloat(accountData.balance)).toFixed(2),
-        realBalance: parseFloat(accountData.balance).toFixed(2)
-      }));
+      const accountRes = await axios.get(`${APP_CONFIG.baseUrl}/users/account/${accountUUID}`);
+      console.log(accountRes);
+      const accountData = accountRes.data.results;
 
-      setPaymentMethods(() => accountData.payment_accounts.map((paymentAccount, index) => {
-        console.log(paymentAccount);
-        return {
-          serialNo: index + 1,
-          cardType: paymentAccount.stripe_card_type,
-          last4: paymentAccount.stripe_card_last_four_digit,
-          expDate: paymentAccount.stripe_card_exp_date,
-          stripePaymentMethodID: paymentAccount.stripe_payment_method_id,
-          createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A"),
-          action_delete: paymentAccount.stripe_payment_method_id,
+      const activeSubscriptionRes = await axios.get(`${APP_CONFIG.baseUrl}/subscription/active`);
+      console.log(activeSubscriptionRes);
+      const activeSubscription = activeSubscriptionRes.data.results;
+
+      if (accountData) {
+        setAccount(() => ({
+          email: accountData.email,
+          username: accountData.username,
+          firstname: accountData.firstname,
+          lastname: accountData.lastname,
+          displayBalance: "S$" + Math.abs(parseFloat(accountData.balance)).toFixed(2),
+          realBalance: parseFloat(accountData.balance).toFixed(2)
+        }));
+
+        setPaymentMethods(() => accountData.payment_accounts.map((paymentAccount, index) => {
+          return {
+            serialNo: index + 1,
+            cardType: paymentAccount.stripe_card_type,
+            last4: paymentAccount.stripe_card_last_four_digit,
+            expDate: paymentAccount.stripe_card_exp_date,
+            stripePaymentMethodID: paymentAccount.stripe_payment_method_id,
+            createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A"),
+            action_delete: paymentAccount.stripe_payment_method_id,
+          }
+        }));
+      }
+
+      if (activeSubscription) {
+        // Subscription info
+        setSubscriptionInfo(() => ({
+          status: activeSubscription.stripe_status,
+          plan: activeSubscription.plan.name,
+          price: activeSubscription.plan.price,
+          billingCycle: (() => {
+            if (activeSubscription.stripe_status !== "trialing") {
+              return dayjs(new Date(activeSubscription.current_period_start)).format("MMMM D, YYYY") + " - " + dayjs(new Date(activeSubscription.current_period_end)).format("MMMM D, YYYY")
+            } else {
+              return null;
+            }
+          })(),
+          trialEnd: (() => {
+            if (activeSubscription.stripe_status === "trialing") {
+              return dayjs(new Date(activeSubscription.trial_end)).format("MMMM D, YYYY h:mm A")
+            } else {
+              return null;
+            }
+          })(),
+          defaultPaymentMethodID: activeSubscription.payment_method?.stripe_payment_method_id,
+          last4: activeSubscription.payment_method?.stripe_card_last_four_digit,
+          cardType: activeSubscription.payment_method?.stripe_card_type,
+        }));
+
+        if (activeSubscription.invoice) {
+          // Set Billing history
+          setBillingHistory(() => activeSubscription.invoice.map((invoice, index) => ({
+            invoiceID: invoice.stripe_invoice_id,
+            accountBalance: invoice.balance,
+            invoiceReferenceNumber: invoice.stripe_reference_number,
+            amount: invoice.amount,
+            status: invoice.stripe_payment_intent_status,
+            cardType: invoice.stripe_card_type,
+            last4: invoice.stripe_card_last_four_digit,
+            clientSecret: invoice.stripe_client_secret,
+            action: (() => {
+              console.log(invoice.stripe_payment_intent_status);
+              if (invoice.stripe_payment_intent_status !== "succeeded" && invoice.stripe_payment_intent_status !== "canceled") {
+                setFailedPaymentExist(() => true);
+                return true;
+              } else {
+                setFailedPaymentExist(() => false);
+                return false;
+              }
+            })(),
+            paidOn: (() => {
+              if (invoice.paid_on) {
+                return dayjs(new Date(invoice.paid_on)).format("MMMM D, YYYY h:mm A");
+              } else {
+                return null;
+              }
+            })()
+          })));
         }
-      }));
+      }
 
     }
     catch (error) {
@@ -88,7 +153,6 @@ const ManageUser = () => {
       console.error("ERROR", { ...error });
     }
   };
-  console.log(paymentMethods);
 
   useEffect(() => {
     let componentMounted = true;
@@ -146,6 +210,7 @@ const ManageUser = () => {
 
   // When user select payment method to change default payment method
   const handleSelectPaymentMethod = (stripePaymentMethodID) => {
+    console.log(stripePaymentMethodID);
     if (stripePaymentMethodID === selectedPaymentMethod) {
       setSelectedPaymentMethod(() => null);
     } else {
@@ -180,8 +245,42 @@ const ManageUser = () => {
     }
   };
 
+  // Handle user submit failed payment
+  const handleFailedPayment = async (clientSecret) => {
+
+    if (!stripe) {
+      // Stripe.js has not yet loaded.
+      // Make sure to disable form submission until Stripe.js has loaded.
+      toast.error("Something went wrong");
+      return;
+    }
+
+    if (!subscriptionInfo?.defaultPaymentMethodID) {
+      toast.error("Error! No default payment method for card!");
+    } else {
+      try {
+        const payload = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: subscriptionInfo.defaultPaymentMethodID
+        });
+        if (payload.error) {
+          console.log(payload.error);
+          // Payment error
+          toast.error(`Payment failed! ${payload.error.message}`);
+        } else {
+          // Payment success
+          toast.success("Payment Success!");
+          setRerender((prevState) => !prevState);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Payment failed! Something went wrong");
+      }
+    }
+  }
+
   const handleCancelSubscription = () => {
     let message = "Click confirm to proceed.";
+    console.log("ran ccancel")
     if (subscriptionInfo?.trialEnd) {
       // if subscription is in free trial
       message = "Free trial will be counted as used."
@@ -234,7 +333,7 @@ const ManageUser = () => {
       } else {
         try {
           await axios.put(`${APP_CONFIG.baseUrl}/stripe/subscriptions`, {
-            stripePaymentMethodID: selectedPaymentMethod
+            paymentMethodID: selectedPaymentMethod
           });
           toast.success("Payment method changed successfully");
           setSelectedPaymentMethod(() => null);
@@ -558,7 +657,7 @@ const ManageUser = () => {
                                             cardBrand={paymentMethod.cardType}
                                             last4={paymentMethod.last4}
                                             expDate={paymentMethod.expDate}
-                                            stripePaymentMethodID={paymentMethod.stripepPaymentMethodID}
+                                            stripePaymentMethodID={paymentMethod.stripePaymentMethodID}
                                             selectedPaymentMethod={selectedPaymentMethod}
                                             handleSelectPaymentMethod={handleSelectPaymentMethod} />
                                         </div>
@@ -608,7 +707,7 @@ const ManageUser = () => {
                             bordered={false}
                             keyField="invoiceReferenceNumber"
                             data={billingHistory}
-                            columns={billingHistoryColumn}
+                            columns={billingHistoryColumn(handleFailedPayment)}
                           />
                         </div>
                       </>

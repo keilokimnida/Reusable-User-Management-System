@@ -10,15 +10,10 @@ const Plans = db.model('Plans');
 const Subscriptions = db.define(
     'Subscriptions',
     {
-        subscription_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            primaryKey: true,
-            autoIncrement: true
-        },
         stripe_subscription_id: {
             type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
+            primaryKey: true,
+            autoIncrement: false
         },
         fk_plan_id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -38,11 +33,11 @@ const Subscriptions = db.define(
         },
         // Default payment method
         fk_payment_method: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: DataTypes.STRING(255),
             allowNull: true,
             references: {
                 model: PaymentMethods,
-                key: 'payment_method_id'
+                key: 'stripe_payment_method_id'
             }
         },
         stripe_status: {

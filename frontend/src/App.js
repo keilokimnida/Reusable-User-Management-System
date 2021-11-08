@@ -19,6 +19,7 @@ import TOAST_CONFIG from './config/toastConfig';
 
 // styling
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 // Stripe elements
 import { loadStripe } from "@stripe/stripe-js";
@@ -49,7 +50,7 @@ const App = () => {
         const accessToken = res.data.results.access_token;
  
         TokenManager.setToken(accessToken);
-        axios.defaults.headers.common = { 'Authorization': `bearer ${accessToken}` };
+        axios.defaults.headers.common['Authorization'] = `bearer ${accessToken}`;
 
         // call refreshToken every 30 minutes to renew the authentication token.
         setTimeout(getRefreshToken,  30 * 60 * 1000);

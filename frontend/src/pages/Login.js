@@ -42,7 +42,9 @@ const Login = () => {
       success: {
         render: ({ data: res }) => {
           setLoading(false);
-          TokenManager.setToken(res.data.results.access_token);
+          const accessToken = res.data.results.access_token;
+          TokenManager.setToken(accessToken);
+          axios.defaults.headers.common['Authorization'] = `bearer ${accessToken}`;
           history.push("/");
           return "Logged in successfully";
         },
@@ -67,7 +69,6 @@ const Login = () => {
 
   // Handler for Recaptcha
   const recaptchaOnChange = (value) => {
-    console.log("Captcha value:", value);
     setIsRecaptchaValidated(() => true);
   }
 

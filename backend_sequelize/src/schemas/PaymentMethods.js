@@ -6,14 +6,11 @@ const Accounts = db.model('Accounts');
 const PaymentMethods = db.define(
     'PaymentMethods',
     {
-        payment_method_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            primaryKey: true,
-            autoIncrement: true
-        },
         stripe_payment_method_id: {
             type: DataTypes.STRING(255),
-            allowNull: false
+            primaryKey: true,
+            allowNull: false,
+            autoIncrement: false
         },
         stripe_payment_method_fingerprint: {
             type: DataTypes.STRING(255),

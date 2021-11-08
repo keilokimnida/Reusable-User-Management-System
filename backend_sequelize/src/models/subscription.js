@@ -6,10 +6,10 @@ const {
 } = require('../schemas/Schemas');
 
 // Create Subscription
-module.exports.createSubscription = (subscriptionID, planID, accountID, status, meta) =>
+module.exports.createSubscription = (stripeSubscriptionID, planID, accountID, status, meta) =>
     Subscriptions.create({
         ...meta,
-        stripe_subscription_id: subscriptionID,
+        stripe_subscription_id: stripeSubscriptionID,
         fk_plan_id: planID,
         fk_account_id: accountID,
         stripe_status: status
@@ -46,7 +46,7 @@ module.exports.findActiveSubscription = (accountID) =>
             {
                 model: Invoices,
                 as: 'invoice',
-                order: [['paid_on', 'DESC']]
+                order: [['paid_on', 'ASC']]
             },
             {
                 model: PaymentMethods,

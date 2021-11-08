@@ -126,7 +126,7 @@ export const billingHistoryColumn = (handleFailedPayment) => {
                 if (cell) {
                     return <button type="button" className="c-Btn c-Btn--link" onClick={() => handleFailedPayment(row.clientSecret)}>Pay Now</button>
                 } else {
-                    return null;
+                    return <p>No action</p>;
                 }
             }
         }

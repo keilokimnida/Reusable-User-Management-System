@@ -9,7 +9,7 @@ const {
 module.exports.insertPaymentMethod = async (accountID, paymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate) => {
     const transaction = await db.transaction();
     try {
-        const { payment_method_id } = await PaymentMethods.create({
+        await PaymentMethods.create({
             stripe_payment_method_id: paymentMethodID,
             stripe_payment_method_fingerprint: cardFingerprint,
             stripe_card_last_four_digit: cardLastFourDigit,
@@ -19,7 +19,7 @@ module.exports.insertPaymentMethod = async (accountID, paymentMethodID, cardFing
 
         await Accounts_PaymentMethods.create({
             fk_account_id: accountID,
-            fk_payment_methods_id: payment_method_id
+            fk_payment_methods_id: paymentMethodID
         }, { transaction });
 
         await transaction.commit();
@@ -57,7 +57,7 @@ module.exports.findPaymentMethod = (paymentMethodID) =>
 
 
 // Find Duplicate Payment Method
-module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, stripePaymentMethodID) =>
+module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, paymentMethodID) =>
     Accounts.findOne({
         where: { account_id: accountID },
         include: {
@@ -66,7 +66,7 @@ module.exports.findDuplicatePaymentMethod = (accountID, cardFingerprint, stripeP
             where: {
                 stripe_payment_method_fingerprint: cardFingerprint,
                 stripe_payment_method_id: {
-                    [Op.ne]: stripePaymentMethodID
+                    [Op.ne]: paymentMethodID
                 }
             }
         }

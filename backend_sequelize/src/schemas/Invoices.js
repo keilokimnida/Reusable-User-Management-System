@@ -8,14 +8,10 @@ const Subscriptions = db.model('Subscriptions');
 const Invoices = db.define(
     'Invoices',
     {
-        invoice_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            primaryKey: true,
-            autoIncrement: true
-        },
         stripe_invoice_id: {
             type: DataTypes.STRING(255),
-            allowNull: false
+            primaryKey: true,
+            autoIncrement: false
         },
         balance: {
             type: DataTypes.DECIMAL(10, 2),
@@ -29,12 +25,12 @@ const Invoices = db.define(
             type: 'TIMESTAMP',
             allowNull: true
         },
-        fk_subscription_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+        fk_stripe_subscription_id: {
+            type: DataTypes.STRING(255),
             allowNull: false,
             references: {
                 model: Subscriptions,
-                key: 'subscription_id'
+                key: 'stripe_subscription_id'
             }
         },
         stripe_reference_number: {
@@ -84,12 +80,12 @@ const Invoices = db.define(
 );
 
 Subscriptions.hasMany(Invoices, {
-    foreignKey: 'fk_subscription_id',
+    foreignKey: 'fk_stripe_subscription_id',
     as: 'invoice'
 });
 
 Invoices.belongsTo(Subscriptions, {
-    foreignKey: 'fk_subscription_id',
+    foreignKey: 'fk_stripe_subscription_id',
     as: 'subscription'
 });
 

@@ -41,21 +41,21 @@ module.exports.createPaymentMethod = async (req, res, next) => {
         if (isNaN(accountID))
             throw new E.ParamTypeError('accountID', accountID, 1);
 
-        const { stripePaymentMethodID } = req.body;
-        if (!stripePaymentMethodID) throw new E.ParamMissingError('stripePaymentMethodID');
+        const { paymentMethodID } = req.body;
+        if (!paymentMethodID) throw new E.ParamMissingError('paymentMethodID');
 
         // Obtain more details about payment method from Stripe
-        const paymentMethod = await findPaymentMethodFromStripe(stripePaymentMethodID);
+        const paymentMethod = await findPaymentMethodFromStripe(paymentMethodID);
         if (!paymentMethod) throw new E.NotFoundError('paymentMethod');
 
         // Every card has a unique fingerprint
         const cardFingerprint = paymentMethod.card.fingerprint;
 
         // Check if new payment method already exists in our database
-        const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, cardFingerprint, stripePaymentMethodID);
+        const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, cardFingerprint, paymentMethodID);
 
         if (duplicatedPaymentMethod) {
-            await detachPaymentMethod(stripePaymentMethodID); // Detach payment method from Stripe database
+            await detachPaymentMethod(paymentMethodID); // Detach payment method from Stripe database
 
             // TODO STRIPE ERROR
             return res.status(400).json({
@@ -72,7 +72,7 @@ module.exports.createPaymentMethod = async (req, res, next) => {
         const cardExpDate = cardExpMonth + '/' + cardExpYear.charAt(2) + cardExpYear.charAt(3);
 
         // Insert payment method in our database
-        await insertPaymentMethod(accountID, stripePaymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate);
+        await insertPaymentMethod(accountID, paymentMethodID, cardFingerprint, cardLastFourDigit, cardType, cardExpDate);
 
         res.status(200).send(r.success200({ duplicate: false }));
         return next();
@@ -116,7 +116,7 @@ module.exports.createSubscription = async (req, res, next) => {
     try {
 
         const { account, plan } = res.locals;
-        const { stripePaymentMethodID } = req.body;
+        const { paymentMethodID } = req.body;
         const { type } = req.params;
         const accountID = parseInt(account.account_id);
 
@@ -139,11 +139,11 @@ module.exports.createSubscription = async (req, res, next) => {
         let clientSecret;
 
         // If account has not used its free trial yet
-        if (!account.trialed) {
-            if (!stripePaymentMethodID) throw new E.ParamMissingError('paymentMethodID');
+        if (!account.has_trialed) {
+            if (!paymentMethodID) throw new E.ParamMissingError('paymentMethodID');
 
             // Check if payment method exists
-            const paymentMethod = findPaymentMethod(stripePaymentMethodID);
+            const paymentMethod = await findPaymentMethod(paymentMethodID);
             if (!paymentMethod) throw new E.NotFoundError('paymentMethod');
 
             // Unix time now + 7 days
@@ -153,18 +153,16 @@ module.exports.createSubscription = async (req, res, next) => {
             // Create subscription in Stripe
             const subscription = await createSubscriptionInStripe(account.stripe_customer_id, priceID, {
                 trial_end: tempTrialEndDate,
-                default_payment_method: stripePaymentMethodID
+                default_payment_method: paymentMethodID
             });
 
             subscriptionID = subscription.id;
             const planID = plan.plan_id;
-
             // Create subscription in our Database
             await createSubscription(subscriptionID, planID, accountID, 'trialing', {
                 trial_end: dayjs((tempTrialEndDate + 3600) * 1000).toDate(), // for testing, trial lasts for 3 mins + 1hr delay for Stripe to charge
-                fk_payment_method: paymentMethod.payment_method_id
+                fk_payment_method: paymentMethodID
             });
-
         }
         else {
             // Create subscription in Stripe
@@ -185,7 +183,7 @@ module.exports.createSubscription = async (req, res, next) => {
 module.exports.updateSubscription = async (req, res, next) => {
     try {
         const { account, plan } = res.locals;
-        const { stripePaymentMethodID } = req.body;
+        const { paymentMethodID } = req.body;
         const accountID = parseInt(account.account_id);
 
         if (isNaN(accountID))
@@ -235,24 +233,24 @@ module.exports.updateSubscription = async (req, res, next) => {
         }
 
         // Change default payment method
-        if (stripePaymentMethodID) {
+        if (paymentMethodID) {
             // Check if payment method exists in our database
-            const paymentMethod = await findPaymentMethod(stripePaymentMethodID);
+            const paymentMethod = await findPaymentMethod(paymentMethodID);
             if (!paymentMethod)
                 throw new E.ParamMissingError('paymentMethod');
 
             // Check if payment method is the same payment method
             const defaultPaymentMethodID = activeSubscription.fk_payment_method;
             // TODO STRIPE ERROR
-            if (paymentMethod.payment_method_id === defaultPaymentMethodID) return res.status(400).json({
+            if (paymentMethod.stripe_payment_method_id === defaultPaymentMethodID) return res.status(400).json({
                 message: 'Error! Payment method is the same as current default payment method'
             });
 
             // Update subscription payment method in Stripe
-            await updateSubscriptionInStripe(subscriptionID, { default_payment_method: stripePaymentMethodID });
+            await updateSubscriptionInStripe(subscriptionID, { default_payment_method: paymentMethodID });
 
             // Update subscription payment method in our database
-            await updateSubscription(subscriptionID, { fk_payment_method: paymentMethod.payment_method_id });
+            await updateSubscription(subscriptionID, { fk_payment_method: paymentMethodID });
         }
 
         res.status(200).send(r.success200());
@@ -367,8 +365,9 @@ module.exports.handleWebhook = async (req, res, next) => {
                 const invoice = event.data.object;
                 const account = await findAccountBy.stripeCustomerId(invoice.customer);
                 const accountID = account.account_id;
+
                 // If this is user's first time subscribing
-                if (!account.trialed) {
+                if (!account.has_trialed) {
                     // Update user trialed status to prevent user from access to free trial multiple times
                     await updateAccount(accountID, {
                         has_trialed: true
@@ -377,9 +376,7 @@ module.exports.handleWebhook = async (req, res, next) => {
                 else {
                     const subscriptionID = invoice.subscription;
                     const amount = parseFloat(invoice.amount_paid / 100).toFixed(2);
-                    console.log('-------');
-                    console.log(invoice.payment_intent);
-                    console.log('-------');
+
                     // Charged with a payment method
                     if (invoice.payment_intent) {
 
@@ -388,11 +385,9 @@ module.exports.handleWebhook = async (req, res, next) => {
                         const paymentIntent = await findPaymentIntent(paymentIntentID);
                         const paymentMethod = paymentIntent.payment_method;
                         const paymentMethodID = paymentMethod.id;
-                        console.log('-------');
-                        console.log(invoice.billing_reason);
 
-                        console.log(invoice.billing_reason === 'subscription_create');
-                        console.log('-------');
+                       
+
                         // https://stripe.com/docs/api/invoices/object#invoice_object-billing_reason
                         if (invoice.billing_reason === 'subscription_create') {
 

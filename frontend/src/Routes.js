@@ -8,10 +8,12 @@ import CreateAccount from './pages/CreateAccount';
 import ManageUsers from './pages/Users/ManageUsers';
 import ManagerUser from './pages/Users/ManageUser';
 
-import Account from './pages/Account';
 import Checkout from './pages/Checkout';
-import Home from './pages/Home';
+import ChangePlan from './pages/ChangePlan';
 import Plans from './pages/Plans';
+
+import Account from './pages/Account';
+import Home from './pages/Home';
 import LoggedOut from './pages/LoggedOut';
 
 import TokenManager from './utils/tokenManager';
@@ -24,7 +26,6 @@ const Routes = () => {
 
   const authGuard = (Component) => (props) => {
     const token = TokenManager.getToken();
-   
     if (!token) return (<Redirect to="/logged-out" {...props} />);
     return (<Component {...props} />);
   };
@@ -52,6 +53,7 @@ const Routes = () => {
         {/* Plans */}
         <Route exact path="/plans" render={(props) => dummy(Plans)(props)} />
         <Route path="/plans/payment/:type" render={(props) => authGuard(Checkout)(props)} />
+        <Route path="/plans/change" render={(props) => authGuard(ChangePlan)(props)} />
 
         {/* User account settings */}
         <Route exact path="/me" render={props => authGuard(Account)(props)} />
