@@ -66,9 +66,8 @@ module.exports.verifyStripeWebhookRequest = async (req, res, next) => {
 // Accessible by Premium and free trial users only
 module.exports.checkPremiumAccess = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-
-        const accountID = decoded.account_id;
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         // Get active subscription information
         // Active can be: "active, canceling, trialing, past_due"
@@ -98,9 +97,8 @@ module.exports.checkPremiumAccess = async (req, res, next) => {
 // Accessible by Standard, Premium and free trial users only
 module.exports.checkStandardAccess = async (req, res, next) => {
     try {
-        const { decoded } = res.locals.auth;
-
-        const accountID = decoded.account_id;
+        const { account } = res.locals;
+        const accountID = parseInt(account.account_id);
 
         // Get active subscription information
         // Active can be: "active, canceling, trialing, past_due"
