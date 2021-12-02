@@ -3,7 +3,7 @@ $header-avatar-diameter: 48px;
 .c-Avatar {
     width: $header-avatar-diameter;
     height: $header-avatar-diameter;
-    border-radius: calc($header-avatar-diameter / 2);
+    border-radius: calc(#{$header-avatar-diameter} / 2);
     position: relative;
     z-index: 1;
 
@@ -12,7 +12,7 @@ $header-avatar-diameter: 48px;
 
         img {
             max-width: 100%;
-            border-radius: calc($header-avatar-diameter / 2);
+            border-radius: calc(#{$header-avatar-diameter} / 2);
             z-index: 0;
         }
     }
@@ -20,7 +20,7 @@ $header-avatar-diameter: 48px;
     &__Placeholder {
         width: $header-avatar-diameter;
         height: $header-avatar-diameter;
-        border-radius: calc($header-avatar-diameter / 2);
+        border-radius: calc(#{$header-avatar-diameter} / 2);
         background-color: rgba(0, 0, 0, 0.3);
         position: absolute;
         top: 0;
@@ -38,7 +38,7 @@ $header-avatar-diameter: 48px;
         position: absolute;
         background-color: white;
         top: 0;
-        right: calc($header-avatar-diameter + 8px);
+        right: calc(#{$header-avatar-diameter} + 8px);
         width: 300px;
         height: 200px;
         border-radius: 5px;
